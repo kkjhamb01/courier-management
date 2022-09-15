@@ -12,6 +12,7 @@ import (
 	"github.com/kkjhamb01/courier-management/common/logger"
 	"github.com/kkjhamb01/courier-management/common/logger/tag"
 	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	"github.com/kkjhamb01/courier-management/grpc/offering/go"
 	"github.com/kkjhamb01/courier-management/offering/business"
 	"github.com/kkjhamb01/courier-management/uaa/security"
 	"google.golang.org/grpc/codes"

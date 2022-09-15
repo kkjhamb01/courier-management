@@ -1,5 +1,9 @@
 package pubsub
 
+import (
+	offeringPb "github.com/kkjhamb01/courier-management/grpc/offering/go"
+)
+
 type Event struct {
 	Data  interface{}
 	Topic string

@@ -1,5 +1,9 @@
 package pubsub
 
+import (
+	"github.com/kkjhamb01/courier-management/grpc/finance/go"
+)
+
 type Event struct {
 	Data  interface{}
 	Topic string

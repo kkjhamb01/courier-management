@@ -9,6 +9,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/kkjhamb01/courier-management/common/logger"
 	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/grpc/offering/go"
 	"github.com/kkjhamb01/courier-management/offering/business"
 	"github.com/kkjhamb01/courier-management/offering/pubsub"
 	"github.com/kkjhamb01/courier-management/uaa/security"

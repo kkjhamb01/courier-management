@@ -2,6 +2,7 @@ package messaging
 
 import (
 	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
+	"github.com/kkjhamb01/courier-management/grpc/offering/go"
 )
 
 func EncodeMaxOfferRetriesData(event offeringPb.MaxOfferRetriesEvent) ([]byte, error) {
