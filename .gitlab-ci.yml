@@ -1,0 +1,329 @@
+stages:
+  - test # All jobs related for testing such as Unit Test
+  - build # All jobs related for building app for iOS and Android
+  - deploy
+  - deploymain
+  - gcloud #deploys this project to gcloud after deployed on okd
+
+courier_test: # Name of the Job
+  stage: test # type of stage
+  only:
+    - develop
+  script:
+    - echo "this is test"
+    # - go test ./...
+  tags:  # Name of jobrunner that i created 
+    - managementtag  # Tags for runner
+
+
+
+courier_build: #Job name
+  stage: build # kind of job
+  only:
+    - develop
+    - developmain
+
+  before_script:
+    #- sudo nohup openvpn --client --config /etc/openvpn/client.conf &
+    - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
+    - echo "this is buils"
+    - echo ${CI_COMMIT_REF_SLUG}
+  dependencies:
+    - courier_test
+
+
+    #script: echo $COMMIT_TIME
+  script:
+    - echo $test
+    - echo $CI_REGISTRY_USER
+    - echo $COMMIT_TIME
+    - echo $CI_REGISTRY_IMAGE
+    - echo $CI_BUILD_REF_NAME
+    - echo $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
+    - echo $CI_COMMIT_BEFORE_SHA
+    - echo $CI_COMMIT_TIMESTAMP
+    - echo $CI_CONCURRENT_ID
+    - go build  # Builds package 
+    - echo $CI_COMMIT_TAG
+    - echo $CI_COMMIT_TIMESTAMP
+    - docker login -u 30691359 -p Server123
+    #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY   
+    # - docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    ######- docker build  -t $CI_REGISTRY/backend/userservice:latest .
+    #- docker build --no-cache -t $CI_REGISTRY/backend/userservice:latest .
+    ######## - docker push $CI_REGISTRY/backend/userservice:latest
+    ###############################################################################
+    - DOCKER_BUILDKIT=1 docker build  -t $CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA .
+    - docker logout
+    #- sudo pkill openvpn
+    #- cd /home/gitlab-runner
+    #- ./killer.sh
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA
+    ######- echo $IMAGE_TAG
+    ######- docker pull $CI_REGISTRY_IMAGE:latest || true
+    ######- docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    ###### - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    ######- docker push $CI_REGISTRY_IMAGE:latest
+
+    #- docker login gitlab.artin.ai:5050
+    ###- docker image tag gitlab.artin.ai:5050/backend/userservice:latest gitlab.artin.ai:5050/backend/userservice:$COMMIT_TIME 
+    ###- docker rmi gitlab.artin.ai:5050/backend/userservice:latest 
+    ###- docker build -t gitlab.artin.ai:5050/backend/userservice:latest .
+    #- docker push gitlab.artin.ai:5050/backend/userservice:latest
+    #- su - gitlab-runner
+    #- oc delete all --selector  app=userservice
+  tags: # Name of jobrunner that i created
+    - managementtag # Tags for runner
+courier_deploy: #Job name
+  stage: deploy # kind of job
+  only:
+    - develop
+  before_script:
+    - oc login https://okd.artin.ai:8443 -u m.torabi -p Server12312345q@                    #--token=
+    - oc project  userservice   #rapidrops-develop
+    #- oc delete all --selector  app=uaa-service
+    #######
+    - oc delete deploy uaa-service
+    - oc delete service uaa-service
+    - oc delete all --selector  app=offering-service
+    - oc delete all --selector  app=delivery-service
+    - oc delete all --selector  app=party-service
+    - oc delete all --selector  app=finance-service
+    - oc delete all --selector  app=notification
+    - oc delete all --selector  app=rating-service
+    - oc delete all --selector  app=promotion-service
+    - oc delete all --selector  app=announcement-service
+    - oc delete all --selector  app=pricing-service
+
+  script:
+    # - oc new-app --docker-image=gitlab.artin.ai:5050/backend/userservice:$COMMIT_TIME  --name=userservice      --source-secret=private-registery1  #$CI_REGISTRY_IMAGE:$COMMIT_TIME
+    - echo $CI_COMMIT_BEFORE_SHA
+    - echo $CI_COMMIT_SHA
+    
+    - oc new-app -e SERVICE_NAME=uaa -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app  --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=uaa-service      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy uaa-service  --port=8086,8087
+    #  - oc expose svc/uaa-service  --hostname=uaa-service.artin.ai  #--port=8086
+    - oc patch svc uaa-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+    ############### UAA Service##################################################################
+
+
+    ############### party Service##################################################################
+    - oc new-app -e SERVICE_NAME=party -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=party-service      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy party-service  --port=8085
+    - oc expose svc/party-service  --hostname=party-service.artin.ai
+    - oc patch svc party-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+    ############### party Service##################################################################
+    ############### finance Service##################################################################
+    - oc new-app -e SERVICE_NAME=finance -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=finance-service      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy finance-service  --port=50002
+    - oc expose service finance-service  --hostname=finance-service.artin.ai
+    - oc patch svc finance-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+    ############### party Service##################################################################
+
+    ############### Offering Service##################################################################
+
+    - oc new-app -e SERVICE_NAME=offering  -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=offering-service      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy offering-service  --port=50003
+    - oc expose svc/offering-service  --hostname=offering-service.artin.ai
+    - oc patch svc offering-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+    ############### Offering Service##################################################################
+
+
+    ############### Delivery Service##################################################################
+
+    - oc new-app -e SERVICE_NAME=delivery  -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=delivery-service      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy delivery-service  --port=50001
+    - oc expose svc/delivery-service  --hostname=delivery-service.artin.ai
+    - oc patch svc delivery-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+    ############### Delivery Service##################################################################
+
+    ############### notificationRegistration Service##################################################################
+    - oc new-app -e SERVICE_NAME=notification -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=notification     --source-secret=courier-managemetnsecret
+
+    - oc expose deploy notification  --port=8089
+    - oc expose svc/notification  --hostname=notification-service.artin.ai
+    - oc patch svc notification  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+   ######################### notificatin service#####################################################
+   ################## Rating Service#################################
+    - oc new-app -e SERVICE_NAME=rating -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app  --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=rating-service      --source-secret=courier-managemetnsecret
+    - oc expose deploy rating-service  --port=8091
+    - oc patch svc rating-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+
+    ############### promotion Service##################################################################
+    - oc new-app -e SERVICE_NAME=promotion -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app  --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=promotion-service    --source-secret=courier-managemetnsecret
+    - oc expose deploy promotion-service  --port=8092
+    - oc patch svc promotion-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+
+    #####################################################################################################
+
+    ############### announcement Service##################################################################
+    - oc new-app -e SERVICE_NAME=announcement -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app  --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=announcement-service    --source-secret=courier-managemetnsecret
+    - oc expose deploy announcement-service  --port=8093
+    - oc patch svc announcement-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+
+    ############### pricing Service##################################################################
+    - oc new-app -e SERVICE_NAME=pricing -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app  --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=pricing-service    --source-secret=courier-managemetnsecret
+    - oc expose deploy pricing-service  --port=50004
+    - oc patch svc pricing-service  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+
+    #####################################################################################################
+
+    ############### party Service##################################################################notificationRegistration
+    # - oc expose svc/courier-managemetn --hostname=courier-managemetn.artin.ai
+
+    #- docker build  -t userservice .  --force-rm=true
+    # - docker run -d -p 8080:8080 userservice
+    #############################################################
+    # Gcloud auto deploy
+    #- cp -r -f * /home/gitlab-runner/courier-management/courier-management
+    #- sudo pkill openvpn
+    #############################################
+  tags: # Name of jobrunner that i created
+    - managementtag  ## Tags for runner
+
+#################################Deploymain#########################################################
+
+courier_deploymain: #Job name
+  stage: deploymain # kind of job
+  only:
+    - developmain
+  before_script:
+    - oc login https://okd.artin.ai:8443 -u m.torabi -p Server12312345q@                    #--token=
+    - oc project  rapidrops-test   #rapidrops-develop
+    #- oc delete all --selector  app=uaa-service
+    #######
+    - oc delete deploy uaa-service-main
+    - oc delete service uaa-service-main
+    - oc delete all --selector  app=offering-service-main
+    - oc delete all --selector  app=delivery-service-main
+    - oc delete all --selector  app=party-service-main
+    - oc delete all --selector  app=finance-service-main
+    - oc delete all --selector  app=notification-main
+    - oc delete all --selector  app=rating-service-main
+    - oc delete all --selector  app=promotion-service-main
+
+  script:
+    # - oc new-app --docker-image=gitlab.artin.ai:5050/backend/userservice:$COMMIT_TIME  --name=userservice      --source-secret=private-registery1  #$CI_REGISTRY_IMAGE:$COMMIT_TIME
+    - echo $CI_COMMIT_BEFORE_SHA
+    - echo $CI_COMMIT_SHA
+    
+    - oc new-app -e SERVICE_NAME=uaa -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app  --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=uaa-service-main      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy uaa-service-main  --port=8086,8087
+    #  - oc expose svc/uaa-service  --hostname=uaa-service.artin.ai  #--port=8086
+    - oc patch svc uaa-service-main  -p '{"spec":{"externalIPs":["185.97.118.34"]}}'
+    ############### UAA Service##################################################################
+
+
+    ############### party Service##################################################################
+    - oc new-app -e SERVICE_NAME=party -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=party-service-main      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy party-service-main  --port=8085
+    - oc expose svc/party-service-main  --hostname=party-service.artin.ai
+    - oc patch svc party-service-main  -p '{"spec":{"externalIPs":["185.97.118.34"]}}'
+    ############### party Service##################################################################
+    ############### finance Service##################################################################
+    - oc new-app -e SERVICE_NAME=finance -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=finance-service-main      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy finance-service-main  --port=50002
+    - oc expose service finance-service-main  --hostname=finance-service.artin.ai
+    - oc patch svc finance-service-main  -p '{"spec":{"externalIPs":["185.97.118.34"]}}'
+    ############### party Service##################################################################
+
+    ############### Offering Service##################################################################
+
+    - oc new-app -e SERVICE_NAME=offering  -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=offering-service-main      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy offering-service-main  --port=50003
+    - oc expose svc/offering-service-main  --hostname=offering-service.artin.ai
+    - oc patch svc offering-service-main  -p '{"spec":{"externalIPs":["185.97.118.34"]}}'
+    ############### Offering Service##################################################################
+
+
+    ############### Delivery Service##################################################################
+
+    - oc new-app -e SERVICE_NAME=delivery  -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=delivery-service-main      --source-secret=courier-managemetnsecret
+
+    - oc expose deploy delivery-service-main  --port=50001
+    - oc expose svc/delivery-service-main  --hostname=delivery-service.artin.ai
+    - oc patch svc delivery-service-main  -p '{"spec":{"externalIPs":["185.97.118.34"]}}'
+    ############### Delivery Service##################################################################
+
+    ############### notificationRegistration Service##################################################################
+    - oc new-app -e SERVICE_NAME=notification -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=notification-main     --source-secret=courier-managemetnsecret
+
+    - oc expose deploy notification-main  --port=8089
+    - oc expose svc/notification-main  --hostname=notification-service.artin.ai
+    - oc patch svc notification-main  -p '{"spec":{"externalIPs":["185.97.118.34"]}}'
+   ######################### notificatin service#####################################################
+   ################## Rating Service#################################
+    - oc new-app -e SERVICE_NAME=rating -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app  --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=rating-service-main      --source-secret=courier-managemetnsecret
+    - oc expose deploy rating-service-main  --port=8091
+    - oc patch svc rating-service-main  -p '{"spec":{"externalIPs":["185.97.118.34"]}}'
+    ###############################################################################################
+
+    ############### promotion Service##################################################################
+    - oc new-app -e SERVICE_NAME=promotion -e CONFIG_FILE=config-okd.yaml -e COURIER_MANAGEMENT_WORKING_DIR=/app  --docker-image=$CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA  --name=promotion-service-main      --source-secret=courier-managemetnsecret
+    - oc expose deploy promotion-service-main  --port=8092
+    - oc patch svc promotion-service-main  -p '{"spec":{"externalIPs":["185.97.117.71"]}}'
+
+    #####################################################################################################
+
+    ############### party Service##################################################################notificationRegistration
+    # - oc expose svc/courier-managemetn --hostname=courier-managemetn.artin.ai
+
+    #- docker build  -t userservice .  --force-rm=true
+    # - docker run -d -p 8080:8080 userservice
+    #############################################################
+    # Gcloud auto deploy
+    #- cp -r -f * /home/gitlab-runner/courier-management/courier-management
+    #- sudo pkill openvpn
+    #############################################
+  tags: # Name of jobrunner that i created
+    - managementtag  ## Tags for runner
+###################   
+
+gcloud_deploy:
+  stage: gcloud
+  only:
+    - master
+  before_script:
+   # - sudo nohup openvpn --client --config /etc/openvpn/client.conf &
+  script:
+    #- git config http.proxy http://user1:Server123@185.235.43.213:4444
+    #- git pull https://source.developers.google.com/p/rapidrops-courier/r/courier-management
+    - rm -rf /home/gitlab-runner/courier-management/courier-management/*
+    - rm -rf  /home/gitlab-runner/courier-management/temp/*
+    - cp -r -f ./* /home/gitlab-runner/courier-management/temp
+   # - cp -r -f ./* /home/gitlab-runner/courier-management/courier-management
+    - cd /home/gitlab-runner/courier-management/courier-management
+    #- gcloud source repos clone courier-management --project=rapidrops-courier
+    - gcloud source repos clone courier-management --project=courier-management-325711
+    - rm -rf *
+    - cp -r -f /home/gitlab-runner/courier-management/temp/* .
+    - mkdir -p /home/gitlab-runner/courier-management/courier-management/test
+    - touch /home/gitlab-runner/courier-management/courier-management/test/"test_$(date +"%F %T")"
+    - pwd
+    #- sudo nohup openvpn --client --config /etc/openvpn/client.conf &
+    #- git switch master
+    - git add *
+    - git commit -a -m "Updated:`date +'%Y-%m-%d %H:%M:%S'`"
+    #- /home/gitlab-runner/killer.sh
+    #- git config http.proxy http://user1:Server123@185.235.43.213:4444
+    - git push
+    ## kill vpn
+   # - cd /home/gitlab-runner
+   # - ./killer.sh
+   # - git config --unset http.proxy
+  # when: manual
+  tags:  # Name of jobrunner that i created
+    - managementtag # Tags for runner
+
+
+

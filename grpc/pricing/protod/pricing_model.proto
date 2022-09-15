@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package artin.couriermanagement.pricing;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/pricing/go;pricingPb";
+
+ 
+
+message Location {
+  double lat = 1 ;
+  double lon = 2 ;
+}
+enum VehicleType {
+  ANY = 0;
+  TRUCK = 1;
+  BICYCLE = 2;
+  CAR = 3;
+  VAN = 4;
+  MOTORBIKE = 5;
+  // TODO: ADD MORE
+}

@@ -1,0 +1,225 @@
+log:
+  filePath: "courier-management.log"
+
+offering:
+  dbName: "offering"
+  grpcPort: "50003"
+  maxCouriersOnNewOffer: 1
+  nearbyCouriersToSearch: 20
+  couriersDistanceOnNewOffer: 3000 # 3KM
+  maxOffersPerCourier: 3
+  maxOfferRetries: 10
+  courierTimeToAnswerOffer: 40s
+
+finance:
+  grpcPort: "50002"
+  webhookPort: "10002"
+  dbName: "finance"
+  accessToken: "123"
+  cronJobSchedule: "@every 5s"
+  revenueStripeId: "acct_1JQwnz2RC7hc7LRV"
+  taxStripeId: "acct_1JQwqj2SR6Y8sUTB"
+  stripeSecretKey: "sk_test_51J5arIEHpRM6GbfWwZ4DXDJaVTa7c5sWIC44OVskXrC4TlZNNcazL6n6Tq8XHCp6YC3BGweKkzqPeWtcwDbb4tsf00rSF36iCP"
+  paymentCourierSharePercent: 70
+  paymentTaxSharePercent: 10 # TODO check if the tax is a fixed percent or needs to be calculated
+  paymentRevenuePercent: 20
+  createStripeAccountMaxRetries: 10
+
+pricing:
+  grpcPort: "50004"
+  connection: "pricing-service:50004"
+
+internalHttp:
+  port: "8070"
+
+delivery:
+  createRequestScheduleDuration: 1m
+  validCities:
+    - London
+  dbName: "delivery"
+  grpcPort: "50001"
+
+googleMap:
+  apiKey: "AIzaSyC68_J_KqxQ7ZDTQQAurKtOEYdQeV_ixRA"
+
+mariadb:
+  address: "172.30.110.12:3306"
+  protocol: "tcp"
+  username: "root"
+  password: "mariadb"
+
+tile38:
+  # host: "localhost"123456
+  # port: "9851"
+  address: "172.30.171.44:9851"
+  courierLocationCollection: "courier"
+
+offerRedis:
+  address: "172.30.2.119:6379"
+  db: 0
+  password: ""
+
+apigateway:
+  example: "foo"
+
+nats:
+  #address: "localhost:4222"
+  address: "172.30.182.228:4222"
+
+party:
+  server:
+    address: ":8085"
+  database:
+    #type: "mysql"
+    #databaseDriver: "mysql"
+    #databaseHost: 127.0.0.1
+    #databasePort: 3306
+    #username: "root"
+    #password: "root"
+    #databaseName: "party"
+    #-----
+    type: "mysql"
+    databaseDriver: "mysql"
+    databaseHost: 172.30.110.12
+    databasePort: 3306
+    username: "root"
+    password: "mariadb"
+    databaseName: "party"
+    maxIdleConnections: 10
+    maxOpenConnections: 100
+    maxIdleTimeInMinutes: 30
+    maxLifetimeInMinutes: 60
+  download:
+    expiration: 3600
+    expirationSecretKey: 1%J3&H5*G79@F0!8A~6q4W
+  mot:
+    apiAddress: "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles"
+    apiKey: "kHy6VzmdJQaLZ8JfbLN9XGO2S5HISvg1HkRGNfR3"
+    timeout: 30
+  thumbnail:
+    maxDimension: 100
+
+uaa:
+  server:
+    address: ":8086"
+  redis:
+    #address: "localhost:6379"
+    #db: 0
+    #password: ""
+
+    address: "172.30.2.119:6379"
+    db: 0
+    password: ""
+    oauthSessionExpireSeconds: 120
+    otpSessionExpireSeconds: 120
+  google:
+    driver:
+      clientId: "484847374263-4s9ise94mkr3klc0tdgul48qedqqm3k2.apps.googleusercontent.com"
+      clientSecret: "fhIMRdOUN72iT0AVJPA7FGTW"
+      redirectUrl: "https://courier.artin.ai/google/driver"
+    passenger:
+      clientId: "484847374263-6hv62g1l30dh3df81eoa0dgnc3gja8f6.apps.googleusercontent.com"
+      clientSecret: "DpcVWue9d5WBwjZ-i2jW5RFW"
+      redirectUrl: "https://courier.artin.ai/google/passenger"
+  facebook:
+    driver:
+      clientId: "201861744746480"
+      clientSecret: "a44a020bdf89035702266a18a24020cc"
+      redirectUrl: "https://courier.artin.ai/facebook/driver"
+    passenger:
+      clientId: "2273373362961135"
+      clientSecret: "263e5c384db0add4699086c56dd4c931"
+      redirectUrl: "https://courier.artin.ai/facebook/passenger"
+  otp:
+    static: "1234"
+    length: 4
+    maxRetry: 3
+  partyAddress: "party-service:8085"
+  deepLinkTemplate: "open-app.html"
+
+jwt:
+  signKey: "localhost.key"
+  verifyKey: "public.key"
+  cert: "localhost.crt"
+  signingMethod: "RS256"
+  expirationMinutes: 1440
+  refreshExpirationHours: 720
+  issuer: "http://okd.rapidrops.com"
+
+notification:
+  server:
+    address: ":8089"
+  database:
+    type: "mysql"
+    databaseDriver: "mysql"
+    databaseHost: 172.30.110.12
+    databasePort: 3306
+    username: "root"
+    password: "mariadb"
+    databaseName: "notification"
+    maxIdleConnections: 10
+    maxOpenConnections: 100
+    maxIdleTimeInMinutes: 30
+    maxLifetimeInMinutes: 60
+  gorush: "172.30.49.2:9000"
+
+rating:
+  server:
+    address: ":8091"
+  database:
+    type: "mysql"
+    databaseDriver: "mysql"
+    databaseHost: 172.30.110.12
+    databasePort: 3306
+    username: "root"
+    password: "mariadb"
+    databaseName: "rating"
+    maxIdleConnections: 10
+    maxOpenConnections: 100
+    maxIdleTimeInMinutes: 30
+    maxLifetimeInMinutes: 60
+  rideService:
+    host: "delivery-service"
+    port: 50001
+
+promotion:
+  server:
+    address: ":8092"
+  database:
+    type: "mysql"
+    databaseDriver: "mysql"
+    databaseHost: 172.30.110.12
+    databasePort: 3306
+    username: "root"
+    password: "mariadb"
+    databaseName: "promotion"
+    maxIdleConnections: 10
+    maxOpenConnections: 100
+    maxIdleTimeInMinutes: 30
+    maxLifetimeInMinutes: 60
+  referral:
+    discountValue: 1000
+    discountPercentage: 0
+    promotionName: "referral"
+
+announcement:
+  server:
+    address: ":8093"
+  database:
+    type: "mysql"
+    databaseDriver: "mysql"
+    databaseHost: 172.30.110.12
+    databasePort: 3306
+    username: "root"
+    password: "mariadb"
+    databaseName: "announcement"
+    maxIdleConnections: 10
+    maxOpenConnections: 100
+    maxIdleTimeInMinutes: 30
+    maxLifetimeInMinutes: 60
+
+tracing:
+  dsn: "http://1e1eeb36067e443c86e4bb3a10694848@snt.alimahdiyar.ir:9000/4"
+
+distanceApi:
+  key: "AIzaSyATvTTHrRF8lMLLwRqPgzUNHdtqqg40hdI"

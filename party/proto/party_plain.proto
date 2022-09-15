@@ -1,0 +1,1130 @@
+syntax = "proto3";
+
+option go_package = "userservice/api/controller/proto";
+
+package party;
+
+// ---------------------------------- Start Courier Account Service ----------------------------------
+// upload dbs, if checked, delete old documents
+
+service CourierAccountService{
+
+  // creates profile for a new courier user
+  // returns error if the courier user already exists
+  rpc CreateCourierAccount(CreateCourierAccountRequest) returns (CreateCourierAccountResponse) {}
+
+  // get profile of user by his token
+  rpc GetCourierAccount(GetCourierAccountRequest) returns (GetCourierAccountResponse) {}
+
+  // find profiles of users
+  rpc FindCourierAccounts(FindCourierAccountsRequest) returns (FindCourierAccountsResponse) {}
+
+  // updates general information of courier, or transportation type
+  // all fields are optional, only available fields in the request are getting updated
+  rpc UpdateCourierAccount(UpdateCourierAccountRequest) returns (UpdateCourierAccountResponse) {}
+
+  // update passport, address, driver's license, ... of a courier user
+  rpc UpdateProfileAdditionalInfo(UpdateProfileAdditionalInfoRequest) returns (UpdateProfileAdditionalInfoResponse) {}
+
+  // delete passport, address, driver's license, ... of a courier user
+  rpc DeleteProfileAdditionalInfo(DeleteProfileAdditionalInfoRequest) returns (DeleteProfileAdditionalInfoResponse) {}
+
+  // get passport, or driver's license, or address, ... of a courier user by their token
+  rpc GetProfileAdditionalInfo(GetProfileAdditionalInfoRequest) returns (GetProfileAdditionalInfoResponse) {}
+
+  // get status of passport, or driver's license, or address, ... of a courier user by their token
+  rpc GetProfileAdditionalInfoStatus(GetProfileAdditionalInfoStatusRequest) returns (GetProfileAdditionalInfoStatusResponse) {}
+
+  // reject or accespt status of passport, or driver's license, or address, ... of a courier user by their token
+  rpc UpdateProfileAdditionalInfoStatus(UpdateProfileAdditionalInfoStatusRequest) returns (UpdateProfileAdditionalInfoStatusResponse) {}
+
+  // get status of profile
+  rpc GetProfileStatus(GetProfileStatusRequest) returns (GetProfileStatusResponse) {}
+
+  // search mot by registration number
+  rpc SearchMot(SearchMotRequest) returns (SearchMotResponse) {}
+
+  // update phone number
+  rpc UpdateCourierPhoneNumber(UpdateCourierPhoneNumberRequest) returns (UpdateCourierPhoneNumberResponse) {}
+
+}
+
+message SearchMotRequest{
+  string access_token = 1;
+  string registration_number = 2;
+}
+
+message SearchMotResponse{
+  Mot mot = 1;
+}
+
+message GetCourierAccountRequest{
+  string access_token = 1;
+}
+
+message GetCourierAccountResponse{
+  CourierProfile profile = 1;
+}
+
+message FindCourierAccountsRequest{
+  string access_token = 1;
+  oneof filter{
+
+    string user_id = 2;
+    string phone_number = 3;
+    string email = 4;
+    string name = 5;
+  }
+}
+
+message FindCourierAccountsResponse{
+  repeated CourierProfile profiles = 1;
+}
+
+message CourierProfile{
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string phone_number = 4;
+  string email = 5;
+  string birth_date = 6;
+  TransportationType transport_type = 7;
+  Boolean citizen = 8;
+  TransportationSize transport_size = 9;
+  repeated AuthorizedClaim authorized_claims = 10;
+}
+
+message AuthorizedClaim{
+  string identifier = 1;
+  ClaimType type = 2;
+}
+
+message CreateCourierAccountRequest{
+  // access token that is taken from uaa
+  // phone number and id of the user is extracted from access_token
+  string access_token = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string birth_date = 5;
+  Boolean citizen = 6;
+}
+
+message CreateCourierAccountResponse{
+}
+
+message UpdateCourierAccountRequest{
+  string access_token = 1;
+  // optional
+  string first_name = 2;
+  // optional
+  string last_name = 3;
+  // optional
+  string email = 4;
+  // optional
+  string birth_date = 5;
+  // optional
+  TransportationType transportation_type = 6;
+  // optional
+  Boolean citizen = 7;
+  // optional
+  TransportationSize transport_size = 8;
+}
+
+message UpdateCourierAccountResponse{
+}
+
+message UpdateCourierPhoneNumberRequest{
+  // access token containing old phone-number
+  string access_token = 1;
+
+  // access token containing new phone-number
+  string new_access_token = 2;
+}
+
+message UpdateCourierPhoneNumberResponse{
+
+}
+
+message IDCard{
+  string first_name = 1;
+  string last_name = 2;
+  string number = 3;
+  string expiration_date = 4;
+  string issue_place = 5;
+  IDCardType type = 6;
+  // list of uploaded document ids
+  repeated DocumentInfo document_ids = 7;
+}
+
+message DrivingLicense{
+  string driving_license_number = 1;
+  string expiration_date = 2;
+  // list of uploaded document ids
+  repeated DocumentInfo document_ids = 3;
+}
+
+message DriverBackground{
+  string national_insurance_number = 1;
+  Boolean upload_dbs_later = 2;
+  // list of uploaded document ids
+  repeated DocumentInfo document_ids = 3;
+}
+
+message ResidenceCard{
+  string number = 1;
+  string expiration_date = 2;
+  string issue_date = 3;
+  // list of uploaded document ids
+  repeated DocumentInfo document_ids = 4;
+}
+
+message BankAccount{
+  string bank_name = 1;
+  string account_number = 2;
+  string account_holder_name = 3;
+  string sort_code = 4;
+  // list of uploaded document ids
+  repeated DocumentInfo document_ids = 5;
+}
+
+message Address{
+  string street = 1;
+  string building = 2;
+  string city = 3;
+  string county = 4;
+  string post_code = 5;
+  string address_details = 6;
+  // list of uploaded document ids
+  repeated DocumentInfo document_ids = 7;
+}
+
+message Mot{
+  string registration_number = 1;
+  int32 co2_emissions = 2;
+  int32 engine_capacity = 3;
+  string euro_status = 4;
+  Boolean marked_for_export = 5;
+  string fuel_type = 6;
+  MotStatus mot_status = 7;
+  int32 revenue_weight = 8;
+  string colour = 9;
+  string make = 10;
+  string type_approval = 11;
+  int32 year_of_manufacture = 12;
+  string tax_due_date = 13;
+  TaxStatus tax_status = 14;
+  string date_of_last_v5c_issued = 15;
+  string real_driving_emissions = 16;
+  string wheelplan = 17;
+  string month_of_first_registration = 18;
+}
+
+message UpdateProfileAdditionalInfoRequest{
+  // user id is taken from access_token
+  string access_token = 1;
+  oneof info{
+
+    IDCard id_card = 2;
+    DrivingLicense driving_license = 3;
+    DriverBackground driver_background = 4;
+    ResidenceCard residence_card = 5;
+    BankAccount bank_account = 6;
+    Address address = 7;
+    MotConfirm mot = 8;
+  }
+}
+
+message UpdateProfileAdditionalInfoResponse{
+}
+
+message MotConfirm{
+  string registration_number = 2;
+}
+
+message DeleteProfileAdditionalInfoRequest{
+  // user id is taken from access_token
+  string access_token = 1;
+  // optional
+  AdditionalInfoType type = 2;
+}
+
+message DeleteProfileAdditionalInfoResponse{
+}
+
+message GetProfileAdditionalInfoRequest{
+  string access_token = 1;
+  AdditionalInfoType type = 2;
+}
+
+message GetProfileAdditionalInfoResponse{
+  oneof info{
+    IDCard id_card = 1;
+    DrivingLicense driving_license = 2;
+    DriverBackground driver_background = 3;
+    ResidenceCard residence_card = 4;
+    BankAccount bank_account = 5;
+    Address address = 6;
+    Mot mot = 7;
+    InsuranceCertificate insurance_certificate = 8;
+    ProfilePicture profile_picture = 9;
+    ProfileAdditionalInfo profile_additional_info = 10;
+  }
+}
+
+message ProfileAdditionalInfo{
+  IDCard id_card = 1;
+  DrivingLicense driving_license = 2;
+  DriverBackground driver_background = 3;
+  ResidenceCard residence_card = 4;
+  BankAccount bank_account = 5;
+  Address address = 6;
+  Mot mot = 7;
+  InsuranceCertificate insurance_certificate = 8;
+  ProfilePicture profile_picture = 9;
+}
+
+message InsuranceCertificate{
+  string object_id = 1;
+  bytes data = 2;
+}
+
+message ProfilePicture{
+  string object_id = 1;
+  bytes data = 2;
+}
+
+message GetProfileAdditionalInfoStatusRequest{
+  string access_token = 1;
+}
+
+message GetProfileAdditionalInfoStatusResponse{
+  repeated GetProfileAdditionalInfoStatusResponseItem items = 1;
+}
+
+message GetProfileAdditionalInfoStatusResponseItem{
+  AdditionalInfoType type = 1;
+  ProfileAdditionalInfoStatus status = 2;
+  string message = 3;
+}
+
+message UpdateProfileAdditionalInfoStatusRequest{
+  string access_token = 1;
+  AdditionalInfoType type = 2;
+  UpdateProfileAdditionalInfoStatus status = 3;
+  string message = 4;
+}
+
+message UpdateProfileAdditionalInfoStatusResponse{
+
+}
+
+message GetProfileStatusRequest{
+  string access_token = 1;
+}
+
+message GetProfileStatusResponse{
+  ProfileStatus status = 1;
+}
+
+enum ProfileAdditionalInfoStatus{
+  UNKNOWN_PROFILE_ADDITIONAL_INFO_STATUS = 0;
+  PROFILE_ADDITIONAL_INFO_STATUS_EMPTY = 1;
+  PROFILE_ADDITIONAL_INFO_STATUS_INCOMPLETED = 2;
+  PROFILE_ADDITIONAL_INFO_STATUS_COMPLETED = 3;
+  PROFILE_ADDITIONAL_INFO_STATUS_REJECTED = 4;
+  PROFILE_ADDITIONAL_INFO_STATUS_ACCEPTED = 5;
+}
+
+enum UpdateProfileAdditionalInfoStatus{
+  UNKNOWN_UPDATE_PROFILE_ADDITIONAL_INFO_STATUS = 0;
+  UPDATE_PROFILE_ADDITIONAL_INFO_STATUS_REJECTED = 1;
+  UPDATE_PROFILE_ADDITIONAL_INFO_STATUS_ACCEPTED = 2;
+}
+
+enum ProfileStatus{
+  UNKNOWN_PROFILE_STATUS = 0;
+  PROFILE_STATUS_IN_PROGRESS = 1;
+  PROFILE_STATUS_WAITING_FOR_VERIFY = 2;
+  PROFILE_STATUS_REJECTED = 3;
+  PROFILE_STATUS_COMPLETED = 4;
+}
+
+enum AdditionalInfoType{
+  UNKNOWN_ADDITIONAL_INFO_TYPE = 0;
+  ADDITIONAL_INFO_TYPE_PROFILE_PICTURE = 1;
+  ADDITIONAL_INFO_TYPE_ID_CARD = 2;
+  ADDITIONAL_INFO_TYPE_DRIVING_LICENSE = 3;
+  ADDITIONAL_INFO_TYPE_DRIVER_BACKGROUND = 4;
+  ADDITIONAL_INFO_TYPE_RESIDENCE_CARD = 5;
+  ADDITIONAL_INFO_TYPE_BANK_ACCOUNT = 6;
+  ADDITIONAL_INFO_TYPE_MOT = 7;
+  ADDITIONAL_INFO_TYPE_INSURANCE_CERTIFICATE = 8;
+  ADDITIONAL_INFO_TYPE_ADDRESS = 9;
+}
+
+enum TransportationType{
+  UNKNOWN_TRANSPORTATION_TYPE = 0;
+  TRANSPORTATION_TYPE_CAR = 1;
+  TRANSPORTATION_TYPE_BICYCLE = 2;
+  TRANSPORTATION_TYPE_MOTORBIKE = 3;
+  TRANSPORTATION_TYPE_VAN = 4;
+}
+
+enum TransportationSize{
+  UNKNOWN_TRANSPORTATION_SIZE = 0;
+  TRANSPORTATION_SIZE_SMALL = 1;
+  TRANSPORTATION_SIZE_MEDIUM = 2;
+  TRANSPORTATION_SIZE_LARGE = 3;
+}
+
+enum IDCardType{
+  UNKNOWN_IDCARD_TYPE = 0;
+  IDCARD_TYPE_PASSPORT = 1;
+  IDCARD_TYPE_NATIONAL_ID_CARD = 2;
+}
+
+enum MotStatus{
+  UNKNOWN_MOT_STATUS = 0;
+  MOT_STATUS_NO_DETAILS_HELD_BY_DVLA = 1;
+  MOT_STATUS_NO_RESULTS_RETURNED = 2;
+  MOT_STATUS_NOT_VALID = 3;
+  MOT_STATUS_VALID = 4;
+}
+
+enum TaxStatus{
+  UNKNOWN_TAX_STATUS = 0;
+  TAX_STATUS_NOT_TAXED_FOR_ON_ROAD_USE = 1;
+  TAX_STATUS_SORN = 2;
+  TAX_STATUS_TAXED = 3;
+  TAX_STATUS_UNTAXED = 4;
+}
+
+enum Boolean{
+  UNKNOWN_BOOLEAN = 0;
+  BOOLEAN_FALSE = 1;
+  BOOLEAN_TRUE = 2;
+}
+
+enum ClaimType{
+  UNKNOWN_CLAIM_TYPE = 0;
+  CLAIM_TYPE_EMAIL = 1;
+  CLAIM_TYPE_PHONE_NUMBER = 2;
+  CLAIM_TYPE_GOOGLE_ID = 3;
+  CLAIM_TYPE_FACEBOOK_ID = 4;
+  CLAIM_TYPE_USERNAME = 5;
+  CLAIM_TYPE_PASSWORD = 6;
+}
+
+// ---------------------------------- End Courier Account Service ----------------------------------
+
+
+
+
+
+// ---------------------------------- Start Document Service ----------------------------------
+// document service
+
+service DocumentService{
+  // upload a new document for a courier user, or update an existing one
+  rpc Upload(UploadDocumentRequest) returns (UploadDocumentResponse) {}
+
+  // get all documents of a user. each document contains a expirable link to download file.
+  rpc GetDocumentsOfUser(GetDocumentsOfUserRequest) returns (GetDocumentsOfUserResponse) {}
+
+  // get a document by its id. response contains expirable link to download file.
+  rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse) {}
+
+  //download file by link generated in GetDocument requests
+  rpc Download(DownloadRequest) returns (DownloadResponse) {}
+
+  //download without generated link
+  rpc DirectDownload(DirectDownloadRequest) returns (DirectDownloadResponse) {}
+}
+
+message Document{
+  // for update request is required, for upload is optional
+  string object_id = 1;
+  // specifies that document is passport, or driver's license, and so on
+  DocumentInfoType info_type = 2;
+  // specifies that document is driver's license photo, or private hire driver's license photo
+  DocumentType doc_type = 3;
+  // optional
+  // example: jpeg, png, pdf, doc
+  string file_type = 4;
+  // content of document in byte array
+  bytes data = 5;
+}
+
+message DocumentInfo{
+  DocumentInfoType info_type = 1;
+  DocumentType doc_type = 2;
+  string file_type = 3;
+  string object_id = 4;
+  bytes data = 5;
+  string creation_date = 6;
+}
+
+enum DocumentInfoType{
+  UNKNOWN_DOCUMENT_INFO_TYPE = 0;
+  DOCUMENT_INFO_TYPE_ID_CARD = 1;
+  DOCUMENT_INFO_TYPE_DRIVING_LICENSE = 2;
+  DOCUMENT_INFO_TYPE_DRIVER_BACKGROUND = 3;
+  DOCUMENT_INFO_TYPE_RESIDENCE_CARD = 4;
+  DOCUMENT_INFO_TYPE_BANK_ACCOUNT = 5;
+  DOCUMENT_INFO_TYPE_ADDRESS = 6;
+  DOCUMENT_INFO_TYPE_INSURANCE_CERTIFICATE = 7;
+  DOCUMENT_INFO_TYPE_PROFILE_PICTURE = 8;
+}
+
+enum DocumentType{
+  UNKNOWN_DOCUMENT_TYPE = 0;
+  DOCUMENT_TYPE_PASSPORT = 1;
+  DOCUMENT_TYPE_NATIONAL_ID_FRONT = 2;
+  DOCUMENT_TYPE_NATIONAL_ID_BACK = 3;
+  DOCUMENT_TYPE_DRIVING_LICENSE_FRONT = 4;
+  DOCUMENT_TYPE_DRIVING_LICENSE_BACK = 5;
+  DOCUMENT_TYPE_RESIDENCE_CARD_FRONT = 6;
+  DOCUMENT_TYPE_RESIDENCE_CARD_BACK = 7;
+  DOCUMENT_TYPE_DBS_CERTIFICATE_FRONT = 8;
+  DOCUMENT_TYPE_DBS_CERTIFICATE_BACK = 9;
+  DOCUMENT_TYPE_INSURANCE_CERTIFICATE = 10;
+  DOCUMENT_TYPE_PROOF_OF_ADDRESS = 11;
+  DOCUMENT_TYPE_PROFILE_PICTURE = 12;
+}
+
+enum DocumentDataType{
+  UNKNOWN_DOCUMENT_DATA_TYPE = 0;
+  DOCUMENT_DATA_TYPE_THUMBNAIL = 1;
+  DOCUMENT_DATA_TYPE_DATA = 2;
+}
+
+message UploadDocumentRequest{
+  string access_token = 1;
+  Document document = 2;
+}
+
+message UploadDocumentResponse{
+  string object_id = 1;
+}
+
+message GetDocumentsOfUserRequest{
+  string access_token = 1;
+  // optional
+  DocumentInfoType type = 2;
+  // optional
+  DocumentDataType data_type = 3;
+}
+
+message GetDocumentsOfUserResponse{
+  repeated DocumentInfo documents = 1;
+}
+
+message GetDocumentRequest{
+  string access_token = 1;
+  string object_id = 2;
+}
+
+message GetDocumentResponse{
+  // how long is the link downloadable
+  int64 download_link_expiration = 1;
+  // a short lasting link to download file without token
+  string download_link = 2;
+}
+
+message DownloadRequest{
+  string download_link = 1;
+}
+
+message DownloadResponse{
+  bytes data = 1;
+}
+
+message DirectDownloadRequest{
+  string access_token = 1;
+  string object_id = 2;
+}
+
+message DirectDownloadResponse{
+  DocumentInfoType info_type = 1;
+  DocumentType doc_type = 2;
+  string file_type = 3;
+  bytes data = 4;
+}
+
+// ---------------------------------- End Document Service ----------------------------------
+
+
+// ---------------------------------- Start User Account Service ----------------------------------
+
+service UserAccountService{
+
+  // creates profile for a new passenger user
+  // returns error if the passenger user already exists
+  rpc CreateUserAccount(CreateUserAccountRequest) returns (CreateUserAccountResponse) {}
+
+  // get profile of passenger user by his token
+  rpc GetUserAccount(GetUserAccountRequest) returns (GetUserAccountResponse) {}
+
+  // find profiles of users
+  rpc FindUserAccounts(FindUserAccountsRequest) returns (FindUserAccountsResponse) {}
+
+  // updates general information of passenger, or transportation type
+  // all fields are optional, only available fields in the request are getting updated
+  rpc UpdateUserAccount(UpdateUserAccountRequest) returns (UpdateUserAccountResponse) {}
+
+  // update card of a passenger user
+  rpc UpdateUserCard(UpdateUserCardRequest) returns (UpdateUserCardResponse) {}
+
+  // delete card of a passenger user
+  rpc DeleteUserCard(DeleteUserCardRequest) returns (DeleteUserCardResponse) {}
+
+  // get card of a passenger user by their token
+  rpc GetUserCard(GetUserCardRequest) returns (GetUserCardResponse) {}
+
+  // update phone number
+  rpc UpdateUserPhoneNumber(UpdateUserPhoneNumberRequest) returns (UpdateUserPhoneNumberResponse) {}
+
+  rpc GetUserAddress(GetUserAddressRequest) returns (GetUserAddressResponse) {}
+
+  rpc UpdateUserAddress(UpdateUserAddressRequest) returns (UpdateUserAddressResponse) {}
+
+}
+
+message GetUserAddressRequest{
+  string access_token = 1;
+}
+
+message GetUserAddressResponse{
+  UserAddress address = 1;
+}
+
+message UpdateUserAddressRequest{
+  string access_token = 1;
+  UserAddress address = 2;
+}
+
+message UpdateUserAddressResponse{
+
+}
+
+message UserAddress{
+  string street = 1;
+  string building = 2;
+  string city = 3;
+  string county = 4;
+  string post_code = 5;
+  string address_details = 6;
+}
+
+message CreateUserAccountRequest{
+  // access token that is taken from uaa
+  // phone number and id of the user is extracted from access_token
+  string access_token = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  // optional
+  string birth_date = 5;
+  // optional
+  string referral = 6;
+}
+
+message CreateUserAccountResponse{
+}
+
+message UpdateUserAccountRequest{
+  string access_token = 1;
+  // optional
+  string first_name = 2;
+  // optional
+  string last_name = 3;
+  // optional
+  string email = 4;
+  // optional
+  PaymentMethod payment_method = 5;
+  // optional
+  string birth_date = 6;
+}
+
+message UpdateUserAccountResponse{
+}
+
+message UpdateUserPhoneNumberRequest{
+  // access token containing old phone-number
+  string access_token = 1;
+
+  // access token containing new phone-number
+  string new_access_token = 2;
+}
+
+message UpdateUserPhoneNumberResponse{
+
+}
+
+message GetUserAccountRequest{
+  string access_token = 1;
+}
+
+message GetUserAccountResponse{
+  UserProfile profile = 1;
+}
+
+message FindUserAccountsRequest{
+  string access_token = 1;
+  oneof filter{
+
+    string user_id = 2;
+    string phone_number = 3;
+    string email = 4;
+    string name = 5;
+  }
+}
+
+message FindUserAccountsResponse{
+  repeated UserProfile profiles = 1;
+}
+
+message UserProfile{
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string phone_number = 4;
+  string email = 5;
+  PaymentMethod payment_method = 6;
+  string birth_date = 7;
+  string code = 8;
+  repeated AuthorizedClaim authorized_claims = 9;
+}
+
+message UpdateUserCardRequest{
+  string access_token = 1;
+  string card_number = 2;
+  string issue_date = 3;
+  string cvv = 4;
+  string zip_code = 5;
+  string country = 6;
+}
+
+message UpdateUserCardResponse{
+}
+
+message GetUserCardRequest{
+  string access_token = 1;
+}
+
+message GetUserCardResponse{
+  repeated UserCard cards = 1;
+}
+
+message DeleteUserCardRequest{
+  string access_token = 1;
+  string card_number = 2;
+}
+
+message DeleteUserCardResponse{
+}
+
+message UserCard{
+  string user_id = 1;
+  string card_number = 2;
+  string issue_date = 3;
+  string cvv = 4;
+  string zip_code = 5;
+  string country = 6;
+}
+
+enum PaymentMethod{
+  UNKNOWN_PAYMENT_METHOD = 0;
+  PAYMENT_METHOD_CREDIT_CARD = 1;
+  PAYMENT_METHOD_DEBIT_CARD = 2;
+}
+
+// ---------------------------------- End User Account Service ----------------------------------
+
+
+// ---------------------------------- Start User Status Service ----------------------------------
+
+
+service UserStatusService{
+
+  // get user status of courier
+  rpc GetCourierUserStatus(GetCourierUserStatusRequest) returns (GetCourierUserStatusResponse) {}
+
+  // update user status of courier
+  rpc UpdateCourierUserStatus(UpdateCourierUserStatusRequest) returns (UpdateCourierUserStatusResponse) {}
+
+  // get user status of courier
+  rpc GetClientUserStatus(GetClientUserStatusRequest) returns (GetClientUserStatusResponse) {}
+
+  // update user status of courier
+  rpc UpdateClientUserStatus(UpdateClientUserStatusRequest) returns (UpdateClientUserStatusResponse) {}
+
+}
+
+message GetCourierUserStatusRequest{
+  string userId = 1;
+}
+
+message GetCourierUserStatusResponse{
+  UserStatus status = 1;
+}
+
+message UpdateCourierUserStatusRequest{
+  string userId = 1;
+  UserStatus status = 2;
+}
+
+message UpdateCourierUserStatusResponse{
+
+}
+
+message GetClientUserStatusRequest{
+  string userId = 1;
+}
+
+message GetClientUserStatusResponse{
+  UserStatus status = 1;
+}
+
+message UpdateClientUserStatusRequest{
+  string userId = 1;
+  UserStatus status = 2;
+}
+
+message UpdateClientUserStatusResponse{
+
+}
+
+enum UserStatus{
+  UNKNOWN_USER_STATUS = 0;
+  USER_STATUS_ENABLED = 1;
+  USER_STATUS_DISABLED = 2;
+  USER_STATUS_BLOCKED = 3;
+  USER_STATUS_AVAILABLE = 4;
+}
+
+// ---------------------------------- End User Status Service ----------------------------------
+
+
+// ---------------------------------- Start User Status By Token Service ----------------------------------
+
+
+service UserStatusByTokenService{
+
+  // get user status of courier
+  rpc GetCourierUserStatusByToken(GetCourierUserStatusByTokenRequest) returns (GetCourierUserStatusResponse) {}
+
+  // update user status of courier
+  rpc UpdateCourierUserStatusByToken(UpdateCourierUserStatusByTokenRequest) returns (UpdateCourierUserStatusResponse) {}
+
+  // get user status of courier
+  rpc GetClientUserStatusByToken(GetClientUserStatusByTokenRequest) returns (GetClientUserStatusResponse) {}
+
+  // update user status of courier
+  rpc UpdateClientUserStatusByToken(UpdateClientUserStatusByTokenRequest) returns (UpdateClientUserStatusResponse) {}
+
+}
+
+message GetCourierUserStatusByTokenRequest{
+  string access_token = 1;
+}
+
+message UpdateCourierUserStatusByTokenRequest{
+  string access_token = 1;
+  UserStatus status = 2;
+}
+
+message GetClientUserStatusByTokenRequest{
+  string access_token = 1;
+}
+
+message UpdateClientUserStatusByTokenRequest{
+  string access_token = 1;
+  UserStatus status = 2;
+}
+
+// ---------------------------------- End User Status By Token Service ----------------------------------
+
+
+// ---------------------------------- Start Party Admin Service ----------------------------------
+
+service PartyAdminService{
+
+  rpc ServiceGetCourierRegistrationStat(ServiceGetCourierRegistrationStatRequest) returns (GetRegistrationStatResponse) {}
+
+  rpc ServiceGetClientRegistrationStat(ServiceGetClientRegistrationStatRequest) returns (GetRegistrationStatResponse) {}
+
+  rpc ServiceGetCourierRegistration(ServiceGetCourierRegistrationRequest) returns (GetCourierRegistrationResponse) {}
+
+  rpc ServiceGetClientRegistration(ServiceGetClientRegistrationRequest) returns (GetClientRegistrationResponse) {}
+
+  rpc ServiceGetDocumentsOfUser(ServiceGetDocumentsOfUserRequest) returns (GetDocumentsOfUserResponse) {}
+
+  rpc ServiceGetProfileAdditionalInfo(ServiceGetProfileAdditionalInfoRequest) returns (GetProfileAdditionalInfoResponse) {}
+
+  rpc ServiceUpdateProfileStatus(ServiceUpdateProfileStatusRequest) returns (UpdateProfileAdditionalInfoStatusResponse) {}
+
+}
+
+message ServiceGetCourierRegistrationStatRequest{
+  string access_token = 1;
+  string date_from = 2;
+  string date_to = 3;
+}
+
+message ServiceGetClientRegistrationStatRequest{
+  string access_token = 1;
+  string date_from = 2;
+  string date_to = 3;
+}
+
+message GetRegistrationStatResponse{
+  repeated GetRegistrationStatItem items = 1;
+}
+
+message GetRegistrationStatItem{
+  string date = 1;
+  int32 count = 2;
+}
+
+message ServiceGetCourierRegistrationRequest{
+  string access_token = 1;
+  Pagination pagination = 2;
+  oneof filter {
+    string user_id = 3;
+    string phone_number = 4;
+    string email = 5;
+    string name = 6;
+  };
+}
+
+message GetCourierRegistrationResponse{
+  repeated CourierProfileAndStatus items = 1;
+}
+
+message ServiceGetClientRegistrationRequest{
+  string access_token = 1;
+  Pagination pagination = 2;
+  oneof filter {
+    string user_id = 3;
+    string phone_number = 4;
+    string email = 5;
+    string name = 6;
+  };
+}
+
+message GetClientRegistrationResponse{
+  repeated UserProfile profiles = 1;
+}
+
+message ServiceGetDocumentsOfUserRequest{
+  string access_token = 1;
+  string user_id = 2;
+  DocumentInfoType type = 3;
+}
+
+message ServiceGetProfileAdditionalInfoRequest{
+  string access_token = 1;
+  string user_id = 2;
+  AdditionalInfoType type = 3;
+}
+
+message ServiceUpdateProfileStatusRequest{
+  string access_token = 1;
+  string user_id = 2;
+  UserStatus user_status = 3;
+  repeated ProfileAdditionalInfoStatusItem status_items = 4;
+}
+
+message CourierProfileAndStatus{
+  CourierProfile profile = 1;
+  UserStatus user_status = 2;
+  repeated ProfileAdditionalInfoStatusItem status_items = 3;
+}
+
+message ProfileAdditionalInfoStatusItem{
+  AdditionalInfoType type = 1;
+  ProfileAdditionalInfoStatus status = 2;
+  string message = 3;
+}
+
+message Pagination{
+  int32 page = 1;
+  int32 limit = 2;
+  string sort = 3;
+  SortType sort_type = 4;
+}
+
+enum SortType{
+  UNKNOWN_SORT_TYPE = 0;
+  SORT_TYPE_ASC = 1;
+  SORT_TYPE_DESC = 2;
+}
+
+// ---------------------------------- End Party Admin Service ----------------------------------
+
+// ---------------------------------- Start UAA Integration Service ----------------------------------
+
+service UaaService{
+
+  rpc FindAccount(FindAccountRequest) returns (FindAccountResponse) {}
+
+  rpc RegisterClaim(RegisterClaimRequest) returns (RegisterClaimResponse) {}
+
+}
+
+message FindAccountRequest{
+  oneof filter{
+    string userId = 1;
+    string phoneNumber = 2;
+    string email = 3;
+    string facebookId = 4;
+    string googleId = 5;
+    string username = 6;
+  }
+  UserType type = 7;
+}
+
+message FindAccountResponse{
+  repeated Account users = 1;
+}
+
+message Account{
+  string userId = 1;
+  string phone_number = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string email = 5;
+  string birth_date = 6;
+  int32 transportation_type = 7;
+  UserType type = 8;
+  repeated Claim claims = 9;
+}
+
+message RegisterClaimRequest{
+  string user_id = 1;
+  UserType type = 2;
+  ClaimType claim = 3;
+  string identifier = 4;
+}
+
+message RegisterClaimResponse{
+
+}
+
+message Claim{
+  ClaimType claim_type = 1;
+  string identifier = 2;
+}
+
+enum UserType{
+  UNKNOWN_USER_TYPE = 0;
+  USER_TYPE_CURIOUR = 1;
+  USER_TYPE_PASSENGER = 2;
+  USER_TYPE_ADMIN = 3;
+  USER_TYPE_ALL = 4;
+}
+
+// ---------------------------------- End UAA Integration Service ----------------------------------
+
+
+
+// ---------------------------------- Start InterService Service ----------------------------------
+
+service InterService{
+
+  rpc InterServiceGetProfileAdditionalInfo(InterServiceGetProfileAdditionalInfoRequest) returns (GetProfileAdditionalInfoResponse) {}
+
+  rpc InterServiceUpdateProfileAdditionalInfo(InterServiceUpdateProfileAdditionalInfoRequest) returns (UpdateProfileAdditionalInfoResponse) {}
+
+  rpc InterServiceFindCourierAccounts(InterServiceFindCourierAccountsRequest) returns (FindCourierAccountsResponse) {}
+
+  rpc InterServiceGetDocumentsOfUser(InterServiceGetDocumentsOfUserRequest) returns (GetDocumentsOfUserResponse) {}
+
+  rpc OpenGetCourierAccount(OpenGetCourierAccountRequest) returns (GetCourierAccountResponse) {}
+
+  rpc OpenGetProfileAdditionalInfo(OpenGetProfileAdditionalInfoRequest) returns (GetProfileAdditionalInfoResponse) {}
+
+  rpc OpenGetDocumentsOfUser(OpenGetDocumentsOfUserRequest) returns (GetDocumentsOfUserResponse) {}
+
+  rpc OpenGetUserAccount(OpenGetUserAccountRequest) returns (GetUserAccountResponse) {}
+
+  rpc OpenGetCourierPublicInfo(OpenGetCourierPublicInfoRequest) returns (OpenGetCourierPublicInfoResponse) {}
+
+}
+
+message InterServiceGetProfileAdditionalInfoRequest{
+  string user_id = 1;
+  AdditionalInfoType type = 2;
+}
+
+message InterServiceUpdateProfileAdditionalInfoRequest{
+  string user_id = 1;
+  oneof info{
+
+    IDCard id_card = 2;
+    DrivingLicense driving_license = 3;
+    DriverBackground driver_background = 4;
+    ResidenceCard residence_card = 5;
+    BankAccount bank_account = 6;
+    Address address = 7;
+    MotConfirm mot = 8;
+  }
+}
+
+message InterServiceFindCourierAccountsRequest{
+  oneof filter{
+
+    string user_id = 1;
+    string phone_number = 2;
+    string email = 3;
+    string name = 4;
+  }
+}
+
+message InterServiceGetDocumentsOfUserRequest{
+  string user_id = 1;
+  // optional
+  DocumentInfoType type = 2;
+  // optional
+  DocumentDataType data_type = 3;
+}
+
+// ---------------------------------- End InterService Service ----------------------------------
+
+
+// ---------------------------------- Start Public Service ----------------------------------
+
+message OpenGetCourierAccountRequest{
+  string user_id = 1;
+}
+
+message OpenGetProfileAdditionalInfoRequest{
+  string user_id = 1;
+  AdditionalInfoType type = 2;
+}
+
+message OpenGetDocumentsOfUserRequest{
+  string user_id = 1;
+  // optional
+  DocumentInfoType type = 2;
+  // optional
+  DocumentDataType data_type = 3;
+}
+
+message OpenGetUserAccountRequest{
+  string user_id = 1;
+}
+
+message OpenGetCourierPublicInfoRequest{
+  string courier_id = 1;
+}
+
+message OpenGetCourierPublicInfoResponse{
+  CourierProfile profile = 1;
+  string registration_number = 2;
+  ProfilePicture profile_picture = 3;
+}
+
+// ---------------------------------- End Public Service ----------------------------------

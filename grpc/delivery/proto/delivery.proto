@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package artin.couriermanagement.delivery;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/delivery/go;deliveryPb";
+
+import "delivery_message.proto";
+import "google/protobuf/empty.proto";
+
+service Delivery {
+  rpc AddSavedLocation (AddSavedLocationRequest) returns (AddSavedLocationResponse) {}
+  rpc ListSavedLocations (google.protobuf.Empty) returns (ListSavedLocationsResponse) {}
+  rpc UpdateSavedLocation (UpdateSavedLocationRequest) returns (google.protobuf.Empty) {}
+  rpc RemoveSavedLocation (RemoveSavedLocationRequest) returns (google.protobuf.Empty){}
+  rpc RemoveAllSavedLocations (RemoveAllSavedLocationsRequest) returns (RemoveAllSavedLocationsResponse) {}
+
+  rpc CreateRequest(CreateRequestRequest) returns (CreateRequestResponse) {}
+  rpc AcceptRequest(AcceptRequestRequest) returns (google.protobuf.Empty) {}
+  rpc RejectRequest(RejectRequestRequest) returns (google.protobuf.Empty) {}
+  rpc CancelRequest(CancelRequestRequest) returns (google.protobuf.Empty) {}
+  rpc RequestArrivedOrigin(RequestArrivedOriginRequest) returns (google.protobuf.Empty) {}
+  rpc RequestArrivedDestination(RequestArrivedDestinationRequest) returns (google.protobuf.Empty) {}
+  rpc RequestPickedUp(RequestPickedUpRequest) returns (google.protobuf.Empty) {}
+  rpc RequestDelivered(RequestDeliveredRequest) returns (google.protobuf.Empty) {}
+  rpc RequestNavigatingToSender(RequestNavigatingToSenderRequest) returns (google.protobuf.Empty) {}
+  rpc RequestNavigatingToReceiver(RequestNavigatingToReceiverRequest) returns (google.protobuf.Empty) {}
+  rpc RequestSenderNotAvailable(RequestSenderNotAvailableRequest) returns (google.protobuf.Empty) {}
+  rpc RequestReceiverNotAvailable(RequestReceiverNotAvailableRequest) returns (google.protobuf.Empty) {}
+  rpc RequestCompleted(RequestCompletedRequest) returns (google.protobuf.Empty) {}
+
+  rpc GetCourierCompletedRequests(GetCourierCompletedRequestsRequest) returns (GetCourierCompletedRequestsResponse) {}
+  rpc GetCourierRequestsDuration(GetCourierRequestsDurationRequest) returns (GetCourierRequestsDurationResponse) {}
+  rpc GetCourierRequestsMileage(GetCourierRequestsMileageRequest) returns (GetCourierRequestsMileageResponse) {}
+  rpc GetCourierRequestsHistory(GetCourierRequestsHistoryRequest) returns (GetCourierRequestsHistoryResponse) {}
+  rpc GetCourierRequestDetails(GetCourierRequestDetailsRequest) returns (GetCourierRequestDetailsResponse) {}
+  rpc GetRequestHistory(GetRequestHistoryRequest) returns (GetRequestHistoryResponse) {}
+
+  rpc GetCustomerCompletedRequests(GetCustomerCompletedRequestsRequest) returns (GetCustomerCompletedRequestsResponse) {}
+  rpc GetCustomerRequestsDuration(GetCustomerRequestsDurationRequest) returns (GetCustomerRequestsDurationResponse) {}
+  rpc GetCustomerRequestsMileage(GetCustomerRequestsMileageRequest) returns (GetCustomerRequestsMileageResponse) {}
+  rpc GetCustomerRequestsHistory(GetCustomerRequestsHistoryRequest) returns (GetCustomerRequestsHistoryResponse) {}
+  rpc GetCustomerRequestDetails(GetCustomerRequestDetailsRequest) returns (GetCustomerRequestDetailsResponse) {}
+
+  rpc GetRequests(GetRequestsRequest) returns (GetRequestsResponse) {}
+  rpc GetCourierActiveRequest(google.protobuf.Empty) returns (GetCourierActiveRequestResponse) {}
+  rpc GetCustomerActiveRequest(google.protobuf.Empty) returns (GetCustomerActiveRequestResponse) {}
+}

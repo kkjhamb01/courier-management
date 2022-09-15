@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package artin.couriermanagement.offering;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/offering/go;offeringPb";
+
+ 
+import "google/protobuf/timestamp.proto";
+import "offering_model.proto";
+import "common.proto";
+
+message SetCourierLiveLocationRequest {
+  artin.couriermanagement.common.Location location = 1 ;
+  google.protobuf.Timestamp time = 2 ;
+}
+
+message SetCourierLiveLocationResponse {
+  bool successful = 1;
+  string message = 2;
+}
+
+message GetCourierLiveLocationRequest {
+  string courier_id = 1 ;
+  uint32 interval_seconds = 2 ;
+}
+
+message GetCourierLiveLocationResponse {
+  artin.couriermanagement.common.Location location = 2;
+  google.protobuf.Timestamp time = 3;
+}
+
+message CourierSubscriptionOnOfferResponse {
+  oneof event {
+    NewOfferEvent new_offer_event = 1;
+    OfferCancelledEvent cancel_offer_event = 2;
+    OfferAcceptedEvent accept_offer_event = 3;
+    AcceptOfferFailedEvent accept_offer_failed_event = 4;
+    RejectOfferFailedEvent reject_offer_failed_event = 5;
+  }
+  enum Type {
+    TypeNewOfferEvent = 0;
+    TypeOfferCancelledEvent = 1;
+    TypeOfferAcceptedEvent = 2;
+    TypeAcceptOfferFailedEvent = 3;
+    TypeRejectOfferFailedEvent = 4;
+  }
+  Type response_type = 6;
+}
+
+message CustomerSubscriptionOnOfferResponse {
+  oneof event {
+    RetryOfferRequestEvent retry_offer_event = 1;
+    MaxOfferRetriesEvent max_offer_retries = 2;
+    OfferAcceptedEvent offer_accepted_event = 3;
+    OfferCancelledEvent offer_cancelled_event = 4;
+    NewOfferSentToCouriersEvent offer_sent_to_couriers = 5;
+    OfferCreationFailedEvent offer_creation_failed_event = 6;
+  }
+  enum Type {
+    TypeRetryOfferRequestEvent = 0;
+    TypeMaxOfferRetriesEvent = 1;
+    TypeOfferAcceptedEvent = 2;
+    TypeOfferCancelledEvent = 3;
+    TypeNewOfferSentToCouriersEvent = 4;
+    TypeOfferCreationFailedEvent = 5;
+  }
+  Type response_type = 7;
+}
+
+message SetCourierLocationRequest {
+  artin.couriermanagement.common.Location location = 1 ;
+}
+
+message GetNearbyCouriersRequest {
+  artin.couriermanagement.common.Location location = 1 ;
+  int32 radius_meter = 2 ;
+  artin.couriermanagement.common.VehicleType vehicle_type = 3 ;
+}
+
+message GetNearbyCouriersResponse {
+  repeated artin.couriermanagement.common.Courier couriers = 1;
+}
+
+message HadCustomerRideWithCourierRequest {
+  string courier_id = 1 ;
+  string customer_id = 2 ;
+  string offer_id = 3 ;
+}
+
+message HadCustomerRideWithCourierResponse {
+  bool hadRide = 1;
+}
+
+message GetOfferCourierAndCustomerRequest {
+  string offer_id = 3 ;
+}
+
+message GetOfferCourierAndCustomerResponse {
+  string courier_id = 1;
+  string customer_id = 2;
+}

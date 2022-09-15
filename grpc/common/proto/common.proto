@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package artin.couriermanagement.common;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/common/go;commonPb";
+
+import "validate/validate.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+enum VehicleType {
+    ANY = 0;
+    TRUCK = 1;
+    BICYCLE = 2;
+    CAR = 3;
+    SMALL_VAN = 4;
+    MEDIUM_VAN = 5;
+    LARGE_VAN = 6;
+    MOTORBIKE = 7;
+}
+
+enum UserType {
+    COURIER = 0;
+    CUSTOMER = 1;
+}
+
+message Courier {
+    string id = 1 [(validate.rules).string.uuid = true];
+    VehicleType vehicle_type = 2;
+}
+
+message CourierLocation {
+    Courier courier = 1;
+    Location location = 2;
+}
+
+message CourierETA {
+    Courier courier = 1;
+    google.protobuf.Duration duration = 2;
+    int32 meters = 3;
+}
+
+enum CourierStatus {
+    AVAILABLE = 0;
+    UNAVAILABLE = 1;
+    BLOCKED = 2;
+    ENABLED = 3;
+    DISABLED = 4;
+    UNKNOWN = 5;
+    ON_RIDE = 6;
+}
+
+message Location {
+    double lat = 1 [(validate.rules).double = {gte: -90,  lte: 90}];
+    double lon = 2 [(validate.rules).double = {gte: -180, lte: 180}];
+}
+
+message LocationRange {
+    double lat = 1 [(validate.rules).double = {gte: -90,  lte: 90}];
+    double lon = 2 [(validate.rules).double = {gte: -180, lte: 180}];
+    double range = 3;
+}
+
+message TimeRange {
+    google.protobuf.Timestamp from = 1;
+    google.protobuf.Timestamp to = 2;
+}

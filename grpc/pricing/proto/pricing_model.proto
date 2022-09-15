@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package artin.couriermanagement.pricing;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/pricing/go;pricingPb";
+
+import "validate/validate.proto";
+
+message Location {
+  double lat = 1 [(validate.rules).double = {gte: -90,  lte: 90}];
+  double lon = 2 [(validate.rules).double = {gte: -180, lte: 180}];
+}
+enum VehicleType {
+  ANY = 0;
+  TRUCK = 1;
+  BICYCLE = 2;
+  CAR = 3;
+  VAN = 4;
+  MOTORBIKE = 5;
+  // TODO: ADD MORE
+}

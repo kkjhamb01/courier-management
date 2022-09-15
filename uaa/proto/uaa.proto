@@ -1,0 +1,388 @@
+syntax = "proto3";
+
+option go_package = "userservice/api/controller/proto";
+
+import "validate/validate.proto";
+
+package uaa;
+
+
+// ---------------------------------- Start Courier Registration Service ----------------------------------
+
+service CourierRegisterService{
+  // registration request for a new courier user to send otp to the phone
+  rpc CourierOtpRegister(CourierOtpRegisterRequest) returns (CourierOtpRegisterResponse) {}
+
+  // login request for an existing courier user to send otp to the phone
+  rpc CourierOtpLogin(CourierOtpLoginRequest) returns (CourierOtpLoginResponse) {}
+
+  // login for courier user with otp, or with otp and password
+  rpc CourierOtpAuthenticate(CourierOtpAuthenticateRequest) returns (CourierOtpAuthenticateResponse) {}
+
+  // resend otp to the phone of courier user
+  rpc CourierOtpRetry(CourierOtpRetryRequest) returns (CourierOtpRetryResponse) {}
+
+  // add google or facebook account to a courier account
+  rpc CourierOauthRegister(CourierOauthRegisterRequest) returns (CourierOauthRegisterResponse) {}
+
+  // verify code from facebook or google to register
+  rpc CourierOauthRegisterVerify(CourierOauthRegisterVerifyRequest) returns (CourierOauthRegisterVerifyResponse) {}
+
+  // Login with google or facebook
+  rpc CourierOauthLogin(CourierOauthLoginRequest) returns (CourierOauthLoginResponse) {}
+
+  // verify code from facebook or google to login
+  rpc CourierOauthLoginVerify(CourierOauthLoginVerifyRequest) returns (CourierOauthLoginVerifyResponse) {}
+
+  // request to add / change phone-number
+  rpc CourierOtpReclaim(CourierOtpReclaimRequest) returns (CourierOtpReclaimResponse) {}
+
+}
+
+message CourierOtpRegisterRequest{
+  // device id of the phone
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  string phone_number = 2 [(validate.rules).string.min_len = 1];
+  string manufacturer = 3;
+  string device_model = 4;
+  string device_os = 5;
+  string device_version = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message CourierOtpRegisterResponse{
+
+}
+
+message CourierOtpReclaimRequest{
+  // device id of the phone
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  string phone_number = 2 [(validate.rules).string.min_len = 1];
+  string old_phone_number = 3 [(validate.rules).string.min_len = 1];
+  string manufacturer = 4;
+  string device_model = 5;
+  string device_os = 6;
+  string device_version = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+message CourierOtpReclaimResponse{
+
+}
+
+message CourierOtpLoginRequest{
+  // device id of the phone
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  string phone_number = 2 [(validate.rules).string.min_len = 1];
+}
+
+message CourierOtpLoginResponse{
+
+}
+
+message CourierOtpAuthenticateRequest{
+  // the same device id as RegisterRequest
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  // a list of credentials, containing OTP and Password
+  // user can send OTP, or OTP and Password
+  // password is used when user set password for themself before
+  repeated Credential credentials = 2 [(validate.rules).repeated = {min_items: 1, max_items: 2}];
+}
+
+message CourierOtpAuthenticateResponse{
+  // number of retry count that user can send request
+  int32 remaining_retry_count = 1;
+  // only for successful authentication
+  Token token = 2;
+}
+
+message Credential{
+  CredentialType type = 1;
+  // password or otp value
+  string value = 2;
+}
+
+message CourierOtpRetryRequest{
+  // same parameters as RegisterRequest
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  string phone_number = 2 [(validate.rules).string.min_len = 1];
+}
+
+message CourierOtpRetryResponse{
+
+}
+
+message CourierOauthRegisterRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string device_id = 2 [(validate.rules).string.min_len = 1];
+  OauthType oauth_type = 3 [(validate.rules).enum.defined_only = true];
+}
+
+message CourierOauthRegisterResponse{
+  string follow_link = 1;
+}
+
+message CourierOauthRegisterVerifyRequest{
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  // the code in redirected url
+  string code = 2 [(validate.rules).string.min_len = 1];
+}
+
+message CourierOauthRegisterVerifyResponse{
+  UserOauthInfo info = 1;
+}
+
+message CourierOauthLoginRequest{
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  OauthType oauth_type = 2 [(validate.rules).enum.defined_only = true];
+}
+
+message CourierOauthLoginResponse{
+  string follow_link = 1;
+}
+
+message CourierOauthLoginVerifyRequest{
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  // the code in redirected url
+  string code = 2 [(validate.rules).string.min_len = 1];
+}
+
+message CourierOauthLoginVerifyResponse{
+  Token token = 1;
+  UserOauthInfo info = 2;
+}
+
+enum CredentialType{
+  UNKNOWN_CREDENTIAL_TYPE = 0;
+  CREDENTIAL_TYPE_PASSWORD = 1;
+  CREDENTIAL_TYPE_OTP = 2;
+}
+
+enum OauthType{
+  UNKNOWN_OAUTH_TYPE = 0;
+  OAUTH_GOOGLE = 1;
+  OAUTH_FACEBOOK = 2;
+}
+
+message UserOauthInfo{
+  string name = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+}
+
+// ---------------------------------- End Courier Registration Service ----------------------------------
+
+// ---------------------------------- Start User Registration Service ----------------------------------
+
+service UserRegisterService{
+  // registration request for a new passenger user to send otp to the phone
+  rpc UserOtpRegister(UserOtpRegisterRequest) returns (UserOtpRegisterResponse) {}
+
+  // login request for an existing passenger user to send otp to the phone
+  rpc UserOtpLogin(UserOtpLoginRequest) returns (UserOtpLoginResponse) {}
+
+  // login for passenger user with otp, or with otp and password
+  rpc UserOtpAuthenticate(UserOtpAuthenticateRequest) returns (UserOtpAuthenticateResponse) {}
+
+  // resend otp to the phone of passenger user
+  rpc UserOtpRetry(UserOtpRetryRequest) returns (UserOtpRetryResponse) {}
+
+  // add google or facebook account to a passenger account
+  rpc UserOauthRegister(UserOauthRegisterRequest) returns (UserOauthRegisterResponse) {}
+
+  // verify code from facebook or google to register
+  rpc UserOauthRegisterVerify(UserOauthRegisterVerifyRequest) returns (UserOauthRegisterVerifyResponse) {}
+
+  // Login with google or facebook
+  rpc UserOauthLogin(UserOauthLoginRequest) returns (UserOauthLoginResponse) {}
+
+  // verify code from facebook or google to login
+  rpc UserOauthLoginVerify(UserOauthLoginVerifyRequest) returns (UserOauthLoginVerifyResponse) {}
+
+  // request to add / change phone-number
+  rpc UserOtpReclaim(UserOtpReclaimRequest) returns (UserOtpReclaimResponse) {}
+
+}
+
+message UserOauthRegisterRequest{
+  // optional
+  string access_token = 1;
+  string device_id = 2 [(validate.rules).string.min_len = 1];
+  OauthType oauth_type = 3 [(validate.rules).enum.defined_only = true];
+}
+
+message UserOauthRegisterResponse{
+  string follow_link = 1;
+}
+
+message UserOauthRegisterVerifyRequest{
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  // the code in redirected url
+  string code = 2 [(validate.rules).string.min_len = 1];
+}
+
+message UserOauthRegisterVerifyResponse{
+  Token token = 1;
+  UserOauthInfo info = 2;
+}
+
+message UserOauthLoginRequest{
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  OauthType oauth_type = 2 [(validate.rules).enum.defined_only = true];
+}
+
+message UserOauthLoginResponse{
+  string follow_link = 1;
+}
+
+message UserOauthLoginVerifyRequest{
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  // the code in redirected url
+  string code = 2 [(validate.rules).string.min_len = 1];
+}
+
+message UserOauthLoginVerifyResponse{
+  Token token = 1;
+  UserOauthInfo info = 2;
+}
+
+
+message UserOtpRegisterRequest{
+  // optional
+  string access_token = 1;
+  // device id of the phone
+  string device_id = 2 [(validate.rules).string.min_len = 1];
+  string phone_number = 3 [(validate.rules).string.min_len = 1];
+  string manufacturer = 4;
+  string device_model = 5;
+  string device_os = 6;
+  string device_version = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+message UserOtpRegisterResponse{
+
+}
+
+message UserOtpReclaimRequest{
+  // device id of the phone
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  string phone_number = 2 [(validate.rules).string.min_len = 1];
+  string old_phone_number = 3 [(validate.rules).string.min_len = 1];
+  string manufacturer = 4;
+  string device_model = 5;
+  string device_os = 6;
+  string device_version = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+message UserOtpReclaimResponse{
+
+}
+
+message UserOtpLoginRequest{
+  // device id of the phone
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  string phone_number = 2 [(validate.rules).string.min_len = 1];
+}
+
+message UserOtpLoginResponse{
+
+}
+
+message UserOtpAuthenticateRequest{
+  // the same device id as RegisterRequest
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  // a list of credentials, containing OTP and Password
+  // user can send OTP, or OTP and Password
+  // password is used when user set password for themself before
+  repeated Credential credentials = 2 [(validate.rules).repeated = {min_items: 1, max_items: 2}];
+}
+
+message UserOtpAuthenticateResponse{
+  // number of retry count that user can send request
+  int32 remaining_retry_count = 1;
+  // only for successful authentication
+  Token token = 2;
+}
+
+message UserOtpRetryRequest{
+  // same parameters as RegisterRequest
+  string device_id = 1 [(validate.rules).string.min_len = 1];
+  string phone_number = 2 [(validate.rules).string.min_len = 1];
+}
+
+message UserOtpRetryResponse{
+
+}
+
+// ---------------------------------- End User Registration Service ----------------------------------
+
+
+// ---------------------------------- Start Token Service ----------------------------------
+
+service TokenService{
+  // refresh token by refresh token value given in the last stored token
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
+  // get jwks information needed for other services to authorize tokens
+  rpc GetJwks(GetJwksRequest) returns (GetJwksResponse) {}
+}
+
+message RefreshTokenRequest{
+  string refresh_token = 1 [(validate.rules).string.min_len = 1];
+}
+
+message RefreshTokenResponse{
+  Token token = 1;
+}
+
+message GetJwksRequest{
+
+}
+
+message GetJwksResponse{
+  // for each kid, there is a jwks public key or certificate
+  repeated JwksItem jwks = 1;
+}
+
+message JwksItem{
+  // id of the key that is in the token
+  string kid = 1;
+  // example: RSA
+  string kty = 2;
+  // example: RS256
+  string alg = 3;
+  // public key
+  string x5c = 4;
+}
+
+message Token{
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+// ---------------------------------- End Token Service ----------------------------------
+
+// ---------------------------------- Start Admin Service ----------------------------------
+
+service AdminService{
+
+  rpc AdminLogin(AdminLoginRequest) returns (AdminLoginResponse) {}
+
+}
+
+message AdminLoginRequest{
+  string username = 1;
+  string password = 2;
+}
+
+message AdminLoginResponse{
+  Token token = 1;
+}
+
+// ---------------------------------- End Admin Service ----------------------------------

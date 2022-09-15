@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+option go_package = "/proto";
+
+package uaa;
+
+service UaaService{
+  rpc FindAccount(FindAccountRequest) returns (FindAccountResponse) {}
+
+  rpc RegisterClaim(RegisterClaimRequest) returns (RegisterClaimResponse) {}
+
+}
+
+message FindAccountRequest{
+  oneof filter{
+    string userId = 1;
+    string phoneNumber = 2;
+    string email = 3;
+    string facebookId = 4;
+    string googleId = 5;
+  }
+  UserType type = 6;
+}
+
+message FindAccountResponse{
+  repeated Account users = 1;
+}
+
+message Account{
+  string userId = 1;
+  string phone_number = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string email = 5;
+  string birth_date = 6;
+  int32 transportation_type = 7;
+  UserType type = 8;
+  repeated Claim claims = 9;
+}
+
+message RegisterClaimRequest{
+  string user_id = 1;
+  string facebook_id = 2;
+  string google_id = 3;
+  UserType type = 4;
+}
+
+message RegisterClaimResponse{
+
+}
+
+message Claim{
+  ClaimType claim_type = 1;
+  string identifier = 2;
+}
+
+enum UserType{
+  UNKNOWN_USER_TYPE = 0;
+  USER_TYPE_CURIOUR = 1;
+  USER_TYPE_PASSENGER = 2;
+}
+
+enum ClaimType{
+  UNKNOWN_CLAIM_TYPE = 0;
+  CLAIM_TYPE_EMAIL = 1;
+  CLAIM_TYPE_PHONE_NUMBER = 2;
+  CLAIM_TYPE_GOOGLE_ID = 3;
+  CLAIM_TYPE_FACEBOOK_ID = 4;
+}

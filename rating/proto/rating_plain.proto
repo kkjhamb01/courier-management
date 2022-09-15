@@ -1,0 +1,249 @@
+syntax = "proto3";
+
+option go_package = "userservice/api/controller/proto";
+
+package rating;
+
+service RatingService{
+
+  // a client wants to rate a courier
+  // can be sent by a client
+  // for each ride_id there is only one courier-rate
+  rpc CreateCourierRating(CreateCourierRatingRequest) returns (CreateCourierRatingResponse) {}
+
+  // a courier wants to rate a client
+  // can be sent by a courier
+  // for each ride_id there is only one client-rate
+  rpc CreateClientRating(CreateClientRatingRequest) returns (CreateClientRatingResponse) {}
+
+  // get rate details of a courier. Which clients with what scores rate a courier
+  // can be sent by either courier or client
+  rpc GetCourierRating(GetCourierRatingRequest) returns (GetCourierRatingResponse) {}
+
+  // get rate details of a client. Which couriers with what scores rate a client
+  // can be sent by either courier or client
+  rpc GetClientRating(GetClientRatingRequest) returns (GetClientRatingResponse) {}
+
+  // get rate summary for a courier
+  // can be sent by anyone, even without token
+  rpc GetCourierRatingStat(GetCourierRatingStatRequest) returns (GetCourierRatingStatResponse) {}
+
+  // get rate summary for a client
+  // can be sent by anyone, even without token
+  rpc GetClientRatingStat(GetClientRatingStatRequest) returns (GetClientRatingStatResponse) {}
+
+  // get rate summary for a courier by its token
+  // can be sent by anyone, even without token
+  rpc GetCourierRatingStatByToken(GetCourierRatingStatByTokenRequest) returns (GetCourierRatingStatByTokenResponse) {}
+
+  // get rate summary for a client by its token
+  // can be sent by anyone, even without token
+  rpc GetClientRatingStatByToken(GetClientRatingStatByTokenRequest) returns (GetClientRatingStatByTokenResponse) {}
+
+}
+
+message CreateCourierRatingRequest{
+  // client access token
+  // required
+  string access_token = 1;
+
+  // ride id
+  // required
+  string ride_id = 2;
+
+  // rate details
+  // required
+  CourierRating rating = 3;
+}
+
+// empty response means success
+message CreateCourierRatingResponse{
+
+}
+
+message CourierRating{
+  // required
+  RateValue value = 1;
+
+  // custom message or note
+  // optional
+  string message = 2;
+
+  // optional
+  // array of positive feedbacks
+  repeated CourierRatingPositiveFeedback positive_feedbacks = 3;
+
+  // optional
+  // array of negative feedbacks
+  repeated CourierRatingNegativeFeedback negative_feedbacks = 4;
+}
+
+message CreateClientRatingRequest{
+  // courier access token
+  // required
+  string access_token = 1;
+
+  // ride id
+  // required
+  string ride_id = 2;
+
+  // rate details
+  // required
+  ClientRating rating = 3;
+}
+
+// empty response means success
+message CreateClientRatingResponse{
+
+}
+
+message ClientRating{
+  // required
+  RateValue value = 1;
+
+  // custom message or note
+  // optional
+  string message = 2;
+
+  // optional
+  // array of positive feedbacks
+  repeated ClientRatingPositiveFeedback positive_feedbacks = 3;
+
+  // optional
+  // array of negative feedbacks
+  repeated ClientRatingNegativeFeedback negative_feedbacks = 4;
+}
+
+message GetCourierRatingRequest{
+  // token might be for courier or client
+  // required
+  string access_token = 1;
+
+  // required
+  string courier_id = 2;
+}
+
+message GetCourierRatingResponse{
+  // array of rate details
+  repeated CourierRated rates = 1;
+}
+
+message CourierRated{
+  // client that rates to the courier
+  string client_id = 1;
+
+  // unique ride id
+  string ride = 2;
+
+  // rate details
+  CourierRating rating = 3;
+}
+
+message GetClientRatingRequest{
+  // token might be for courier or client
+  // required
+  string access_token = 1;
+
+  // required
+  string client_id = 2;
+}
+
+message GetClientRatingResponse{
+  // array of rate details
+  repeated ClientRated rates = 1;
+}
+
+message ClientRated{
+  // courier that rates
+  string courier_id = 1;
+
+  // unique ride id
+  string ride = 2;
+
+  // rate details
+  ClientRating rating = 3;
+}
+
+message GetCourierRatingStatRequest{
+  // required
+  string courier_id = 1;
+}
+
+message GetCourierRatingStatResponse{
+  RateScore score = 1;
+}
+
+message GetClientRatingStatRequest{
+  // required
+  string client_id = 1;
+}
+
+message GetClientRatingStatResponse{
+  RateScore score = 1;
+}
+
+message GetCourierRatingStatByTokenRequest{
+  // required
+  // access_token of courier
+  string access_token = 1;
+}
+
+message GetCourierRatingStatByTokenResponse{
+  string courier_id = 1;
+  RateScore score = 2;
+}
+
+message GetClientRatingStatByTokenRequest{
+  // required
+  // access_token of client
+  string access_token = 1;
+}
+
+message GetClientRatingStatByTokenResponse{
+  string client_id = 1;
+  RateScore score = 2;
+}
+
+message RateScore{
+  // total number of users that rates a courier / client
+  int64 number_of_rates = 1;
+
+  // average of the rate values
+  double score_avg = 2;
+}
+
+enum CourierRatingPositiveFeedback{
+  UNKNOWN_COURIER_RATING_POSITIVE_FEEDBACK = 0;
+  COURIER_RATING_POSITIVE_FEEDBACK_GOOD_BEHAVIOUR = 1;
+  COURIER_RATING_POSITIVE_FEEDBACK_DRIVE_CAREFULLY = 2;
+  COURIER_RATING_POSITIVE_FEEDBACK_FAMILIAR_WITH_ROUTES = 3;
+}
+
+enum CourierRatingNegativeFeedback{
+  UNKNOWN_COURIER_RATING_NEGATIVE_FEEDBACK = 0;
+  COURIER_RATING_NEGATIVE_FEEDBACK_BEHAVE_BADLY = 1;
+  COURIER_RATING_NEGATIVE_FEEDBACK_DRIVE_CARELESSLY = 2;
+  COURIER_RATING_NEGATIVE_FEEDBACK_UNFAMILIAR_WITH_ROUTES = 3;
+  COURIER_RATING_NEGATIVE_FEEDBACK_REQUEST_FOR_EXTRA_PAY = 4;
+}
+
+enum ClientRatingPositiveFeedback{
+  UNKNOWN_CLIENT_RATING_POSITIVE_FEEDBACK = 0;
+  CLIENT_RATING_POSITIVE_FEEDBACK_GOOD_BEHAVIOUR = 1;
+}
+
+enum ClientRatingNegativeFeedback{
+  UNKNOWN_CLIENT_RATING_NEGATIVE_FEEDBACK = 0;
+  CLIENT_RATING_NEGATIVE_FEEDBACK_BEHAVE_BADLY = 1;
+  CLIENT_RATING_NEGATIVE_TALKING_WITH_PHONE = 2;
+  CLIENT_RATING_NEGATIVE_NOT_PAYED = 3;
+}
+
+enum RateValue{
+  UNKNOWN_RATE_VALUE = 0;
+  RATE_VALUE_1 = 1;
+  RATE_VALUE_2 = 2;
+  RATE_VALUE_3 = 3;
+  RATE_VALUE_4 = 4;
+  RATE_VALUE_5 = 5;
+}

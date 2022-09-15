@@ -1,0 +1,696 @@
+syntax = "proto3";
+
+option go_package = "userservice/api/controller/proto";
+
+package party;
+
+import "validate/validate.proto";
+
+// ---------------------------------- Start Courier Account Service ----------------------------------
+// upload dbs, if checked, delete old documents
+
+service CourierAccountService{
+
+  // creates profile for a new courier user
+  // returns error if the courier user already exists
+  rpc CreateCourierAccount(CreateCourierAccountRequest) returns (CreateCourierAccountResponse) {}
+
+  // get profile of user by his token
+  rpc GetCourierAccount(GetCourierAccountRequest) returns (GetCourierAccountResponse) {}
+
+  // find profiles of users
+  rpc FindCourierAccounts(FindCourierAccountsRequest) returns (FindCourierAccountsResponse) {}
+
+  // updates general information of courier, or transportation type
+  // all fields are optional, only available fields in the request are getting updated
+  rpc UpdateCourierAccount(UpdateCourierAccountRequest) returns (UpdateCourierAccountResponse) {}
+
+  // update passport, address, driver's license, ... of a courier user
+  rpc UpdateProfileAdditionalInfo(UpdateProfileAdditionalInfoRequest) returns (UpdateProfileAdditionalInfoResponse) {}
+
+  // delete passport, address, driver's license, ... of a courier user
+  rpc DeleteProfileAdditionalInfo(DeleteProfileAdditionalInfoRequest) returns (DeleteProfileAdditionalInfoResponse) {}
+
+  // get passport, or driver's license, or address, ... of a courier user by their token
+  rpc GetProfileAdditionalInfo(GetProfileAdditionalInfoRequest) returns (GetProfileAdditionalInfoResponse) {}
+
+  // get status of passport, or driver's license, or address, ... of a courier user by their token
+  rpc GetProfileAdditionalInfoStatus(GetProfileAdditionalInfoStatusRequest) returns (GetProfileAdditionalInfoStatusResponse) {}
+
+  // reject or accespt status of passport, or driver's license, or address, ... of a courier user by their token
+  rpc UpdateProfileAdditionalInfoStatus(UpdateProfileAdditionalInfoStatusRequest) returns (UpdateProfileAdditionalInfoStatusResponse) {}
+
+  // get status of profile
+  rpc GetProfileStatus(GetProfileStatusRequest) returns (GetProfileStatusResponse) {}
+
+  // search mot by registration number
+  rpc SearchMot(SearchMotRequest) returns (SearchMotResponse) {}
+
+  // get mot by token
+  rpc GetMot(GetMotRequest) returns (GetMotResponse) {}
+
+  // confirm mot to be saved in database
+  rpc ConfirmMot(ConfirmMotRequest) returns (ConfirmMotResponse) {}
+
+}
+
+message SearchMotRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string registration_number = 2 [(validate.rules).string.min_len = 1];
+}
+
+message SearchMotResponse{
+  string registration_number = 1;
+  int32 co2_emissions = 2;
+  int32 engine_capacity = 3;
+  string euro_status = 4;
+  bool marked_for_export = 5;
+  string fuel_type = 6;
+  string mot_status = 7;
+  int32 revenue_weight = 8;
+  string colour = 9;
+  string make = 10;
+  string type_approval = 11;
+  int32 year_of_manufacture = 12;
+  string tax_due_date = 13;
+  string tax_status = 14;
+  string date_of_last_v5c_issued = 15;
+  string real_driving_emissions = 16;
+  string wheelplan = 17;
+  string month_of_first_registration = 18;
+}
+
+message GetMotRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetMotResponse{
+  repeated GetMotResponseItem items = 1;
+}
+
+message GetMotResponseItem{
+  string registration_number = 1;
+  int32 co2_emissions = 2;
+  int32 engine_capacity = 3;
+  string euro_status = 4;
+  bool marked_for_export = 5;
+  string fuel_type = 6;
+  string mot_status = 7;
+  int32 revenue_weight = 8;
+  string colour = 9;
+  string make = 10;
+  string type_approval = 11;
+  int32 year_of_manufacture = 12;
+  string tax_due_date = 13;
+  string tax_status = 14;
+  string date_of_last_v5c_issued = 15;
+  string real_driving_emissions = 16;
+  string wheelplan = 17;
+  string month_of_first_registration = 18;
+}
+
+message ConfirmMotRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string registration_number = 2 [(validate.rules).string.min_len = 1];
+}
+
+message ConfirmMotResponse{
+
+}
+
+message GetCourierAccountRequest{
+  string access_token = 1;
+}
+
+message GetCourierAccountResponse{
+  CourierProfile profile = 1;
+}
+
+message FindCourierAccountsRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  oneof filter{
+    option (validate.required) = true;
+    string user_id = 2;
+    string phone_number = 3;
+    string email = 4;
+    string name = 5;
+  }
+}
+
+message FindCourierAccountsResponse{
+  repeated CourierProfile profiles = 1;
+}
+
+message CourierProfile{
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string phone_number = 4;
+  string email = 5;
+  string birth_date = 6;
+  TransportationType transport_type = 7;
+  bool citizen = 8;
+}
+
+message CreateCourierAccountRequest{
+  // access token that is taken from uaa
+  // phone number and id of the user is extracted from access_token
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string first_name = 2 [(validate.rules).string.min_len = 1];
+  string last_name = 3 [(validate.rules).string.min_len = 1];
+  string email = 4 [(validate.rules).string.email = true];
+  string birth_date = 5;
+  bool citizen = 6;
+}
+
+message CreateCourierAccountResponse{
+}
+
+message UpdateCourierAccountRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  // optional
+  string first_name = 2;
+  // optional
+  string last_name = 3;
+  // optional
+  string email = 4;
+  // optional
+  string birth_date = 5;
+  // optional
+  TransportationType transportation_type = 6;
+  // optional
+  bool citizen = 7;
+}
+
+message UpdateCourierAccountResponse{
+}
+
+message IDCard{
+  string first_name = 1;
+  string last_name = 2;
+  string number = 3;
+  string expiration_date = 4;
+  string issue_place = 5;
+  IDCardType type = 6;
+  // list of uploaded document ids
+  repeated string document_ids = 7;
+}
+
+message DrivingLicense{
+  string driving_license_number = 1;
+  string expiration_date = 2;
+  // list of uploaded document ids
+  repeated string document_ids = 3;
+}
+
+message DriverBackground{
+  string national_insurance_number = 1;
+  bool upload_dbs_later = 2;
+  // list of uploaded document ids
+  repeated string document_ids = 3;
+}
+
+message ResidenceCard{
+  string number = 1;
+  string expiration_date = 2;
+  string issue_date = 3;
+  // list of uploaded document ids
+  repeated string document_ids = 4;
+}
+
+message BankAccount{
+  string bank_name = 1;
+  string account_number = 2;
+  string account_holder_name = 3;
+  string sort_code = 4;
+  // list of uploaded document ids
+  repeated string document_ids = 5;
+}
+
+message Address{
+  string street = 1;
+  string building = 2;
+  string city = 3;
+  string county = 4;
+  string post_code = 5;
+  string address_details = 6;
+  // list of uploaded document ids
+  repeated string document_ids = 7;
+}
+
+message UpdateProfileAdditionalInfoRequest{
+  // user id is taken from access_token
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  oneof info{
+    option (validate.required) = true;
+    IDCard id_card = 2;
+    DrivingLicense driving_license = 3;
+    DriverBackground driver_background = 4;
+    ResidenceCard residence_card = 5;
+    BankAccount bank_account = 6;
+    Address address = 7;
+  }
+}
+
+message UpdateProfileAdditionalInfoResponse{
+}
+
+message DeleteProfileAdditionalInfoRequest{
+  // user id is taken from access_token
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  oneof info{
+    option (validate.required) = false;
+    string id_card_number = 2;
+    string driving_license_number = 3;
+    string national_insurance_number = 4;
+    string residence_card_number = 5;
+    string bank_account_number = 6;
+  }
+}
+
+message DeleteProfileAdditionalInfoResponse{
+}
+
+message GetProfileAdditionalInfoRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  AdditionalInfoType type = 2 [(validate.rules).enum.defined_only = true];
+}
+
+message GetProfileAdditionalInfoResponse{
+  oneof info{
+    IDCard id_card = 1;
+    DrivingLicense driving_license = 2;
+    DriverBackground driver_background = 3;
+    ResidenceCard residence_card = 4;
+    BankAccount bank_account = 5;
+    Address address = 6;
+  }
+}
+
+message GetProfileAdditionalInfoStatusRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetProfileAdditionalInfoStatusResponse{
+  repeated GetProfileAdditionalInfoStatusResponseItem items = 1;
+}
+
+message GetProfileAdditionalInfoStatusResponseItem{
+  AdditionalInfoType type = 1;
+  ProfileAdditionalInfoStatus status = 2;
+  string message = 3;
+}
+
+message UpdateProfileAdditionalInfoStatusRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  AdditionalInfoType type = 2 [(validate.rules).enum.defined_only = true];
+  UpdateProfileAdditionalInfoStatus status = 3 [(validate.rules).enum.defined_only = true];
+  string message = 4;
+}
+
+message UpdateProfileAdditionalInfoStatusResponse{
+
+}
+
+message GetProfileStatusRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetProfileStatusResponse{
+  ProfileStatus status = 1;
+}
+
+enum ProfileAdditionalInfoStatus{
+  UNKNOWN_PROFILE_ADDITIONAL_INFO_STATUS = 0;
+  PROFILE_ADDITIONAL_INFO_STATUS_EMPTY = 1;
+  PROFILE_ADDITIONAL_INFO_STATUS_INCOMPLETED = 2;
+  PROFILE_ADDITIONAL_INFO_STATUS_REJECTED = 3;
+  PROFILE_ADDITIONAL_INFO_STATUS_ACCEPTED = 4;
+}
+
+enum UpdateProfileAdditionalInfoStatus{
+  UNKNOWN_UPDATE_PROFILE_ADDITIONAL_INFO_STATUS = 0;
+  UPDATE_PROFILE_ADDITIONAL_INFO_STATUS_REJECTED = 1;
+  UPDATE_PROFILE_ADDITIONAL_INFO_STATUS_ACCEPTED = 2;
+}
+
+enum ProfileStatus{
+  UNKNOWN_PROFILE_STATUS = 0;
+  PROFILE_STATUS_IN_PROGRESS = 1;
+  PROFILE_STATUS_WAITING_FOR_VERIFY = 2;
+  PROFILE_STATUS_COMPLETED = 3;
+}
+
+enum AdditionalInfoType{
+  UNKNOWN_ADDITIONAL_INFO_TYPE = 0;
+  ADDITIONAL_INFO_TYPE_ID_CARD = 1;
+  ADDITIONAL_INFO_TYPE_DRIVING_LICENSE = 2;
+  ADDITIONAL_INFO_TYPE_DRIVER_BACKGROUND = 3;
+  ADDITIONAL_INFO_TYPE_RESIDENCE_CARD = 4;
+  ADDITIONAL_INFO_TYPE_BANK_ACCOUNT = 5;
+  ADDITIONAL_INFO_TYPE_ADDRESS = 6;
+}
+
+enum TransportationType{
+  UNKNOWN_TRANSPORTATION_TYPE = 0;
+  TRANSPORTATION_TYPE_CAR = 1;
+  TRANSPORTATION_TYPE_BICYCLE = 2;
+  TRANSPORTATION_TYPE_MOTORBIKE = 3;
+  TRANSPORTATION_TYPE_VAN = 4;
+}
+
+enum IDCardType{
+  UNKNOWN_IDCARD_TYPE = 0;
+  IDCARD_TYPE_PASSPORT = 1;
+  IDCARD_TYPE_NATIONAL_ID_CARD = 2;
+}
+
+// ---------------------------------- End Courier Account Service ----------------------------------
+
+
+
+
+
+// ---------------------------------- Start Document Service ----------------------------------
+// document service
+
+service DocumentService{
+  // upload a new document for a courier user, or update an existing one
+  rpc Upload(UploadDocumentRequest) returns (UploadDocumentResponse) {}
+
+  // get all documents of a user. each document contains a expirable link to download file.
+  rpc GetDocumentsOfUser(GetDocumentsOfUserRequest) returns (GetDocumentsOfUserResponse) {}
+
+  // get a document by its id. response contains expirable link to download file.
+  rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse) {}
+
+  //download file by link generated in GetDocument requests
+  rpc Download(DownloadRequest) returns (DownloadResponse) {}
+
+  //download without generated link
+  rpc DirectDownload(DirectDownloadRequest) returns (DirectDownloadResponse) {}
+}
+
+message Document{
+  // for update request is required, for upload is optional
+  string object_id = 1;
+  // specifies that document is passport, or driver's license, and so on
+  DocumentInfoType info_type = 2;
+  // specifies that document is driver's license photo, or private hire driver's license photo
+  DocumentType doc_type = 3;
+  // optional
+  // example: jpeg, png, pdf, doc
+  string file_type = 4;
+  // content of document in byte array
+  bytes data = 5;
+}
+
+message DocumentInfo{
+  DocumentInfoType info_type = 1;
+  DocumentType doc_type = 2;
+  string file_type = 3;
+  // how long is the link downloadable
+  int64 download_link_expiration = 4;
+  // a short lasting link to download file without token
+  string download_link = 5;
+  string object_id = 6;
+}
+
+enum DocumentInfoType{
+  UNKNOWN_DOCUMENT_INFO_TYPE = 0;
+  DOCUMENT_INFO_TYPE_ID_CARD = 1;
+  DOCUMENT_INFO_TYPE_DRIVING_LICENSE = 2;
+  DOCUMENT_INFO_TYPE_DRIVER_BACKGROUND = 3;
+  DOCUMENT_INFO_TYPE_RESIDENCE_CARD = 4;
+  DOCUMENT_INFO_TYPE_BANK_ACCOUNT = 5;
+  DOCUMENT_INFO_TYPE_ADDRESS = 6;
+}
+
+enum DocumentType{
+  UNKNOWN_DOCUMENT_TYPE = 0;
+  DOCUMENT_TYPE_PASSPORT = 1;
+  DOCUMENT_TYPE_NATIONAL_ID = 2;
+  DOCUMENT_TYPE_DRIVING_LICENSE_PHOTO_FRONT = 3;
+  DOCUMENT_TYPE_DRIVING_LICENSE_PHOTO_BACK = 4;
+  DOCUMENT_TYPE_RESIDENCE_CARD_FRONT = 5;
+  DOCUMENT_TYPE_RESIDENCE_CARD_BACK = 6;
+  DOCUMENT_TYPE_ID_CARD_FRONT = 7;
+  DOCUMENT_TYPE_ID_CARD_BACK = 8;
+  DOCUMENT_TYPE_PRIVATE_HIRE_DRIVING_LICENSE_PHOTO = 9;
+  DOCUMENT_TYPE_DBS_CERTIFICATE = 10;
+  DOCUMENT_TYPE_INSURANCE_CERTIFICATE = 11;
+  DOCUMENT_TYPE_RESIDENCE_CARD = 12;
+  DOCUMENT_TYPE_BANK_STATEMENT = 13;
+  DOCUMENT_TYPE_PROOF_OF_ADDRESS = 14;
+  DOCUMENT_TYPE_BILL = 15;
+  DOCUMENT_TYPE_OTHERS = 16;
+}
+
+message UploadDocumentRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  Document document = 2 [(validate.rules).message.required = true];
+}
+
+message UploadDocumentResponse{
+  string object_id = 1;
+}
+
+message GetDocumentsOfUserRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  // optional
+  DocumentInfoType type = 2;
+}
+
+message GetDocumentsOfUserResponse{
+  repeated DocumentInfo documents = 1;
+}
+
+message GetDocumentRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string object_id = 2 [(validate.rules).string.min_len = 1];
+}
+
+message GetDocumentResponse{
+  // how long is the link downloadable
+  int64 download_link_expiration = 1;
+  // a short lasting link to download file without token
+  string download_link = 2;
+}
+
+message DownloadRequest{
+  string download_link = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DownloadResponse{
+  bytes data = 1;
+}
+
+message DirectDownloadRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string object_id = 2 [(validate.rules).string.min_len = 1];
+}
+
+message DirectDownloadResponse{
+  bytes data = 1;
+}
+
+// ---------------------------------- End Document Service ----------------------------------
+
+
+// ---------------------------------- Start User Account Service ----------------------------------
+
+service UserAccountService{
+
+  // creates profile for a new passenger user
+  // returns error if the passenger user already exists
+  rpc CreateUserAccount(CreateUserAccountRequest) returns (CreateUserAccountResponse) {}
+
+  // get profile of passenger user by his token
+  rpc GetUserAccount(GetUserAccountRequest) returns (GetUserAccountResponse) {}
+
+  // find profiles of users
+  rpc FindUserAccounts(FindUserAccountsRequest) returns (FindUserAccountsResponse) {}
+
+  // updates general information of passenger, or transportation type
+  // all fields are optional, only available fields in the request are getting updated
+  rpc UpdateUserAccount(UpdateUserAccountRequest) returns (UpdateUserAccountResponse) {}
+
+  // update card of a passenger user
+  rpc UpdateUserCard(UpdateUserCardRequest) returns (UpdateUserCardResponse) {}
+
+  // delete card of a passenger user
+  rpc DeleteUserCard(DeleteUserCardRequest) returns (DeleteUserCardResponse) {}
+
+  // get card of a passenger user by their token
+  rpc GetUserCard(GetUserCardRequest) returns (GetUserCardResponse) {}
+
+}
+
+
+message CreateUserAccountRequest{
+  // access token that is taken from uaa
+  // phone number and id of the user is extracted from access_token
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string first_name = 2 [(validate.rules).string.min_len = 1];
+  string last_name = 3 [(validate.rules).string.min_len = 1];
+  string email = 4 [(validate.rules).string.email = true];
+}
+
+message CreateUserAccountResponse{
+}
+
+message UpdateUserAccountRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  // optional
+  string first_name = 2;
+  // optional
+  string last_name = 3;
+  // optional
+  string email = 4;
+  // optional
+  PaymentMethod payment_method = 5;
+}
+
+message UpdateUserAccountResponse{
+}
+
+message GetUserAccountRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetUserAccountResponse{
+  UserProfile profile = 1;
+}
+
+message FindUserAccountsRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  oneof filter{
+    option (validate.required) = true;
+    string user_id = 2;
+    string phone_number = 3;
+    string email = 4;
+    string name = 5;
+  }
+}
+
+message FindUserAccountsResponse{
+  repeated UserProfile profiles = 1;
+}
+
+message UserProfile{
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string phone_number = 4;
+  string email = 5;
+  PaymentMethod payment_method = 6;
+}
+
+message UpdateUserCardRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string card_number = 2 [(validate.rules).string.min_len = 1];
+  string issue_date = 3 [(validate.rules).string.min_len = 1];
+  string cvv = 4 [(validate.rules).string.min_len = 1];
+  string zip_code = 5 [(validate.rules).string.min_len = 1];
+  string country = 6 [(validate.rules).string.min_len = 1];
+}
+
+message UpdateUserCardResponse{
+}
+
+message GetUserCardRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetUserCardResponse{
+  repeated UserCard cards = 1;
+}
+
+message DeleteUserCardRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string card_number = 2 [(validate.rules).string.min_len = 1];
+}
+
+message DeleteUserCardResponse{
+}
+
+message UserCard{
+  string user_id = 1;
+  string card_number = 2;
+  string issue_date = 3;
+  string cvv = 4;
+  string zip_code = 5;
+  string country = 6;
+}
+
+enum PaymentMethod{
+  UNKNOWN_PAYMENT_METHOD = 0;
+  PAYMENT_METHOD_CREDIT_CARD = 1;
+  PAYMENT_METHOD_DEBIT_CARD = 2;
+}
+
+// ---------------------------------- End User Account Service ----------------------------------
+
+
+// ---------------------------------- Start User Status Service ----------------------------------
+
+
+service UserStatusService{
+
+  // get user status of courier
+  rpc GetCourierUserStatus(GetCourierUserStatusRequest) returns (GetCourierUserStatusResponse) {}
+
+  // update user status of courier
+  rpc UpdateCourierUserStatus(UpdateCourierUserStatusRequest) returns (UpdateCourierUserStatusResponse) {}
+
+  // get user status of courier
+  rpc GetClientUserStatus(GetClientUserStatusRequest) returns (GetClientUserStatusResponse) {}
+
+  // update user status of courier
+  rpc UpdateClientUserStatus(UpdateClientUserStatusRequest) returns (UpdateClientUserStatusResponse) {}
+
+}
+
+message GetCourierUserStatusRequest{
+  string userId = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetCourierUserStatusResponse{
+  UserStatus status = 1;
+}
+
+message UpdateCourierUserStatusRequest{
+  string userId = 1 [(validate.rules).string.min_len = 1];
+  UserStatus status = 2 [(validate.rules).enum.defined_only = true];
+}
+
+message UpdateCourierUserStatusResponse{
+
+}
+
+message GetClientUserStatusRequest{
+  string userId = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetClientUserStatusResponse{
+  UserStatus status = 1;
+}
+
+message UpdateClientUserStatusRequest{
+  string userId = 1 [(validate.rules).string.min_len = 1];
+  UserStatus status = 2 [(validate.rules).enum.defined_only = true];
+}
+
+message UpdateClientUserStatusResponse{
+
+}
+
+enum UserStatus{
+  UNKNOWN_USER_STATUS = 0;
+  USER_STATUS_ENABLED = 1;
+  USER_STATUS_DISABLED = 2;
+  USER_STATUS_BLOCKED = 3;
+  USER_STATUS_AVAILABLE = 4;
+}
+
+// ---------------------------------- End User Status Service ----------------------------------

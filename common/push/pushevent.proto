@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+option go_package = "userservice/push";
+
+package push;
+
+message PushEvent{
+  google.protobuf.Any event = 1;
+}
+
+message OfferAccepted{
+  string customer_phone_number = 1;
+  OfferInfo offer = 2;
+}
+
+message OfferRejected{
+  string customer_phone_number = 1;
+  OfferInfo offer = 2;
+}
+
+message OfferInfo{
+  string offer_id = 1;
+  string courier_id = 2;
+  string courier_name = 3;
+  string time = 4;
+}
+
+message RideStateArrived{
+  string requester_phone_number = 1;
+  string sender_phone_number = 2;
+  string receiver_phone_number = 3;
+  RideInfo ride = 4;
+}
+
+message RideStateCancelled{
+  string requester_phone_number = 1;
+  RideInfo ride = 2;
+  string cancellation_note = 3;
+}
+
+message RideStatePickedup{
+  string requester_phone_number = 1;
+  string sender_phone_number = 2;
+  RideInfo ride = 3;
+}
+
+message RideStateDelivered{
+  string requester_phone_number = 1;
+  string receiver_phone_number = 2;
+  RideInfo ride = 3;
+}
+
+message RideStateSenderIsNotAvailable{
+  string requester_phone_number = 1;
+  string sender_phone_number = 2;
+  RideInfo ride = 3;
+}
+
+message RideStateReceiverIsNotAvailable{
+  string requester_phone_number = 1;
+  string receiver_phone_number = 2;
+  RideInfo ride = 3;
+}
+
+message RideStateFinished{
+  string requester_phone_number = 1;
+  RideInfo ride = 2;
+}
+
+// when requester adds a new location it should inform courier
+message RideNewLocation{
+  string courier_phone_number = 1;
+  RideInfo ride = 2;
+  string location_id = 3;
+  string location = 4;
+}
+
+message RideInfo{
+  string request_id = 1;
+  string location_id = 2;
+  string human_readable_id = 3;
+  // name of the sender or receiver
+  string full_name = 4;
+  // phone number of sender or receiver
+  string phone_number = 5;
+  string time = 6;
+}
+
+message AnnouncementReceived{
+  int64 id = 1;
+  string title = 2;
+  int32 type = 3;
+  int32 message_type = 4;
+  string text = 5;
+  string time = 6;
+  string user_phone_number = 7;
+}

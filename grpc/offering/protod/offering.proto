@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package artin.couriermanagement.offering;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/offering/go;offeringPb";
+
+import "offering_message.proto";
+import "google/protobuf/empty.proto";
+
+service Offering {
+  rpc SetCourierLiveLocation (stream SetCourierLiveLocationRequest) returns (stream SetCourierLiveLocationResponse) {}
+  rpc GetCourierLiveLocation (GetCourierLiveLocationRequest) returns (stream GetCourierLiveLocationResponse) {}
+  rpc CourierSubscriptionOnOffer(google.protobuf.Empty) returns (stream CourierSubscriptionOnOfferResponse) {}
+  rpc CustomerSubscriptionOnOffer(google.protobuf.Empty) returns (stream CustomerSubscriptionOnOfferResponse) {}
+  rpc SetCourierLocation(SetCourierLocationRequest) returns (google.protobuf.Empty){}
+  rpc GetNearbyCouriers(GetNearbyCouriersRequest) returns (GetNearbyCouriersResponse) {}
+  rpc HadCustomerRideWithCourier(HadCustomerRideWithCourierRequest) returns (HadCustomerRideWithCourierResponse) {}
+  rpc GetOfferCourierAndCustomer(GetOfferCourierAndCustomerRequest) returns (GetOfferCourierAndCustomerResponse) {}
+}

@@ -1,0 +1,311 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: courier-management-promotion
+  managedFields:
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:progressDeadlineSeconds': {}
+          'f:replicas': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector': {}
+          'f:strategy':
+            'f:rollingUpdate':
+              .: {}
+              'f:maxSurge': {}
+              'f:maxUnavailable': {}
+            'f:type': {}
+          'f:template':
+            'f:metadata':
+              'f:labels':
+                .: {}
+                'f:app': {}
+            'f:spec':
+              'f:containers':
+                'k:{"name":"courier-management-sha256-1"}':
+                  .: {}
+                  'f:env':
+                    .: {}
+                    'k:{"name":"CONFIG_FILE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                    'k:{"name":"COURIER_MANAGEMENT_WORKING_DIR"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                    'k:{"name":"SERVICE_NAME"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                  'f:image': {}
+                  'f:imagePullPolicy': {}
+                  'f:name': {}
+                  'f:resources': {}
+                  'f:terminationMessagePath': {}
+                  'f:terminationMessagePolicy': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-09-15T05:28:19Z'
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:deployment.kubernetes.io/revision': {}
+        'f:status':
+          'f:availableReplicas': {}
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:observedGeneration': {}
+          'f:readyReplicas': {}
+          'f:replicas': {}
+          'f:updatedReplicas': {}
+      manager: kube-controller-manager
+      operation: Update
+      time: '2021-09-15T05:28:25Z'
+  name: courier-management-promotion
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: courier-management-promotion
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: courier-management-promotion
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_FILE
+              valueFrom:
+                configMapKeyRef:
+                  key: CONFIG_FILE
+                  name: courier-management-promotion-config-vgnx
+            - name: COURIER_MANAGEMENT_WORKING_DIR
+              valueFrom:
+                configMapKeyRef:
+                  key: COURIER_MANAGEMENT_WORKING_DIR
+                  name: courier-management-promotion-config-vgnx
+            - name: SERVICE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: SERVICE_NAME
+                  name: courier-management-promotion-config-vgnx
+          image: gcr.io/courier-management-325711/courier-management
+          imagePullPolicy: IfNotPresent
+          name: courier-management-sha256-1
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: courier-management-promotion
+  managedFields:
+    - apiVersion: autoscaling/v2beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:maxReplicas': {}
+          'f:metrics': {}
+          'f:minReplicas': {}
+          'f:scaleTargetRef':
+            'f:apiVersion': {}
+            'f:kind': {}
+            'f:name': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-09-15T05:28:19Z'
+    - apiVersion: autoscaling/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:autoscaling.alpha.kubernetes.io/conditions': {}
+        'f:status':
+          'f:currentReplicas': {}
+      manager: vpa-recommender
+      operation: Update
+      time: '2021-09-15T05:28:36Z'
+  name: courier-management-promotion-hpa-xgsn
+  namespace: default
+spec:
+  maxReplicas: 5
+  metrics:
+    - resource:
+        name: cpu
+        targetAverageUtilization: 80
+      type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: courier-management-promotion
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+  finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+  generateName: courier-management-promotion-
+  labels:
+    app: courier-management-promotion
+  managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:generateName': {}
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:externalTrafficPolicy': {}
+          'f:ports':
+            .: {}
+            'k:{"port":8092,"protocol":"TCP"}':
+              .: {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+          'f:selector':
+            .: {}
+            'f:app': {}
+          'f:sessionAffinity': {}
+          'f:type': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-09-15T05:33:04Z'
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:finalizers':
+            .: {}
+            'v:"service.kubernetes.io/load-balancer-cleanup"': {}
+        'f:status':
+          'f:loadBalancer':
+            'f:ingress': {}
+      manager: kube-controller-manager
+      operation: Update
+      time: '2021-09-15T05:33:46Z'
+  name: courier-management-promotion-j6ncr
+  namespace: default
+spec:
+  clusterIP: 10.24.12.158
+  clusterIPs:
+    - 10.24.12.158
+  externalTrafficPolicy: Cluster
+  ports:
+    - nodePort: 31321
+      port: 8092
+      protocol: TCP
+      targetPort: 8092
+  selector:
+    app: courier-management-promotion
+  sessionAffinity: None
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+  labels:
+    app: courier-management-promotion
+  managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:ports':
+            .: {}
+            'k:{"port":8092,"protocol":"TCP"}':
+              .: {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+          'f:selector':
+            .: {}
+            'f:app': {}
+          'f:sessionAffinity': {}
+          'f:type': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-09-15T05:29:35Z'
+  name: promotion-service
+  namespace: default
+spec:
+  clusterIP: 10.24.3.234
+  clusterIPs:
+    - 10.24.3.234
+  ports:
+    - port: 8092
+      protocol: TCP
+      targetPort: 8092
+  selector:
+    app: courier-management-promotion
+  sessionAffinity: None
+  type: ClusterIP
+

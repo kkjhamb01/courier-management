@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package artin.couriermanagement.delivery;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/delivery/go;deliveryPb";
+
+import "google/protobuf/timestamp.proto";
+ 
+import "common.proto";
+import "google/protobuf/wrappers.proto";
+
+message SavedLocation {
+  string id = 1;
+  string name = 2;
+  string full_name = 3;
+  google.protobuf.StringValue phone_number = 4;
+  google.protobuf.StringValue address_details = 5;
+  double lat = 6;
+  double lon = 7;
+  google.protobuf.StringValue courier_instructions = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+enum RequestStatus {
+  PROCESSING = 0;
+  SCHEDULED = 1;
+  NO_DRIVERS_AVAILABLE = 2;
+  ACCEPTED = 3;
+  ARRIVED = 4;
+  NAVIGATING = 5;
+  COURIER_CANCELLED = 6;
+  CUSTOMER_CANCELLED = 7;
+  COMPLETED = 8;
+  CREATION_FAILED = 9;
+  PICKED_UP = 10;
+  DELIVERED = 11;
+  SENDER_NOT_AVAILABLE = 12;
+  RECEIVER_NOT_AVAILABLE = 13;
+}
+
+message RideStatus {
+  string id = 1;
+  string request_id = 2;
+  string ride_location_id = 3;
+  RequestStatus status = 4;
+  string cancellation_note = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message Request {
+  string id = 1;
+  string human_readable_id = 2;
+  string customer_id = 3;
+  string courier_id = 4;
+  RequestLocation origin = 5;
+  repeated RequestLocation destinations = 6;
+  int64 estimated_duration = 7;
+  int32 estimated_distance_meter = 8;
+  double final_price = 9;
+  string final_price_currency = 10;
+  artin.couriermanagement.common.VehicleType vehicle_type = 11;
+  int32 required_workers = 12;
+  RequestStatus status = 13;
+  int32 last_processed_destination = 14;
+  google.protobuf.Timestamp scheduled_on = 15;
+  google.protobuf.Timestamp created_at = 16;
+  google.protobuf.Timestamp updated_at = 17;
+  double calculated_price = 18;
+}
+
+message RequestLocation {
+  string id = 1;
+  string full_name = 2;
+  string phone_number = 3;
+  string address_details = 4;
+  double lat = 5;
+  double lon = 6;
+  string courier_instructions = 7;
+  int32 order = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message NewRequestEvent {
+  string request_id = 1;
+}
+
+message RequestCancelledEvent {
+  string request_id = 1 ;
+  string customer_id = 2 ;
+  string courier_id = 3;
+  CancelReason cancel_reason = 4;
+  CancelledBy cancelled_by = 5;
+  string updated_by = 6 ;
+}
+
+enum CancelReason {
+  BY_CUSTOMER = 0;
+  TIMEOUT = 1;
+  ACCEPTED_BY_ANOTHER_COURIER = 2;
+  OTHER = 3;
+}
+
+enum CancelledBy {
+  COURIER = 0;
+  CUSTOMER = 1;
+  SYSTEM = 2;
+}
+
+message RequestAcceptedEvent {
+  string request_id = 1 ;
+  string customer_id = 2 ;
+  string courier_id = 3 ;
+  string desc = 4;
+}
+
+message RequestRejectedEvent {
+  string request_id = 1 ;
+  string customer_id = 2 ;
+  string courier_id = 3 ;
+  string desc = 4;
+}
+
+message RequestArrivedOriginEvent {
+  string request_id = 1 ;
+  string desc = 2;
+}
+
+message RequestArrivedDestinationEvent {
+  string request_id = 1 ;
+  int32 destination_order = 2;
+  string desc = 3;
+}
+
+message RequestPickedUpEvent {
+  string request_id = 1 ;
+  string desc = 2;
+}
+
+message RequestDeliveredEvent {
+  string request_id = 1 ;
+  int32 destination_order = 2;
+  string desc = 3;
+}
+
+message RequestCompletedEvent {
+  string request_id = 1 ;
+  string desc = 3;
+}
+
+message RequestNavigatingToSenderEvent {
+  string request_id = 1 ;
+}
+
+message RequestNavigatingToReceiverEvent {
+  string request_id = 1 ;
+  int32 target_destination_order = 2;
+}
+
+message RequestSenderNotAvailableEvent {
+  string request_id = 1 ;
+  string desc = 2;
+}
+
+message RequestReceiverNotAvailableEvent {
+  string request_id = 1 ;
+  int32 destination_order = 2;
+  string desc = 3;
+}
+
+message RequestHistoryItem {
+  Request request = 1;
+  repeated RideStatus events = 2;
+}

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package artin.couriermanagement.finance;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/finance/go;financePb";
+
+import "finance_message.proto";
+import "google/protobuf/empty.proto";
+
+service Finance {
+  rpc SetUpStripeUser (stream SetUpStripeUserRequest) returns (stream SetUpStripeUserResponse) {}
+  rpc GetClientSecret (GetClientSecretRequest) returns (GetClientSecretResponse) {}
+  rpc GetCustomerPaymentMethods (GetCustomerPaymentMethodsRequest) returns (GetCustomerPaymentMethodsResponse) {}
+  rpc DeleteCustomerPaymentMethod (DeleteCustomerPaymentMethodRequest) returns (google.protobuf.Empty) {}
+  rpc CreatePayment (CreatePaymentRequest) returns (CreatePaymentResponse) {}
+  rpc SetDefaultPaymentMethod (SetDefaultPaymentMethodRequest) returns (google.protobuf.Empty) {}
+
+  rpc GetCourierPayable (google.protobuf.Empty) returns (GetCourierPayableResponse) {}
+  rpc GetRequestTransactions (GetRequestTransactionsRequest) returns (GetRequestTransactionsResponse) {}
+  rpc GetTransactionsPaidByCustomer (GetTransactionsPaidByCustomerRequest) returns (GetTransactionsPaidByCustomerResponse) {}
+  rpc GetTransactionsPaidToCourier (GetTransactionsPaidToCourierRequest) returns (GetTransactionsPaidToCourierResponse) {}
+  rpc GetAmountPaidToCourier (GetAmountPaidToCourierRequest) returns (GetAmountPaidToCourierResponse) {}
+}

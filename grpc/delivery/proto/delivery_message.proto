@@ -1,0 +1,270 @@
+syntax = "proto3";
+
+package artin.couriermanagement.delivery;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/delivery/go;deliveryPb";
+
+import "common.proto";
+import "validate/validate.proto";
+import "google/protobuf/wrappers.proto";
+import "delivery_model.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/type/money.proto";
+
+message AddSavedLocationRequest {
+  string name = 1 [(validate.rules).string.ignore_empty = false];
+  string full_name = 2;
+  google.protobuf.StringValue phone_number = 3 [(validate.rules).string = {pattern: "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\s\\./0-9]*$",ignore_empty: true}];
+  google.protobuf.StringValue address_details = 4 [(validate.rules).string.ignore_empty = true];
+  double lat = 5 [(validate.rules).double = {gte: -90,  lte: 90}];
+  double lon = 6 [(validate.rules).double = {gte: -180, lte: 180}];
+  google.protobuf.StringValue courier_instructions = 7;
+}
+
+message AddSavedLocationResponse {
+  string id = 1;
+}
+
+message ListSavedLocationsResponse {
+  repeated SavedLocation saved_locations = 1;
+}
+
+message UpdateSavedLocationRequest {
+  string id = 1 [(validate.rules).string = {ignore_empty:false, uuid:true}];
+  google.protobuf.StringValue name = 2 [(validate.rules).string.ignore_empty = true];
+  google.protobuf.StringValue full_name = 3 [(validate.rules).string.ignore_empty = true];
+  google.protobuf.StringValue phone_number = 4 [(validate.rules).string = {pattern: "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\s\\./0-9]*$"}];
+  google.protobuf.StringValue address_details = 5;
+  google.protobuf.DoubleValue lat = 6 [(validate.rules).double = {gte: -90,  lte: 90}, (validate.rules).message.required = false];
+  google.protobuf.DoubleValue lon = 7 [(validate.rules).double = {gte: -180,  lte: 180}, (validate.rules).message.required = false];
+  google.protobuf.StringValue courier_instructions = 8 [(validate.rules).string.ignore_empty = true];
+}
+
+message RemoveSavedLocationRequest {
+  string saved_location_id = 1 [(validate.rules).string = {ignore_empty:false, uuid:true}];
+}
+
+message RemoveAllSavedLocationsRequest {
+}
+
+message RemoveAllSavedLocationsResponse {
+  repeated string saved_location_ids = 1;
+}
+
+message CreateRequestRequest {
+  artin.couriermanagement.common.VehicleType vehicle_type = 1;
+  CreateRequestLocation origin = 2[(validate.rules).message.required = true];
+  repeated CreateRequestLocation destinations = 3[(validate.rules).repeated = {min_items: 1, max_items: 5}];
+  google.protobuf.Timestamp schedule = 4;
+  google.protobuf.Int32Value required_workers = 5 [(validate.rules).int32.gte = 0];
+}
+
+message CreateRequestLocation {
+  google.protobuf.StringValue full_name = 1[(validate.rules).string.ignore_empty = true];
+  google.protobuf.StringValue phone_number = 2[(validate.rules).string.ignore_empty = true];
+  google.protobuf.StringValue address_details = 3;
+  double lat = 4[(validate.rules).double = {gte: -90,  lte: 90}];
+  double lon = 5[(validate.rules).double = {gte: -180,  lte: 180}];
+  google.protobuf.StringValue courier_instructions = 6;
+}
+
+message CreateRequestResponse {
+  Request createdRequest = 1;
+}
+
+message AcceptRequestRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  google.protobuf.StringValue description = 2;
+}
+
+message RejectRequestRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  google.protobuf.StringValue description = 2;
+}
+
+message CancelRequestRequest {
+  string id = 1 [(validate.rules).string.uuid = true];
+  CancelReason cancel_reason = 2;
+  CancelledBy cancelled_by = 3;
+  google.protobuf.StringValue description = 4;
+}
+
+message RequestArrivedOriginRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  google.protobuf.StringValue description = 2;
+}
+
+message RequestArrivedDestinationRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  int32 destination_order = 2;
+  google.protobuf.StringValue description = 3;
+}
+
+message RequestPickedUpRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  string name = 2;
+  string signature = 3;
+  google.protobuf.StringValue description = 4;
+}
+
+message RequestDeliveredRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  int32 destination_order = 2;
+  string name = 3;
+  string signature = 4;
+  google.protobuf.StringValue description = 5;
+}
+
+message RequestSenderNotAvailableRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  google.protobuf.StringValue description = 2;
+}
+
+message RequestNavigatingToSenderRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+}
+
+message RequestNavigatingToReceiverRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  int32 target_destination_order = 2;
+}
+
+message RequestReceiverNotAvailableRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  int32 destination_order = 2;
+  google.protobuf.StringValue description = 3;
+}
+
+message RequestCompletedRequest {
+  string id = 1[(validate.rules).string.uuid = true];
+  google.protobuf.StringValue description = 2;
+}
+
+message GetRequestsRequest {
+  oneof filter {
+    string id = 1 [(validate.rules).string.uuid = true];
+    artin.couriermanagement.common.LocationRange origin = 2;
+    artin.couriermanagement.common.LocationRange destination = 3;
+    artin.couriermanagement.common.TimeRange time_range = 4;
+    google.type.Money price = 5;
+    string customer_id = 6[(validate.rules).string.uuid = true];
+    string courier_id = 7[(validate.rules).string.uuid = true];
+  }
+}
+
+message GetRequestsResponse {
+  repeated Request requests = 1;
+}
+
+message GetCourierCompletedRequestsRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+message GetCourierCompletedRequestsResponse{
+  int32 completed_requests = 1;
+}
+
+message GetCourierRequestsDurationRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+message GetCourierRequestsDurationResponse{
+  google.protobuf.Duration time_range = 1;
+}
+
+message GetCourierRequestsMileageRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+message GetCourierRequestsMileageResponse{
+  int32 mileage = 1;
+}
+
+message GetCourierRequestsHistoryRequest {
+  int32 page_number = 1 [(validate.rules).int32.gte = 1];
+  int32 page_size = 2 [(validate.rules).int32.gte = 1];
+}
+
+message GetCourierRequestsHistoryResponse{
+  repeated RequestHistoryItem items = 1;
+}
+
+message GetRequestHistoryRequest {
+  string request_id = 1 [(validate.rules).string.uuid = true];
+}
+
+message GetRequestHistoryResponse {
+  RequestHistoryItem items = 1;
+}
+
+message GetCourierRequestDetailsRequest {
+  string request_id = 1;
+}
+
+message GetCourierRequestDetailsResponse{
+  Request request = 1;
+}
+
+message GetCustomerCompletedRequestsRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+message GetCustomerCompletedRequestsResponse{
+  int32 completed_requests = 1;
+}
+
+message GetCustomerRequestsDurationRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+message GetCustomerRequestsDurationResponse{
+  google.protobuf.Duration time_range = 1;
+}
+
+message GetCustomerRequestsMileageRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+message GetCustomerRequestsMileageResponse{
+  int32 mileage = 1;
+}
+
+message GetCustomerRequestsHistoryRequest {
+  int32 page_number = 1 [(validate.rules).int32.gte = 1];
+  int32 page_size = 2 [(validate.rules).int32.gte = 1];
+}
+
+message GetCustomerRequestsHistoryResponse{
+  repeated RequestHistoryItem items = 1;
+}
+
+message GetCustomerRequestDetailsRequest {
+  string request_id = 1;
+}
+
+message GetCustomerRequestDetailsResponse{
+  Request request = 1;
+  string plate = 2;
+  bytes courier_photo = 3;
+  string courier_phone_number = 4;
+  string courier_name = 5;
+}
+
+message GetCourierActiveRequestResponse{
+  RequestHistoryItem requestAndStatuses = 1;
+  string requester_name = 2;
+  string requester_phone = 3;
+}
+
+message GetCustomerActiveRequestResponse{
+  RequestHistoryItem requestAndStatuses = 1;
+  string requester_name = 2;
+  string requester_phone = 3;
+}

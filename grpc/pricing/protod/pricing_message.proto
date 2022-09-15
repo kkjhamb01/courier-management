@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package artin.couriermanagement.pricing;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/pricing/go;pricingPb";
+
+ 
+import "common.proto";
+
+message CalculateCourierPriceRequest {
+  artin.couriermanagement.common.VehicleType vehicle_type = 1;
+  int32 required_workers = 2;
+  artin.couriermanagement.common.Location source = 3 ;
+  repeated artin.couriermanagement.common.Location destinations = 4 ;
+}
+
+message CalculateCourierPriceResponse {
+  int64 estimated_duration = 1;
+  int32 estimated_distance = 2;
+  double amount = 3;
+  string currency = 4;
+}
+
+message ReviewCourierPriceRequest{
+  int32 required_workers = 1;
+  artin.couriermanagement.common.Location source = 2 ;
+  repeated artin.couriermanagement.common.Location destinations = 3 ;
+}
+
+message ReviewCourierPriceResponse{
+  message Price {
+    artin.couriermanagement.common.VehicleType vehicle_type = 4;
+    double amount = 5;
+    string currency = 6;
+  }
+  int64 estimated_duration = 1;
+  int32 estimated_distance = 2;
+  repeated Price prices = 3;
+}

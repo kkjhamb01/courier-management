@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+option go_package = "userservice/api/controller/proto";
+
+package announcement;
+
+import "validate/validate.proto";
+
+// called by dashboard admin
+service AnnouncementAdminService{
+
+  rpc CreateAnnouncement(CreateAnnouncementRequest) returns (CreateAnnouncementResponse) {}
+
+  rpc AssignAnnouncementToUser(AssignAnnouncementToUserRequest) returns (AssignAnnouncementToUserResponse) {}
+
+  rpc GetAnnouncements(GetAnnouncementsRequest) returns (GetAnnouncementsResponse) {}
+
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
+
+}
+
+// called by client
+service AnnouncementUserService{
+
+  rpc GetAnnouncementsOfUser(GetAnnouncementsOfUserRequest) returns (GetAnnouncementsOfUserResponse) {}
+
+}
+
+message CreateAnnouncementRequest{
+  // admin access token
+  // required
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+
+  // title of the announcement
+  // required
+  string title = 2 [(validate.rules).string.min_len = 1];
+
+  AnnouncementType type = 3 [(validate.rules).enum.defined_only = true];
+
+  AnnouncementMessageType message_type = 4 [(validate.rules).enum.defined_only = true];
+
+  // text of the announcement
+  // required
+  string text = 5 [(validate.rules).string.min_len = 1];
+
+}
+
+message CreateAnnouncementResponse{
+  int64 announcement_id = 1;
+}
+
+message AssignAnnouncementToUserRequest{
+  // admin access token
+  // required
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+
+  // required
+  int64 announcement_id = 2 [(validate.rules).int64.gt = 0];
+
+  // required
+  repeated string user_ids = 3;
+}
+
+message AssignAnnouncementToUserResponse{
+
+}
+
+message GetAnnouncementsRequest{
+  // admin access token
+  // required
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+
+  // optional
+  Pagination pagination = 2;
+
+}
+
+message GetAnnouncementsResponse{
+  repeated Announcement announcements = 1;
+}
+
+message GetUsersRequest{
+  // admin access token
+  // required
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+
+  // optional
+  // get announcement-users by announcement or user
+  oneof filter {
+    int64 announcement_id = 2;
+    string user_id = 3;
+  };
+
+}
+
+message GetUsersResponse{
+  repeated AnnouncementUser users = 1;
+}
+
+message GetAnnouncementsOfUserRequest{
+  // client's access token
+  // required
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+
+}
+
+message GetAnnouncementsOfUserResponse{
+  repeated Announcement announcements = 1;
+}
+
+message Announcement{
+  int64 id = 1;
+  string title = 2;
+  AnnouncementType type = 3;
+  AnnouncementMessageType message_type = 4;
+  string text = 5;
+  string time = 6;
+}
+
+message AnnouncementUser{
+  Announcement announcement = 1;
+  string user_id = 2;
+}
+
+message Pagination{
+  int32 page = 1;
+  int32 limit = 2;
+  string sort = 3;
+  SortType sort_type = 4;
+}
+
+enum SortType{
+  UNKNOWN_SORT_TYPE = 0;
+  SORT_TYPE_ASC = 1;
+  SORT_TYPE_DESC = 2;
+}
+
+enum AnnouncementType{
+  UNKNOWN_ANNOUNCEMENT_TYPE = 0;
+  ANNOUNCEMENT_TYPE_ALL = 1;
+  ANNOUNCEMENT_TYPE_GROUP = 2;
+  ANNOUNCEMENT_TYPE_INDIVIDUAL = 3;
+}
+
+enum AnnouncementMessageType{
+  UNKNOWN_ANNOUNCEMENT_MESSAGE_TYPE = 0;
+  ANNOUNCEMENT_MESSAGE_TYPE_INFORMATION = 1;
+  ANNOUNCEMENT_MESSAGE_TYPE_PROMOTION = 2;
+  ANNOUNCEMENT_MESSAGE_TYPE_ALARM = 3;
+}

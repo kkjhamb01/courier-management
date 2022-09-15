@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0, maximum-scale=1.0" />
+    <style>@media screen and (max-device-width:480px){body{-webkit-text-size-adjust:none}}</style>
+    <title>Rapidrops</title>
+
+    <script type="application/javascript">
+        function openApp(){
+            var addr = 'rapidrops-{{.type}}://oauth?oauth={{.oauth}}&code={{.code}}';
+            console.log(addr);
+            window.location = addr;
+        }
+        window.onload = function() {
+            setTimeout(openApp, 100);
+        }
+    </script>
+
+</head>
+<body>
+<div align="left" style="margin: auto 0; float: left;">
+    <input type="button" style="color: blue; margin: 10px; padding: 10px;" value="Open Application" onclick="openApp()"/>
+</div>
+</body>
+</html>

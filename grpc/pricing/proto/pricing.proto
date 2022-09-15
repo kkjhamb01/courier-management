@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package artin.couriermanagement.pricing;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/pricing/go;pricingPb";
+
+import "pricing_message.proto";
+
+service Pricing {
+  rpc CalculateCourierPrice (CalculateCourierPriceRequest) returns (CalculateCourierPriceResponse) {}
+  rpc ReviewCourierPrice (ReviewCourierPriceRequest) returns (ReviewCourierPriceResponse) {}
+}

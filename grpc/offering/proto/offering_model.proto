@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package artin.couriermanagement.offering;
+
+option go_package = "gitlab.artin.ai/backend/courier-management/grpc/offering/go;offeringPb";
+
+import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "common.proto";
+
+message Offer {
+  string id = 1 [(validate.rules).string.uuid = true];
+  string customer_id = 2 [(validate.rules).string.uuid = true];
+  Location source = 3;
+  repeated Location destinations = 4;
+  artin.couriermanagement.common.VehicleType vehicle_type = 5;
+  int32 required_workers = 6;
+  double price = 7;
+  string currency = 8;
+}
+
+message Location {
+  string phone_number = 1;
+  string address_details = 2;
+  string full_name = 3;
+  double lat = 4;
+  double lon = 5;
+  int32 order = 6;
+  string courier_instructions = 7;
+}
+
+message NewOfferEvent {
+  Offer offer = 1;
+  string courier_id = 2 [(validate.rules).string.uuid = true];
+  google.protobuf.Duration courier_response_timeout = 3;
+  string requester_name = 4;
+  string requester_phone = 5;
+  string desc = 6;
+  int32 distance_meters = 7;
+  google.protobuf.Duration duration = 8;
+}
+
+message NewOfferSentToCouriersEvent {
+  Offer offer = 1;
+  repeated string courier_ids = 2;
+}
+
+message OfferCancelledEvent {
+  string offer_id = 1 [(validate.rules).string.uuid = true];
+  string customer_id = 2 [(validate.rules).string.uuid = true];
+  string updated_by = 3 [(validate.rules).string.uuid = true];
+  enum Reason {
+    BY_CLIENT = 0;
+    TIMEOUT = 1;
+    ACCEPTED_BY_ANOTHER_COURIER = 2;
+  }
+  Reason cancel_reason = 4;
+  enum CancelledBy {
+    COURIER = 0;
+    CUSTOMER = 1;
+    SYSTEM = 2;
+  }
+  CancelledBy cancelled_by = 5;
+}
+
+message OfferAcceptedEvent {
+  string offer_id = 1 [(validate.rules).string.uuid = true];
+  string customer_id = 2 [(validate.rules).string.uuid = true];
+  string courier_id = 3 [(validate.rules).string.uuid = true];
+  string desc = 4;
+}
+
+message OfferRejectedEvent {
+  string offer_id = 1 [(validate.rules).string.uuid = true];
+  string courier_id = 2 [(validate.rules).string.uuid = true];
+  string desc = 3;
+}
+
+message MaxOfferRetriesEvent {
+  string offer_id = 1 [(validate.rules).string.uuid = true];
+  string customer_id = 2 [(validate.rules).string.uuid = true];
+  string desc = 3;
+}
+
+message RetryOfferRequestEvent {
+  Offer offer = 1;
+  string desc = 2;
+}
+
+message OfferCreationFailedEvent {
+  Offer offer = 1;
+  string msg = 2;
+}
+
+message AcceptOfferFailedEvent {
+  string offer_id = 1;
+  string customer_id = 2;
+  string courier_id = 3;
+  string msg = 4;
+}
+
+message RejectOfferFailedEvent {
+  string offer_id = 1;
+  string customer_id = 2;
+  string courier_id = 3;
+  string msg = 4;
+}
+
+message CourierStatusLog {
+  string courier_id = 1;
+  artin.couriermanagement.common.CourierStatus status = 2;
+  google.protobuf.Timestamp time = 3;
+}

@@ -1,0 +1,10 @@
+DELETE FROM `courier_id_card`;
+DELETE FROM `courier_driving_license`;
+DELETE FROM `courier_driver_background`;
+DELETE FROM `courier_residence_card`;
+DELETE FROM `courier_bank_account`;
+ALTER TABLE `courier_id_card` DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`);
+ALTER TABLE `courier_driving_license` DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`);
+ALTER TABLE `courier_driver_background` DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`);
+ALTER TABLE `courier_residence_card` DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`);
+ALTER TABLE `courier_bank_account` DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`);

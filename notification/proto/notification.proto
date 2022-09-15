@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option go_package = "userservice/api/controller/proto";
+
+import "validate/validate.proto";
+
+package notification;
+
+service NotificationService{
+
+  rpc Register(RegisterRequest) returns (RegisterResponse) {}
+
+  rpc Unregister(UnregisterRequest) returns (UnregisterResponse) {}
+
+}
+
+message RegisterRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string device_id = 2 [(validate.rules).string.min_len = 1];
+  string manufacturer = 3 [(validate.rules).string.min_len = 1];
+  string device_model = 4 [(validate.rules).string.min_len = 1];
+  DeviceOS device_os = 5 [(validate.rules).enum.defined_only = true];
+  string device_version = 6 [(validate.rules).string.min_len = 1];
+  string device_token = 7 [(validate.rules).string.min_len = 1];
+}
+
+message RegisterResponse{
+}
+
+message UnregisterRequest{
+  string access_token = 1 [(validate.rules).string.min_len = 1];
+  string device_id = 2 [(validate.rules).string.min_len = 1];
+}
+
+message UnregisterResponse{
+
+}
+
+enum DeviceOS{
+  UNKNOWN_DEVICE_OS = 0;
+  DEVICE_OS_ANDROID = 1;
+  DEVICE_OS_IOS = 2;
+  DEVICE_OS_WINDOWS = 3;
+  DEVICE_OS_WEB = 4;
+}

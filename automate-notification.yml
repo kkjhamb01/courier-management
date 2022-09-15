@@ -1,0 +1,311 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: courier-management-notification
+  managedFields:
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:progressDeadlineSeconds': {}
+          'f:replicas': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector': {}
+          'f:strategy':
+            'f:rollingUpdate':
+              .: {}
+              'f:maxSurge': {}
+              'f:maxUnavailable': {}
+            'f:type': {}
+          'f:template':
+            'f:metadata':
+              'f:labels':
+                .: {}
+                'f:app': {}
+            'f:spec':
+              'f:containers':
+                'k:{"name":"courier-management-sha256-1"}':
+                  .: {}
+                  'f:env':
+                    .: {}
+                    'k:{"name":"CONFIG_FILE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                    'k:{"name":"COURIER_MANAGEMENT_WORKING_DIR"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                    'k:{"name":"SERVICE_NAME"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                  'f:image': {}
+                  'f:imagePullPolicy': {}
+                  'f:name': {}
+                  'f:resources': {}
+                  'f:terminationMessagePath': {}
+                  'f:terminationMessagePolicy': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-09-15T05:57:47Z'
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:deployment.kubernetes.io/revision': {}
+        'f:status':
+          'f:availableReplicas': {}
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:observedGeneration': {}
+          'f:readyReplicas': {}
+          'f:replicas': {}
+          'f:updatedReplicas': {}
+      manager: kube-controller-manager
+      operation: Update
+      time: '2021-09-15T05:57:49Z'
+  name: courier-management-notification
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: courier-management-notification
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: courier-management-notification
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_FILE
+              valueFrom:
+                configMapKeyRef:
+                  key: CONFIG_FILE
+                  name: courier-management-notification-config-6vjh
+            - name: COURIER_MANAGEMENT_WORKING_DIR
+              valueFrom:
+                configMapKeyRef:
+                  key: COURIER_MANAGEMENT_WORKING_DIR
+                  name: courier-management-notification-config-6vjh
+            - name: SERVICE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: SERVICE_NAME
+                  name: courier-management-notification-config-6vjh
+          image: gcr.io/courier-management-325711/courier-management
+          imagePullPolicy: IfNotPresent
+          name: courier-management-sha256-1
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: courier-management-notification
+  managedFields:
+    - apiVersion: autoscaling/v2beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:maxReplicas': {}
+          'f:metrics': {}
+          'f:minReplicas': {}
+          'f:scaleTargetRef':
+            'f:apiVersion': {}
+            'f:kind': {}
+            'f:name': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-09-15T05:57:47Z'
+    - apiVersion: autoscaling/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:autoscaling.alpha.kubernetes.io/conditions': {}
+        'f:status':
+          'f:currentReplicas': {}
+      manager: vpa-recommender
+      operation: Update
+      time: '2021-09-15T05:58:03Z'
+  name: courier-management-notification-hpa-vptb
+  namespace: default
+spec:
+  maxReplicas: 5
+  metrics:
+    - resource:
+        name: cpu
+        targetAverageUtilization: 80
+      type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: courier-management-notification
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+  finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+  generateName: courier-management-notification-
+  labels:
+    app: courier-management-notification
+  managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:generateName': {}
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:externalTrafficPolicy': {}
+          'f:ports':
+            .: {}
+            'k:{"port":8089,"protocol":"TCP"}':
+              .: {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+          'f:selector':
+            .: {}
+            'f:app': {}
+          'f:sessionAffinity': {}
+          'f:type': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-09-15T06:03:36Z'
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:finalizers':
+            .: {}
+            'v:"service.kubernetes.io/load-balancer-cleanup"': {}
+        'f:status':
+          'f:loadBalancer':
+            'f:ingress': {}
+      manager: kube-controller-manager
+      operation: Update
+      time: '2021-09-15T06:04:16Z'
+  name: courier-management-notification-4mbb4
+  namespace: default
+spec:
+  clusterIP: 10.24.1.105
+  clusterIPs:
+    - 10.24.1.105
+  externalTrafficPolicy: Cluster
+  ports:
+    - nodePort: 30821
+      port: 8089
+      protocol: TCP
+      targetPort: 8089
+  selector:
+    app: courier-management-notification
+  sessionAffinity: None
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+  labels:
+    app: courier-management-notification
+  managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:ports':
+            .: {}
+            'k:{"port":8089,"protocol":"TCP"}':
+              .: {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+          'f:selector':
+            .: {}
+            'f:app': {}
+          'f:sessionAffinity': {}
+          'f:type': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-09-15T05:59:06Z'
+  name: notification-service
+  namespace: default
+spec:
+  clusterIP: 10.24.4.47
+  clusterIPs:
+    - 10.24.4.47
+  ports:
+    - port: 8089
+      protocol: TCP
+      targetPort: 8089
+  selector:
+    app: courier-management-notification
+  sessionAffinity: None
+  type: ClusterIP
+
