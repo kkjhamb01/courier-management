@@ -2,22 +2,23 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/promotion/proto"
-	"google.golang.org/grpc"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/promotion/proto"
+	"google.golang.org/grpc"
 )
 
-type PromotionAPI struct{
-	config    config.PromotionData
+type PromotionAPI struct {
+	config config.PromotionData
 }
 
 func (api PromotionAPI) AssignUserReferral(userId string, referral string, referredId string) error {
 	logger.Debugf("AssignUserReferral userId %v referral %v", userId, referral)
 	query := &proto.AssignUserReferralRequest{
-		UserId: userId,
-		Referral: referral,
+		UserId:     userId,
+		Referral:   referral,
 		ReferredId: referredId,
 	}
 	conn := api.getConn()
@@ -32,7 +33,7 @@ func (api PromotionAPI) AssignUserReferral(userId string, referral string, refer
 	return err
 }
 
-func (api PromotionAPI) getConn() *grpc.ClientConn{
+func (api PromotionAPI) getConn() *grpc.ClientConn {
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
 	}
@@ -44,7 +45,7 @@ func (api PromotionAPI) getConn() *grpc.ClientConn{
 	return conn
 }
 
-func NewPromotionAPI(config config.PromotionData) PromotionAPI{
+func NewPromotionAPI(config config.PromotionData) PromotionAPI {
 	return PromotionAPI{
 		config: config,
 	}

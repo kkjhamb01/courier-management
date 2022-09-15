@@ -1,10 +1,11 @@
 package model
 
 import (
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
+
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Request struct {
@@ -66,7 +67,7 @@ func (r Request) ToProto() deliveryPb.Request {
 		LastProcessedDestination: int32(r.LastProcessedDestination),
 		CreatedAt:                timestamppb.New(r.CreatedAt),
 		UpdatedAt:                timestamppb.New(r.UpdatedAt),
-		CalculatedPrice: 		  taxation(r),
+		CalculatedPrice:          taxation(r),
 	}
 
 	if r.ScheduleOn != nil {

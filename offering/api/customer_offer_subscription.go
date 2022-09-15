@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/golang/protobuf/ptypes/empty"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/grpc/offering/go"
-	"gitlab.artin.ai/backend/courier-management/offering/business"
-	"gitlab.artin.ai/backend/courier-management/offering/pubsub"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
 	"sync"
+
+	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/offering/business"
+	"github.com/kkjhamb01/courier-management/offering/pubsub"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 )
 
 func (s serverImpl) CustomerSubscriptionOnOffer(_ *empty.Empty, stream offeringPb.Offering_CustomerSubscriptionOnOfferServer) error {

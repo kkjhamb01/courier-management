@@ -2,8 +2,9 @@ package announcement
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/announcement/api"
-	"gitlab.artin.ai/backend/courier-management/common/service"
+
+	"github.com/kkjhamb01/courier-management/announcement/api"
+	"github.com/kkjhamb01/courier-management/common/service"
 )
 
 func init() {

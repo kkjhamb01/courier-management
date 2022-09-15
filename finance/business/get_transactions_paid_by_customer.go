@@ -2,12 +2,13 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/finance/db"
-	"gitlab.artin.ai/backend/courier-management/finance/model"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/finance/db"
+	"github.com/kkjhamb01/courier-management/finance/model"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func GetTransactionsPaidByCustomer(ctx context.Context, customerId string, from time.Time, to time.Time) ([]*financePb.GetTransactionsPaidByCustomerResponse_Item, error) {

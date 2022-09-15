@@ -2,15 +2,16 @@ package delivery
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/http"
-	"gitlab.artin.ai/backend/courier-management/common/service"
-	"gitlab.artin.ai/backend/courier-management/delivery/api"
-	"gitlab.artin.ai/backend/courier-management/delivery/db"
-	"gitlab.artin.ai/backend/courier-management/delivery/healthcheck"
-	"gitlab.artin.ai/backend/courier-management/delivery/maps"
-	"gitlab.artin.ai/backend/courier-management/delivery/messaging"
-	"gitlab.artin.ai/backend/courier-management/delivery/scheduler"
-	"gitlab.artin.ai/backend/courier-management/delivery/services"
+
+	"github.com/kkjhamb01/courier-management/common/http"
+	"github.com/kkjhamb01/courier-management/common/service"
+	"github.com/kkjhamb01/courier-management/delivery/api"
+	"github.com/kkjhamb01/courier-management/delivery/db"
+	"github.com/kkjhamb01/courier-management/delivery/healthcheck"
+	"github.com/kkjhamb01/courier-management/delivery/maps"
+	"github.com/kkjhamb01/courier-management/delivery/messaging"
+	"github.com/kkjhamb01/courier-management/delivery/scheduler"
+	"github.com/kkjhamb01/courier-management/delivery/services"
 )
 
 func init() {

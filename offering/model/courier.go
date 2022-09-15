@@ -2,11 +2,12 @@ package model
 
 import (
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	offeringPb "gitlab.artin.ai/backend/courier-management/grpc/offering/go"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	offeringPb "github.com/kkjhamb01/courier-management/grpc/offering/go"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type CourierStatusLog struct {

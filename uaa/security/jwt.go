@@ -4,71 +4,72 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	guid "github.com/google/uuid"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	model "gitlab.artin.ai/backend/courier-management/uaa/proto"
 	"io/ioutil"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	guid "github.com/google/uuid"
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	model "github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
-const(
-	CLAIM_AUDIENCE = "aud"
-	CLAIM_ID = "id"
-	CLAIM_ISSUED_AT = "iat"
-	CLAIM_ISSUER = "iss"
-	CLAIM_TYPE = "typ"
-	CLAIM_SUB = "sub"
-	CLAIM_EMAIL = "email"
-	CLAIM_ROLES = "roles"
+const (
+	CLAIM_AUDIENCE     = "aud"
+	CLAIM_ID           = "id"
+	CLAIM_ISSUED_AT    = "iat"
+	CLAIM_ISSUER       = "iss"
+	CLAIM_TYPE         = "typ"
+	CLAIM_SUB          = "sub"
+	CLAIM_EMAIL        = "email"
+	CLAIM_ROLES        = "roles"
 	CLAIM_PHONE_NUMBER = "phone_number"
-	CLAIM_STATUS = "status"
-	CLAIM_EXP = "exp"
-	CLAIM_KID = "kid"
-	CLAIM_DEVICE = "device"
-	CLAIM_DEVICE_ID = "device_id"
-	LOCAL_USER = "user"
-	CLAIM_AUTHORIZED = "authorized"
+	CLAIM_STATUS       = "status"
+	CLAIM_EXP          = "exp"
+	CLAIM_KID          = "kid"
+	CLAIM_DEVICE       = "device"
+	CLAIM_DEVICE_ID    = "device_id"
+	LOCAL_USER         = "user"
+	CLAIM_AUTHORIZED   = "authorized"
 )
 
-type JWTUtils struct{
-	config    config.JwtData
-	verifyKeyStr	string
-	signKey   *rsa.PrivateKey
-	verifyKey *rsa.PublicKey
-	parser    jwt.Parser
-	Kid 		string
-	Alg 		string
-	Kty			string
+type JWTUtils struct {
+	config       config.JwtData
+	verifyKeyStr string
+	signKey      *rsa.PrivateKey
+	verifyKey    *rsa.PublicKey
+	parser       jwt.Parser
+	Kid          string
+	Alg          string
+	Kty          string
 }
 
-func (jwtUtils JWTUtils) init(config config.JwtData) (JWTUtils,error){
+func (jwtUtils JWTUtils) init(config config.JwtData) (JWTUtils, error) {
 	workingDir := os.Getenv("COURIER_MANAGEMENT_WORKING_DIR")
 	if workingDir == "" {
 		workingDir = "."
 	}
 	signBytes, err := ioutil.ReadFile(workingDir + "/" + config.SignKey)
-	if err != nil{
+	if err != nil {
 		logger.Fatal("error in loading sign key file")
 	}
 
 	jwtUtils.signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	if err != nil{
+	if err != nil {
 		logger.Fatal("error in loading sign key")
 	}
 
 	verifyBytes, err := ioutil.ReadFile(workingDir + "/" + config.VerifyKey)
-	if err != nil{
+	if err != nil {
 		logger.Fatal("error in loading verify key file")
 	}
 
 	jwtUtils.verifyKeyStr = string(verifyBytes)
 
 	jwtUtils.verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-	if err != nil{
+	if err != nil {
 		logger.Fatal("error in loading verify key")
 	}
 
@@ -83,7 +84,7 @@ func (jwtUtils JWTUtils) init(config config.JwtData) (JWTUtils,error){
 	return jwtUtils, nil
 }
 
-func (jwtUtils JWTUtils) GenerateToken(user User) (*model.Token, error){
+func (jwtUtils JWTUtils) GenerateToken(user User) (*model.Token, error) {
 	token := jwt.New(jwt.GetSigningMethod(jwtUtils.config.SigningMethod))
 	claims := token.Claims.(jwt.MapClaims)
 	claims[CLAIM_ID] = guid.New().String()
@@ -92,13 +93,13 @@ func (jwtUtils JWTUtils) GenerateToken(user User) (*model.Token, error){
 	claims[CLAIM_ISSUER] = jwtUtils.config.Issuer
 	claims[CLAIM_TYPE] = "bearer"
 	claims[CLAIM_KID] = jwtUtils.Kid
-	if len(user.Claims) > 0{
+	if len(user.Claims) > 0 {
 		claims[CLAIM_AUTHORIZED] = user.Claims
 	}
 	if user.Id != "" {
 		claims[CLAIM_SUB] = user.Id
 	}
-	if user.DeviceID != ""{
+	if user.DeviceID != "" {
 		claims[CLAIM_DEVICE] = user.DeviceID
 	}
 	if user.PhoneNumber != "" {
@@ -108,15 +109,15 @@ func (jwtUtils JWTUtils) GenerateToken(user User) (*model.Token, error){
 		claims[CLAIM_EMAIL] = user.Email
 	}
 	var roles []string
-	for _,role := range user.Roles {
+	for _, role := range user.Roles {
 		roles = append(roles, role.String())
 	}
 	if len(roles) > 0 {
 		claims[CLAIM_ROLES] = roles
 	}
 	claims[CLAIM_EXP] = time.Now().Add(time.Minute * jwtUtils.config.ExpirationMinutes).Unix()
-	accessToken,err := token.SignedString(jwtUtils.signKey)
-	if err != nil{
+	accessToken, err := token.SignedString(jwtUtils.signKey)
+	if err != nil {
 		return nil, err
 	}
 
@@ -136,22 +137,23 @@ func (jwtUtils JWTUtils) GenerateToken(user User) (*model.Token, error){
 	}
 
 	return &model.Token{
-		AccessToken: accessToken,
+		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
 }
 
 type CustomClaims struct {
-	Email string `json:"email"`
-	Roles []string `json:"roles"`
-	Name string `json:"name"`
-	GivenName string `json:"given_name"`
-	FamilyName string `json:"family_name"`
-	Status string `json:"status"`
-	PhoneNumber string `json:"phone_number"`
-	Authorized []Claim `json:"authorized"`
+	Email       string   `json:"email"`
+	Roles       []string `json:"roles"`
+	Name        string   `json:"name"`
+	GivenName   string   `json:"given_name"`
+	FamilyName  string   `json:"family_name"`
+	Status      string   `json:"status"`
+	PhoneNumber string   `json:"phone_number"`
+	Authorized  []Claim  `json:"authorized"`
 	jwt.StandardClaims
 }
+
 func (c CustomClaims) Valid() error {
 	return nil
 }
@@ -168,22 +170,22 @@ func (jwtUtils JWTUtils) Validate(auth string) (*User, error) {
 		return jwtUtils.verifyKey, nil
 	})
 	var u User
-	if err != nil{
+	if err != nil {
 		logger.Error("invalid token ", err)
-	}else{
+	} else {
 		claims := token.Claims.(*CustomClaims)
 
 		var userRoles []Role
-		for _,role := range claims.Roles {
+		for _, role := range claims.Roles {
 			userRoles = append(userRoles, Role(Role_value[role]))
 		}
 
 		u = User{
-			Id: claims.Subject,
+			Id:          claims.Subject,
 			PhoneNumber: claims.PhoneNumber,
-			Email: claims.Email,
-			Roles: userRoles,
-			Claims: claims.Authorized,
+			Email:       claims.Email,
+			Roles:       userRoles,
+			Claims:      claims.Authorized,
 		}
 	}
 	return &u, err
@@ -200,8 +202,8 @@ func (jwtUtils JWTUtils) ValidateUnsigned(auth string, validateIssuer bool) (*Us
 	token, err := jwtUtils.parseToken(jwtUtils.parser, auth, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtUtils.verifyKey, nil
 	})
-	if err2, ok := err.(*jwt.ValidationError); ok{
-		if jwt.ValidationErrorExpired == err2.Errors{
+	if err2, ok := err.(*jwt.ValidationError); ok {
+		if jwt.ValidationErrorExpired == err2.Errors {
 			return nil, model.TokenIsExpired.ErrorNoMsg()
 		}
 	}
@@ -214,25 +216,25 @@ func (jwtUtils JWTUtils) ValidateUnsigned(auth string, validateIssuer bool) (*Us
 	}
 
 	var u User
-	if err != nil{
+	if err != nil {
 		logger.Error("invalid token ", err)
-	}else{
+	} else {
 		claims := token.Claims.(*CustomClaims)
 
 		var userRoles []Role
-		for _,role := range claims.Roles {
+		for _, role := range claims.Roles {
 			userRoles = append(userRoles, Role(Role_value[role]))
 		}
 
 		u = User{
-			Id: claims.Subject,
+			Id:          claims.Subject,
 			PhoneNumber: claims.PhoneNumber,
-			Email: claims.Email,
-			Name: claims.Name,
-			Roles: userRoles,
-			Claims: claims.Authorized,
-			FirstName: claims.GivenName,
-			LastName: claims.FamilyName,
+			Email:       claims.Email,
+			Name:        claims.Name,
+			Roles:       userRoles,
+			Claims:      claims.Authorized,
+			FirstName:   claims.GivenName,
+			LastName:    claims.FamilyName,
 		}
 	}
 	return &u, err
@@ -242,28 +244,28 @@ func (jwtUtils JWTUtils) ValidateRefreshToken(refreshToken string) (*User, error
 	token, err := jwtUtils.parseToken(jwtUtils.parser, refreshToken, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtUtils.verifyKey, nil
 	})
-	if err2, ok := err.(*jwt.ValidationError); ok{
-		if jwt.ValidationErrorExpired == err2.Errors{
+	if err2, ok := err.(*jwt.ValidationError); ok {
+		if jwt.ValidationErrorExpired == err2.Errors {
 			return nil, model.TokenIsExpired.ErrorNoMsg()
 		}
 	}
 	var u User
-	if err != nil{
+	if err != nil {
 		logger.Error("invalid token ", err)
-	}else{
+	} else {
 		claims := token.Claims.(*CustomClaims)
 
 		var userRoles []Role
-		for _,role := range claims.Roles {
+		for _, role := range claims.Roles {
 			userRoles = append(userRoles, Role(Role_value[role]))
 		}
 
 		u = User{
-			Id: claims.Subject,
+			Id:          claims.Subject,
 			PhoneNumber: claims.PhoneNumber,
-			Email: claims.Email,
-			Name: claims.Name,
-			Roles: userRoles,
+			Email:       claims.Email,
+			Name:        claims.Name,
+			Roles:       userRoles,
 		}
 	}
 	return &u, err
@@ -329,19 +331,19 @@ func (jwtUtils JWTUtils) parseToken(p jwt.Parser, tokenString string, claims jwt
 	return token, vErr
 }
 
-func (jwtUtils JWTUtils) Sign(plain string, secret string) (string,error) {
-	return jwt.GetSigningMethod(jwtUtils.config.SigningMethod).Sign(plain + secret, jwtUtils.signKey)
+func (jwtUtils JWTUtils) Sign(plain string, secret string) (string, error) {
+	return jwt.GetSigningMethod(jwtUtils.config.SigningMethod).Sign(plain+secret, jwtUtils.signKey)
 }
 
 func (jwtUtils JWTUtils) Verify(plain string, secret string, sign string) error {
-	return jwt.GetSigningMethod(jwtUtils.config.SigningMethod).Verify(plain + secret, sign, jwtUtils.verifyKey)
+	return jwt.GetSigningMethod(jwtUtils.config.SigningMethod).Verify(plain+secret, sign, jwtUtils.verifyKey)
 }
 
 func (jwtUtils JWTUtils) GetX5c() string {
 	return jwtUtils.verifyKeyStr
 }
 
-func NewJWTUtils(config config.JwtData) (JWTUtils, error){
+func NewJWTUtils(config config.JwtData) (JWTUtils, error) {
 	var jwtUtils JWTUtils
 	return jwtUtils.init(config)
 }

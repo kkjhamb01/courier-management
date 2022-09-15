@@ -2,12 +2,13 @@ package business
 
 import (
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
 	"testing"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
 )
 
-func init(){
+func init() {
 	config.InitTestConfig()
 	logger.InitLogger()
 }
@@ -27,7 +28,7 @@ func TestReferral(t *testing.T) {
 		"e963b23f-ab55-13f0-c23f-ea309bd25aac",
 		"e063b23f-ab55-13f0-c23f-ea309bd25aac",
 	}
-	for _,id := range idList{
+	for _, id := range idList {
 		referral := service.CalculateReferral(id)
 		fmt.Printf("id = %v, referral = %v\n", id, referral)
 	}

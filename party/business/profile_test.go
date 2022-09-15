@@ -3,17 +3,18 @@ package business
 import (
 	"context"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/party/db"
-	"gitlab.artin.ai/backend/courier-management/party/domain"
-	_ "gitlab.artin.ai/backend/courier-management/party/proto"
-	pb "gitlab.artin.ai/backend/courier-management/party/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
 	"testing"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/party/db"
+	"github.com/kkjhamb01/courier-management/party/domain"
+	_ "github.com/kkjhamb01/courier-management/party/proto"
+	pb "github.com/kkjhamb01/courier-management/party/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 )
 
-func init(){
+func init() {
 	config.InitTestConfig()
 	logger.InitLogger()
 }
@@ -21,8 +22,8 @@ func init(){
 func TestProfile1(t *testing.T) {
 	t.Skip()
 	config := config.Party().Database
-	db,err := db.NewOrm(config)
-	if err != nil{
+	db, err := db.NewOrm(config)
+	if err != nil {
 		logger.Fatalf("cannot connect to database", err)
 	}
 	id := "bc0b62c7-55cc-2657-54cb-71be785387f8"
@@ -78,10 +79,10 @@ func TestProfile2(t *testing.T) {
 	t.Skip()
 	service := NewService(config.GetData(), config.Jwt())
 	ctx := context.WithValue(context.Background(), "user", security.User{
-		Id: "e63c0b87-098a-4927-94e6-1bd817c48e5d",
+		Id:          "e63c0b87-098a-4927-94e6-1bd817c48e5d",
 		PhoneNumber: "989126031724",
-		Name: "Behnam Nikbakht",
-		Roles: []security.Role{security.Role_COURIER},
+		Name:        "Behnam Nikbakht",
+		Roles:       []security.Role{security.Role_COURIER},
 	})
 	/*response, err := service.CreateCourierAccount(ctx, &pb.CreateCourierAccountRequest{
 		FirstName: "Behnam",
@@ -102,11 +103,11 @@ func TestProfile2(t *testing.T) {
 	response, err := service.UpdateProfileAdditionalInfo(ctx, &pb.UpdateProfileAdditionalInfoRequest{
 		Info: &pb.UpdateProfileAdditionalInfoRequest_IdCard{
 			IdCard: &pb.IDCard{
-				FirstName: "beh12",
-				LastName: "nik1",
-				Number: "num1",
+				FirstName:      "beh12",
+				LastName:       "nik1",
+				Number:         "num1",
 				ExpirationDate: "exp1",
-				IssuePlace: "isp1",
+				IssuePlace:     "isp1",
 			},
 		},
 	})
@@ -131,9 +132,9 @@ func TestProfile2(t *testing.T) {
 	service.UpdateProfileAdditionalInfo(ctx, &pb.UpdateProfileAdditionalInfoRequest{
 		Info: &pb.UpdateProfileAdditionalInfoRequest_ResidenceCard{
 			ResidenceCard: &pb.ResidenceCard{
-				Number: "n1",
+				Number:         "n1",
 				ExpirationDate: "ed1",
-				IssueDate: "id1",
+				IssueDate:      "id1",
 			},
 		},
 	})
@@ -141,10 +142,10 @@ func TestProfile2(t *testing.T) {
 	service.UpdateProfileAdditionalInfo(ctx, &pb.UpdateProfileAdditionalInfoRequest{
 		Info: &pb.UpdateProfileAdditionalInfoRequest_BankAccount{
 			BankAccount: &pb.BankAccount{
-				BankName: "bcn1",
-				AccountNumber: "an1",
+				BankName:          "bcn1",
+				AccountNumber:     "an1",
 				AccountHolderName: "ahn1",
-				SortCode: "sc1",
+				SortCode:          "sc1",
 			},
 		},
 	})
@@ -152,10 +153,10 @@ func TestProfile2(t *testing.T) {
 	service.UpdateProfileAdditionalInfo(ctx, &pb.UpdateProfileAdditionalInfoRequest{
 		Info: &pb.UpdateProfileAdditionalInfoRequest_Address{
 			Address: &pb.Address{
-				Street: "st1",
+				Street:   "st1",
 				Building: "b1",
-				City: "c1",
-				County: "co1",
+				City:     "c1",
+				County:   "co1",
 				PostCode: "pc1",
 			},
 		},
@@ -191,32 +192,31 @@ func TestProfile2(t *testing.T) {
 	})
 	fmt.Printf("address = %v", response2)
 
-	response3,_ := service.FindAccount(ctx, &pb.FindAccountRequest{
+	response3, _ := service.FindAccount(ctx, &pb.FindAccountRequest{
 		Filter: &pb.FindAccountRequest_UserId{
 			UserId: "e63c0b87-098a-4927-94e6-1bd817c48e5d",
 		},
 	})
 	fmt.Printf("FindCourierAccount by id = %v", response3)
 
-	response3,_ = service.FindAccount(ctx, &pb.FindAccountRequest{
+	response3, _ = service.FindAccount(ctx, &pb.FindAccountRequest{
 		Filter: &pb.FindAccountRequest_PhoneNumber{
 			PhoneNumber: "989126031724",
 		},
 	})
 	fmt.Printf("FindCourierAccount by phonenumber = %v", response3)
 
-	response4,err := service.GetCourierAccount(ctx, &pb.GetCourierAccountRequest{
-	})
+	response4, err := service.GetCourierAccount(ctx, &pb.GetCourierAccountRequest{})
 	fmt.Printf("GetCourierAccount = %v, err = %v", response4, err)
 
-	response5,_ := service.FindCourierAccounts(ctx, &pb.FindCourierAccountsRequest{
+	response5, _ := service.FindCourierAccounts(ctx, &pb.FindCourierAccountsRequest{
 		Filter: &pb.FindCourierAccountsRequest_UserId{
 			UserId: "e63c0b87-098a-4927-94e6-1bd817c48e5d",
 		},
 	})
 	fmt.Printf("FindCourierAccounts by userid = %v", response5)
 
-	response5,_ = service.FindCourierAccounts(ctx, &pb.FindCourierAccountsRequest{
+	response5, _ = service.FindCourierAccounts(ctx, &pb.FindCourierAccountsRequest{
 		Filter: &pb.FindCourierAccountsRequest_Name{
 			Name: "behnam",
 		},
@@ -236,10 +236,9 @@ func TestProfile2(t *testing.T) {
 		ObjectId: "58c107f5-fa42-557d-feac-5d621af62850",
 	})*/
 
-	response9,err := service.DirectDownload(ctx, &pb.DirectDownloadRequest{
+	response9, err := service.DirectDownload(ctx, &pb.DirectDownloadRequest{
 		ObjectId: "9fc8360d-468b-2065-0cf4-a2dcfcf2d7ea",
 	})
 	fmt.Printf("DirectDownload = %v, err = %v", response9, err)
-
 
 }

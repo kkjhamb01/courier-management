@@ -2,10 +2,11 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/delivery/db"
-	uaa "gitlab.artin.ai/backend/courier-management/uaa/proto"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/delivery/db"
+	uaa "github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
 func GetCourierRequestsMileage(ctx context.Context, userId string, from time.Time, to time.Time) (int, error) {

@@ -2,9 +2,10 @@ package scheduler
 
 import (
 	"fmt"
-	"github.com/robfig/cron/v3"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/robfig/cron/v3"
 )
 
 func startSchedule(duration time.Duration, job func()) (*cron.Cron, error) {

@@ -3,11 +3,12 @@ package stripe
 import (
 	"context"
 	"encoding/json"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/finance/business"
+	"github.com/kkjhamb01/courier-management/finance/storage"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
 	"github.com/stripe/stripe-go/v72"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/finance/business"
-	"gitlab.artin.ai/backend/courier-management/finance/storage"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
 )
 
 func onPaymentMethodDetached(ctx context.Context, event stripe.Event) error {

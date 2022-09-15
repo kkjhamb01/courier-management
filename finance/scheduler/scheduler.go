@@ -1,8 +1,8 @@
 package scheduler
 
 import (
+	"github.com/kkjhamb01/courier-management/common/logger"
 	"github.com/robfig/cron/v3"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
 )
 
 func startSchedule(duration string, job func()) (*cron.Cron, error) {

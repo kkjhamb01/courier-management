@@ -1,11 +1,12 @@
 package maps
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"googlemaps.github.io/maps"
 	"sync"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"googlemaps.github.io/maps"
 )
 
 var googleClient *maps.Client

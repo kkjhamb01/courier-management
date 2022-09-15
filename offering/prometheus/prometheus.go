@@ -2,11 +2,12 @@ package prometheus
 
 import (
 	"context"
-	prometheusClient "github.com/prometheus/client_golang/prometheus"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/prometheus"
-	"gitlab.artin.ai/backend/courier-management/offering/storage"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/prometheus"
+	"github.com/kkjhamb01/courier-management/offering/storage"
+	prometheusClient "github.com/prometheus/client_golang/prometheus"
 )
 
 func Setup(ctx context.Context) {

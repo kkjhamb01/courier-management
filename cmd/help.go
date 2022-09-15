@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"gitlab.artin.ai/backend/courier-management/common/service"
 	"os"
 	"strings"
+
+	"github.com/kkjhamb01/courier-management/common/service"
+	"github.com/spf13/cobra"
 )
 
 var helpCommand = &cobra.Command{

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package artin.couriermanagement.pricing;
 
-option go_package = "gitlab.artin.ai/backend/courier-management/grpc/pricing/go;pricingPb";
+option go_package = "github.com/kkjhamb01/courier-management/grpc/pricing/go;pricingPb";
 
  
 

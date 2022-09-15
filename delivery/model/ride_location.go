@@ -1,7 +1,7 @@
 package model
 
 import (
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

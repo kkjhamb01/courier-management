@@ -4,51 +4,52 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/party/db"
-	"gitlab.artin.ai/backend/courier-management/promotion/domain"
-	pb "gitlab.artin.ai/backend/courier-management/promotion/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
-	"gorm.io/gorm"
 	"math"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/party/db"
+	"github.com/kkjhamb01/courier-management/promotion/domain"
+	pb "github.com/kkjhamb01/courier-management/promotion/proto"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
+	"gorm.io/gorm"
 )
 
 type Service struct {
-	config                config.PromotionData
-	db					  *gorm.DB
-	jwtUtils      		  *security.JWTUtils
-	dateFormat 			  string
+	config     config.PromotionData
+	db         *gorm.DB
+	jwtUtils   *security.JWTUtils
+	dateFormat string
 }
 
-func (s *Service) CreatePromotion(ctx context.Context, in *pb.CreatePromotionRequest) (*pb.CreatePromotionResponse, error){
+func (s *Service) CreatePromotion(ctx context.Context, in *pb.CreatePromotionRequest) (*pb.CreatePromotionResponse, error) {
 	logger.Infof("CreatePromotion name = %v, start_date = %v, exp_date = %v, type = %v, discount_percentage = %v, discount_value = %v",
 		in.GetName(), in.GetStartDate(), in.GetExpDate(),
 		in.GetType(), in.GetDiscountPercentage(), in.GetDiscountValue())
 
 	startDate, err := time.Parse(s.dateFormat, in.GetStartDate())
 
-	if err != nil{
+	if err != nil {
 		logger.Debugf("CreatePromotion invalid start date")
 		return nil, proto.InvalidArgument.ErrorMsg("invalid start date")
 	}
 
 	expDate, err := time.Parse(s.dateFormat, in.GetExpDate())
 
-	if err != nil{
+	if err != nil {
 		logger.Debugf("CreatePromotion invalid exp date")
 		return nil, proto.InvalidArgument.ErrorMsg("invalid exp date")
 	}
 
 	promotion := &domain.Promotion{
-		Name:        in.GetName(),
-		StartDate:   sql.NullTime{Time: startDate, Valid: in.GetStartDate() != ""},
-		ExpDate:    sql.NullTime{Time: expDate, Valid: in.GetExpDate() != ""},
-		DiscountPercentage:       sql.NullFloat64{Float64: in.GetDiscountPercentage(), Valid: in.GetDiscountPercentage() > 0},
-		DiscountValue: sql.NullFloat64{Float64: in.GetDiscountValue(), Valid: in.GetDiscountValue() > 0},
-		Type:      domain.PromotionType(in.GetType()),
+		Name:               in.GetName(),
+		StartDate:          sql.NullTime{Time: startDate, Valid: in.GetStartDate() != ""},
+		ExpDate:            sql.NullTime{Time: expDate, Valid: in.GetExpDate() != ""},
+		DiscountPercentage: sql.NullFloat64{Float64: in.GetDiscountPercentage(), Valid: in.GetDiscountPercentage() > 0},
+		DiscountValue:      sql.NullFloat64{Float64: in.GetDiscountValue(), Valid: in.GetDiscountValue() > 0},
+		Type:               domain.PromotionType(in.GetType()),
 	}
 
 	err = s.db.Transaction(func(tx *gorm.DB) error {
@@ -72,12 +73,12 @@ func (s *Service) CreatePromotion(ctx context.Context, in *pb.CreatePromotionReq
 	}, nil
 }
 
-func (s *Service) AssignPromotionToUser(ctx context.Context, in *pb.AssignPromotionToUserRequest) (*pb.AssignPromotionToUserResponse, error){
+func (s *Service) AssignPromotionToUser(ctx context.Context, in *pb.AssignPromotionToUserRequest) (*pb.AssignPromotionToUserResponse, error) {
 	logger.Infof("AssignPromotionToUser promotion_id = %v, user_id = %v", in.GetPromotionId(), in.GetUserIds())
 
 	promotion := domain.Promotion{}
 
-	if err := s.db.Model(&domain.Promotion{}).Where("id = ?", in.GetPromotionId()).Find(&promotion).Error; err != nil{
+	if err := s.db.Model(&domain.Promotion{}).Where("id = ?", in.GetPromotionId()).Find(&promotion).Error; err != nil {
 		logger.Errorf("AssignPromotionToUser error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
@@ -89,11 +90,11 @@ func (s *Service) AssignPromotionToUser(ctx context.Context, in *pb.AssignPromot
 
 	promotionUsers := make([]*domain.PromotionUser, len(in.GetUserIds()))
 
-	for i, userId := range in.GetUserIds(){
+	for i, userId := range in.GetUserIds() {
 		promotionUsers[i] = &domain.PromotionUser{
-			PromotionId:        in.GetPromotionId(),
-			UserId:   		userId,
-			Status:      		domain.PROMOTION_STATUS_AVAILABLE,
+			PromotionId: in.GetPromotionId(),
+			UserId:      userId,
+			Status:      domain.PROMOTION_STATUS_AVAILABLE,
 		}
 	}
 
@@ -113,12 +114,10 @@ func (s *Service) AssignPromotionToUser(ctx context.Context, in *pb.AssignPromot
 
 	logger.Debugf("AssignPromotionToUser promotion created successfully")
 
-	return &pb.AssignPromotionToUserResponse{
-
-	}, nil
+	return &pb.AssignPromotionToUserResponse{}, nil
 }
 
-func (s *Service) GetPromotions(ctx context.Context, in *pb.GetPromotionsRequest) (*pb.GetPromotionsResponse, error){
+func (s *Service) GetPromotions(ctx context.Context, in *pb.GetPromotionsRequest) (*pb.GetPromotionsResponse, error) {
 
 	logger.Infof("GetPromotions pagination = %v", in.GetPagination())
 
@@ -130,11 +129,11 @@ func (s *Service) GetPromotions(ctx context.Context, in *pb.GetPromotionsRequest
 	if in.GetPagination() != nil {
 		page = in.GetPagination().GetPage()
 		limit = in.GetPagination().GetLimit()
-		if in.GetPagination().GetSort() != ""{
+		if in.GetPagination().GetSort() != "" {
 			order = in.GetPagination().GetSort()
 			if in.GetPagination().GetSortType() == pb.SortType_SORT_TYPE_DESC {
 				order = order + " desc"
-			} else{
+			} else {
 				order = order + " asc"
 			}
 		}
@@ -146,25 +145,25 @@ func (s *Service) GetPromotions(ctx context.Context, in *pb.GetPromotionsRequest
 		limit = 20
 	}
 	offset = (page - 1) * limit
-	if order == ""{
+	if order == "" {
 		order = "creation_time desc"
 	}
 
 	err := s.db.Limit(int(limit)).Offset(int(offset)).Order(order).Model(&domain.Promotion{}).Scan(&promotions).Error
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("GetPromotions error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
 
-	if len(promotions) == 0{
+	if len(promotions) == 0 {
 		logger.Debugf("GetPromotions no promotion found")
 		return nil, proto.NotFound.ErrorMsg("no promotion found")
 	}
 
 	var result = make([]*pb.Promotion, len(promotions))
 
-	for i,promotion := range promotions{
+	for i, promotion := range promotions {
 		result[i] = s.promotionToDto(promotion)
 	}
 
@@ -175,7 +174,7 @@ func (s *Service) GetPromotions(ctx context.Context, in *pb.GetPromotionsRequest
 	}, nil
 }
 
-func (s *Service) promotionToDto(promotion domain.Promotion) *pb.Promotion{
+func (s *Service) promotionToDto(promotion domain.Promotion) *pb.Promotion {
 	var startDate, expDate string
 
 	if promotion.StartDate.Valid {
@@ -186,17 +185,17 @@ func (s *Service) promotionToDto(promotion domain.Promotion) *pb.Promotion{
 	}
 
 	return &pb.Promotion{
-		Id: promotion.Id,
-		Name: promotion.Name,
-		StartDate: startDate,
-		ExpDate: expDate,
-		Type: pb.PromotionType(promotion.Type),
+		Id:                 promotion.Id,
+		Name:               promotion.Name,
+		StartDate:          startDate,
+		ExpDate:            expDate,
+		Type:               pb.PromotionType(promotion.Type),
 		DiscountPercentage: promotion.DiscountPercentage.Float64,
-		DiscountValue: promotion.DiscountValue.Float64,
+		DiscountValue:      promotion.DiscountValue.Float64,
 	}
 }
 
-func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.GetUsersResponse, error){
+func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
 
 	logger.Infof("GetUsers user_id = %v, promotion_id = %v", in.GetUserId(), in.GetPromotionId())
 
@@ -212,19 +211,19 @@ func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.Get
 
 	err := s.db.Preload("Promotion").Where(query).Find(&users).Error
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("GetUsers error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
 
-	if len(users) == 0{
+	if len(users) == 0 {
 		logger.Debugf("GetUsers no promotion-user found")
 		return nil, proto.NotFound.ErrorMsg("no promotion-user found")
 	}
 
 	var result = make([]*pb.PromotionUser, len(users))
 
-	for i,user := range users {
+	for i, user := range users {
 		var promotionHistory = domain.PromotionHistory{}
 		var transaction *pb.Transaction
 
@@ -233,15 +232,15 @@ func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.Get
 		if promotionHistory.PromotionId != 0 {
 			transaction = &pb.Transaction{
 				TransactionId: promotionHistory.TransactionId,
-				Date: promotionHistory.Date.String(),
+				Date:          promotionHistory.Date.String(),
 			}
 		}
 
 		result[i] = &pb.PromotionUser{
-			UserId : user.UserId,
-			Metadata: user.Metadata.String,
-			Status: pb.PromotionUserStatus(user.Status),
-			Promotion: s.promotionToDto(user.Promotion),
+			UserId:      user.UserId,
+			Metadata:    user.Metadata.String,
+			Status:      pb.PromotionUserStatus(user.Status),
+			Promotion:   s.promotionToDto(user.Promotion),
 			Transaction: transaction,
 		}
 	}
@@ -253,18 +252,18 @@ func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.Get
 	}, nil
 }
 
-func (s *Service) AssignUserReferral(ctx context.Context, in *pb.AssignUserReferralRequest) (*pb.AssignUserReferralResponse, error){
+func (s *Service) AssignUserReferral(ctx context.Context, in *pb.AssignUserReferralRequest) (*pb.AssignUserReferralResponse, error) {
 
 	logger.Infof("AssignUserReferral user_id = %v, referral = %v", in.GetUserId(), in.GetReferral())
 
 	startDate := time.Now()
 
 	promotion := &domain.Promotion{
-		Name:        s.config.Referral.PromotionName,
-		StartDate:   sql.NullTime{Time: startDate, Valid: true},
-		DiscountPercentage:       sql.NullFloat64{Float64: s.config.Referral.DiscountPercentage, Valid: s.config.Referral.DiscountPercentage > 0},
-		DiscountValue: sql.NullFloat64{Float64: s.config.Referral.DiscountValue, Valid: s.config.Referral.DiscountValue > 0},
-		Type:      domain.PROMOTION_TYPE_REFERRAL,
+		Name:               s.config.Referral.PromotionName,
+		StartDate:          sql.NullTime{Time: startDate, Valid: true},
+		DiscountPercentage: sql.NullFloat64{Float64: s.config.Referral.DiscountPercentage, Valid: s.config.Referral.DiscountPercentage > 0},
+		DiscountValue:      sql.NullFloat64{Float64: s.config.Referral.DiscountValue, Valid: s.config.Referral.DiscountValue > 0},
+		Type:               domain.PROMOTION_TYPE_REFERRAL,
 	}
 
 	err := s.db.Transaction(func(tx *gorm.DB) error {
@@ -282,10 +281,10 @@ func (s *Service) AssignUserReferral(ctx context.Context, in *pb.AssignUserRefer
 	}
 
 	promotionUser := &domain.PromotionUser{
-		PromotionId:        promotion.Id,
-		UserId:   in.GetUserId(),
-		Metadata:       sql.NullString{String: in.GetReferral(), Valid: in.GetReferral() != ""},
-		Status: domain.PROMOTION_STATUS_AVAILABLE,
+		PromotionId: promotion.Id,
+		UserId:      in.GetUserId(),
+		Metadata:    sql.NullString{String: in.GetReferral(), Valid: in.GetReferral() != ""},
+		Status:      domain.PROMOTION_STATUS_AVAILABLE,
 	}
 
 	err = s.db.Transaction(func(tx *gorm.DB) error {
@@ -309,14 +308,14 @@ func (s *Service) AssignUserReferral(ctx context.Context, in *pb.AssignUserRefer
 	}, nil
 }
 
-func (s *Service) ApplyPromotion(ctx context.Context, in *pb.ApplyPromotionRequest) (*pb.ApplyPromotionResponse, error){
+func (s *Service) ApplyPromotion(ctx context.Context, in *pb.ApplyPromotionRequest) (*pb.ApplyPromotionResponse, error) {
 
 	logger.Infof("ApplyPromotion promotion_id = %v, user_id = %v, transaction_id = %v, total_payment = %v",
 		in.GetPromotionId(), in.GetUserId(), in.GetTransactionId(), in.GetTotalPayment())
 
 	promotion := domain.Promotion{}
 
-	if err := s.db.Model(&domain.Promotion{}).Where("id = ?", in.GetPromotionId()).Find(&promotion).Error; err != nil{
+	if err := s.db.Model(&domain.Promotion{}).Where("id = ?", in.GetPromotionId()).Find(&promotion).Error; err != nil {
 		logger.Errorf("ApplyPromotion error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
@@ -345,7 +344,7 @@ func (s *Service) ApplyPromotion(ctx context.Context, in *pb.ApplyPromotionReque
 	promotionUser := domain.PromotionUser{}
 
 	if err := s.db.Model(&domain.PromotionUser{}).Where("promotion_id = ? AND user_id = ?",
-		in.GetPromotionId(), in.GetUserId()).Find(&promotionUser).Error; err != nil{
+		in.GetPromotionId(), in.GetUserId()).Find(&promotionUser).Error; err != nil {
 		logger.Errorf("ApplyPromotion error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
@@ -355,7 +354,7 @@ func (s *Service) ApplyPromotion(ctx context.Context, in *pb.ApplyPromotionReque
 		return nil, proto.NotFound.ErrorMsg("this user has not such promotion")
 	}
 
-	if promotionUser.Status != domain.PROMOTION_STATUS_AVAILABLE{
+	if promotionUser.Status != domain.PROMOTION_STATUS_AVAILABLE {
 		logger.Debugf("ApplyPromotion this promotion is not available for this user")
 		return nil, proto.PromotionNotAvailable.ErrorMsg("this promotion is not available for this user")
 	}
@@ -371,7 +370,7 @@ func (s *Service) ApplyPromotion(ctx context.Context, in *pb.ApplyPromotionReque
 	} else if d2 < 1 {
 		discount = d1
 	} else {
-		discount = math.Min(d1,d2)
+		discount = math.Min(d1, d2)
 	}
 
 	if discount < 1 {
@@ -389,8 +388,8 @@ func (s *Service) ApplyPromotion(ctx context.Context, in *pb.ApplyPromotionReque
 
 		updatedPromotionUser := domain.PromotionUser{
 			PromotionId: in.PromotionId,
-			UserId: in.UserId,
-			Status: domain.PROMOTION_STATUS_CONSUMED,
+			UserId:      in.UserId,
+			Status:      domain.PROMOTION_STATUS_CONSUMED,
 		}
 
 		if err := tx.Model(&updatedPromotionUser).Updates(&updatedPromotionUser).Error; err != nil {
@@ -401,10 +400,10 @@ func (s *Service) ApplyPromotion(ctx context.Context, in *pb.ApplyPromotionReque
 		// insert promotion-history
 
 		if err := tx.Create(&domain.PromotionHistory{
-			PromotionId: in.PromotionId,
-			UserId: in.UserId,
+			PromotionId:   in.PromotionId,
+			UserId:        in.UserId,
 			TransactionId: in.TransactionId,
-			Date: time.Now(),
+			Date:          time.Now(),
 		}).Error; err != nil {
 			logger.Errorf("ApplyPromotion cannot perform insert history", err)
 			return proto.Internal.Error(err)
@@ -420,11 +419,11 @@ func (s *Service) ApplyPromotion(ctx context.Context, in *pb.ApplyPromotionReque
 
 	return &pb.ApplyPromotionResponse{
 		DiscountPercentage: float64(100) * discount / totalPayment,
-		DiscountValue: discount,
+		DiscountValue:      discount,
 	}, nil
 }
 
-func (s *Service) GetPromotionsOfUser(ctx context.Context, in *pb.GetPromotionsOfUserRequest) (*pb.GetPromotionsOfUserResponse, error){
+func (s *Service) GetPromotionsOfUser(ctx context.Context, in *pb.GetPromotionsOfUserRequest) (*pb.GetPromotionsOfUserResponse, error) {
 
 	logger.Infof("GetPromotionsOfUser type = %v", in.GetType())
 
@@ -443,19 +442,19 @@ func (s *Service) GetPromotionsOfUser(ctx context.Context, in *pb.GetPromotionsO
 			tokenUser.Id, domain.PromotionStatus(in.GetType())).Find(&users).Error
 	}
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("GetPromotionsOfUser error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
 
-	if len(users) == 0{
+	if len(users) == 0 {
 		logger.Debugf("GetPromotionsOfUser no promotion found")
 		return nil, proto.NotFound.ErrorMsg("no promotion found")
 	}
 
 	var result = make([]*pb.Promotion, len(users))
 
-	for i,user := range users{
+	for i, user := range users {
 		result[i] = s.promotionToDto(user.Promotion)
 	}
 
@@ -466,20 +465,19 @@ func (s *Service) GetPromotionsOfUser(ctx context.Context, in *pb.GetPromotionsO
 	}, nil
 }
 
-
 func NewService(config config.PromotionData, jwtConfig config.JwtData) *Service {
-	dbInstance,err := db.NewOrm(config.Database)
-	if err != nil{
+	dbInstance, err := db.NewOrm(config.Database)
+	if err != nil {
 		logger.Fatalf("cannot connect to database", err)
 	}
 	jwtUtils, err := security.NewJWTUtils(jwtConfig)
-	if err != nil{
+	if err != nil {
 		logger.Fatalf("cannot create jwtutils ", err)
 	}
 	return &Service{
-		config: config,
-		db: dbInstance,
-		jwtUtils: &jwtUtils,
+		config:     config,
+		db:         dbInstance,
+		jwtUtils:   &jwtUtils,
 		dateFormat: "2006-01-02",
 	}
 }

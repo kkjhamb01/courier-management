@@ -2,9 +2,10 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	pb "gitlab.artin.ai/backend/courier-management/party/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	pb "github.com/kkjhamb01/courier-management/party/proto"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
 func (s *Service) InterServiceGetProfileAdditionalInfo(ctx context.Context, in *pb.InterServiceGetProfileAdditionalInfoRequest) (*pb.GetProfileAdditionalInfoResponse, error) {
@@ -15,43 +16,43 @@ func (s *Service) InterServiceGetProfileAdditionalInfo(ctx context.Context, in *
 func (s *Service) InterServiceUpdateProfileAdditionalInfo(ctx context.Context, in *pb.InterServiceUpdateProfileAdditionalInfoRequest) (*pb.UpdateProfileAdditionalInfoResponse, error) {
 	logger.Infof("InterServiceUpdateProfileAdditionalInfo userId = %v, info = %v", in.GetUserId(), in.GetInfo())
 	var in2 *pb.UpdateProfileAdditionalInfoRequest
-	if in.GetIdCard() != nil{
+	if in.GetIdCard() != nil {
 		in2 = &pb.UpdateProfileAdditionalInfoRequest{
 			Info: &pb.UpdateProfileAdditionalInfoRequest_IdCard{
 				IdCard: in.GetIdCard(),
 			},
 		}
-	} else if in.GetDrivingLicense() != nil{
+	} else if in.GetDrivingLicense() != nil {
 		in2 = &pb.UpdateProfileAdditionalInfoRequest{
 			Info: &pb.UpdateProfileAdditionalInfoRequest_DrivingLicense{
 				DrivingLicense: in.GetDrivingLicense(),
 			},
 		}
-	} else if in.GetDriverBackground() != nil{
+	} else if in.GetDriverBackground() != nil {
 		in2 = &pb.UpdateProfileAdditionalInfoRequest{
 			Info: &pb.UpdateProfileAdditionalInfoRequest_DriverBackground{
 				DriverBackground: in.GetDriverBackground(),
 			},
 		}
-	} else if in.GetResidenceCard() != nil{
+	} else if in.GetResidenceCard() != nil {
 		in2 = &pb.UpdateProfileAdditionalInfoRequest{
 			Info: &pb.UpdateProfileAdditionalInfoRequest_ResidenceCard{
 				ResidenceCard: in.GetResidenceCard(),
 			},
 		}
-	} else if in.GetBankAccount() != nil{
+	} else if in.GetBankAccount() != nil {
 		in2 = &pb.UpdateProfileAdditionalInfoRequest{
 			Info: &pb.UpdateProfileAdditionalInfoRequest_BankAccount{
 				BankAccount: in.GetBankAccount(),
 			},
 		}
-	} else if in.GetAddress() != nil{
+	} else if in.GetAddress() != nil {
 		in2 = &pb.UpdateProfileAdditionalInfoRequest{
 			Info: &pb.UpdateProfileAdditionalInfoRequest_Address{
 				Address: in.GetAddress(),
 			},
 		}
-	} else if in.GetMot() != nil{
+	} else if in.GetMot() != nil {
 		in2 = &pb.UpdateProfileAdditionalInfoRequest{
 			Info: &pb.UpdateProfileAdditionalInfoRequest_Mot{
 				Mot: in.GetMot(),

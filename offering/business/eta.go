@@ -3,13 +3,14 @@ package business
 import (
 	"context"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	offeringPb "gitlab.artin.ai/backend/courier-management/grpc/offering/go"
-	"gitlab.artin.ai/backend/courier-management/offering/maps"
+	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	offeringPb "github.com/kkjhamb01/courier-management/grpc/offering/go"
+	"github.com/kkjhamb01/courier-management/offering/maps"
 	"google.golang.org/protobuf/types/known/durationpb"
 	googlemap "googlemaps.github.io/maps"
-	"time"
 )
 
 func bestEstimateArrivalTime(ctx context.Context, numberOfTopEstimates int, origins []commonPb.CourierLocation, dest offeringPb.Location) ([]commonPb.CourierETA, error) {

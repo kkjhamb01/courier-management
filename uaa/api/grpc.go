@@ -1,13 +1,14 @@
 package api
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/uaa/business"
-	pb "gitlab.artin.ai/backend/courier-management/uaa/proto"
+	"net"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/uaa/business"
+	pb "github.com/kkjhamb01/courier-management/uaa/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type grpcServer struct {
@@ -16,10 +17,10 @@ type grpcServer struct {
 	pb.UnimplementedTokenServiceServer
 	pb.UnimplementedUserRegisterServiceServer
 	pb.UnimplementedAdminServiceServer
-	server *grpc.Server
+	server              *grpc.Server
 	registrationService *business.RegistrationService
-	tokenService *business.TokenService
-	adminService *business.AdminService
+	tokenService        *business.TokenService
+	adminService        *business.AdminService
 }
 
 var server = grpcServer{}

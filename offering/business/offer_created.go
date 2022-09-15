@@ -3,15 +3,16 @@ package business
 import (
 	"context"
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	offeringPb "gitlab.artin.ai/backend/courier-management/grpc/offering/go"
-	"gitlab.artin.ai/backend/courier-management/offering/pubsub"
-	"gitlab.artin.ai/backend/courier-management/offering/storage"
-	"google.golang.org/protobuf/types/known/durationpb"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	offeringPb "github.com/kkjhamb01/courier-management/grpc/offering/go"
+	"github.com/kkjhamb01/courier-management/offering/pubsub"
+	"github.com/kkjhamb01/courier-management/offering/storage"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func OnNewOfferCreated(ctx context.Context, offer offeringPb.Offer) (returnErr error) {

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package artin.couriermanagement.offering;
 
-option go_package = "gitlab.artin.ai/backend/courier-management/grpc/offering/go;offeringPb";
+option go_package = "github.com/kkjhamb01/courier-management/grpc/offering/go;offeringPb";
 
 import "offering_message.proto";
 import "google/protobuf/empty.proto";

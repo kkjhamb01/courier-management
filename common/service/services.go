@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
 )
 
 const (
@@ -16,7 +17,7 @@ const (
 	Delivery     = "delivery"
 	Rating       = "rating"
 	Promotion    = "promotion"
-	Announcement    = "announcement"
+	Announcement = "announcement"
 
 	Prometheus = "prometheus"
 )

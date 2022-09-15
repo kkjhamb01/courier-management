@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	pricingPb "gitlab.artin.ai/backend/courier-management/grpc/pricing/go"
-	"gitlab.artin.ai/backend/courier-management/pricing/business"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	pricingPb "github.com/kkjhamb01/courier-management/grpc/pricing/go"
+	"github.com/kkjhamb01/courier-management/pricing/business"
 )
 
 func (s serverImpl) CalculateCourierPrice(ctx context.Context, req *pricingPb.CalculateCourierPriceRequest) (*pricingPb.CalculateCourierPriceResponse, error) {

@@ -2,8 +2,9 @@ package promotion
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/service"
-	"gitlab.artin.ai/backend/courier-management/promotion/api"
+
+	"github.com/kkjhamb01/courier-management/common/service"
+	"github.com/kkjhamb01/courier-management/promotion/api"
 )
 
 func init() {

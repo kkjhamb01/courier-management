@@ -2,16 +2,17 @@ package api
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	pricingPb "gitlab.artin.ai/backend/courier-management/grpc/pricing/go"
-	"google.golang.org/grpc"
 	"testing"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	pricingPb "github.com/kkjhamb01/courier-management/grpc/pricing/go"
+	"google.golang.org/grpc"
 )
 
-func init(){
+func init() {
 	config.InitTestConfig()
 	logger.InitLogger()
 }
@@ -39,18 +40,18 @@ func TestGetPrice(t *testing.T) {
 
 	c := pricingPb.NewPricingClient(conn)
 
-	res,err := c.CalculateCourierPrice(ctx, query)
+	res, err := c.CalculateCourierPrice(ctx, query)
 
 	logger.Infof("res = %v, err = %v", res, err)
 }
 
-func getPricingConn() *grpc.ClientConn{
+func getPricingConn() *grpc.ClientConn {
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
 	}
 	opts = append(opts, grpc.WithBlock())
 	logger.Infof("try to connect to pricing service %v", config.GetData().Pricing.GrpcPort)
-	conn, err := grpc.Dial(":" + config.GetData().Pricing.GrpcPort, opts...)
+	conn, err := grpc.Dial(":"+config.GetData().Pricing.GrpcPort, opts...)
 	if err != nil {
 		logger.Errorf("cannot connect to pricing: %v", err)
 	}

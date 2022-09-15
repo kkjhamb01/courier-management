@@ -3,9 +3,10 @@ package business
 import (
 	"context"
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/offering/db"
-	"gitlab.artin.ai/backend/courier-management/offering/model"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/offering/db"
+	"github.com/kkjhamb01/courier-management/offering/model"
 	"gorm.io/gorm"
 )
 

@@ -2,16 +2,17 @@ package business
 
 import (
 	"context"
+	"os"
+	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/finance/storage"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/finance/storage"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"os"
-	"time"
 )
 
 func CreateStripeAccount(ctx context.Context, userId, accessToken, firstName, lastName string, firstTime bool) (financePb.OnboardingUrl, error) {

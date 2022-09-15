@@ -1,8 +1,8 @@
 package status
 
 import (
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
 	"github.com/looplab/fsm"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
 )
 
 var requestEvents fsm.Events

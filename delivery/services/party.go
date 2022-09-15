@@ -1,10 +1,11 @@
 package services
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"google.golang.org/grpc"
 	"os"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"google.golang.org/grpc"
 )
 
 var partyConnection *grpc.ClientConn

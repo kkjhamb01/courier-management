@@ -3,18 +3,17 @@ package business
 import (
 	"context"
 	"encoding/json"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/party/proto"
-	pb "gitlab.artin.ai/backend/courier-management/uaa/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/party/proto"
+	pb "github.com/kkjhamb01/courier-management/uaa/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 )
-
-
 
 func (s *RegistrationService) UserOauthRegister(ctx context.Context, in *pb.UserOauthRegisterRequest) (*pb.UserOauthRegisterResponse, error) {
 
@@ -34,20 +33,20 @@ func (s *RegistrationService) UserOauthRegister(ctx context.Context, in *pb.User
 		b, _ := json.Marshal(user)
 		fields[REDIS_KEY_USER] = string(b)
 	}
-	if _,err := s.redis.HMSet(ctx, key, fields).Result(); err != nil{
+	if _, err := s.redis.HMSet(ctx, key, fields).Result(); err != nil {
 		return nil, pb.Internal.Error(err)
 	}
-	if _,err := s.redis.Expire(ctx, key, time.Duration(s.config.Redis.OTPSessionExpireSeconds) * time.Second).Result(); err != nil{
+	if _, err := s.redis.Expire(ctx, key, time.Duration(s.config.Redis.OTPSessionExpireSeconds)*time.Second).Result(); err != nil {
 		return nil, pb.Internal.Error(err)
 	}
 	// Finish Redis Operations
 
 	var link string
-	if in.OauthType == pb.OauthType_OAUTH_GOOGLE{
+	if in.OauthType == pb.OauthType_OAUTH_GOOGLE {
 		link = s.googleUserConfig.AuthCodeURL("state")
-	} else if in.OauthType == pb.OauthType_OAUTH_FACEBOOK{
+	} else if in.OauthType == pb.OauthType_OAUTH_FACEBOOK {
 		link = s.facebookUserConfig.AuthCodeURL("state")
-	} else{
+	} else {
 		return nil, pb.InvalidArgument.ErrorMsg("invalid authorization server type")
 	}
 	return &pb.UserOauthRegisterResponse{
@@ -59,12 +58,12 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 
 	// Start Redis Operations
 	key := "oauth_" + in.DeviceId
-	redisMap,err := s.redis.HGetAll(ctx, key).Result()
+	redisMap, err := s.redis.HGetAll(ctx, key).Result()
 	if err != nil {
 		return nil, pb.InvalidCode.ErrorNoMsg()
 	}
-	oauthType,err := strconv.ParseInt(redisMap[REDIS_KEY_OAUTH_TYPE], 10, 32)
-	userType,err := strconv.ParseInt(redisMap[REDIS_KEY_USER_TYPE], 10, 32)
+	oauthType, err := strconv.ParseInt(redisMap[REDIS_KEY_OAUTH_TYPE], 10, 32)
+	userType, err := strconv.ParseInt(redisMap[REDIS_KEY_USER_TYPE], 10, 32)
 
 	if err != nil {
 		return nil, pb.InvalidCode.ErrorNoMsg()
@@ -89,12 +88,12 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 
 	var exchangeCodeErr error
 
-	if int(oauthType) == int(pb.OauthType_OAUTH_GOOGLE){
+	if int(oauthType) == int(pb.OauthType_OAUTH_GOOGLE) {
 		code, _ := url.QueryUnescape(in.Code)
 
 		tok, err := s.googleUserConfig.Exchange(ctx, code)
 
-		if err!=nil{
+		if err != nil {
 			logger.Errorf("Invalid exchange code", err)
 			exchangeCodeErr = pb.InvalidCode.ErrorNoMsg()
 		} else {
@@ -113,20 +112,20 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 					LastName:  user.LastName,
 				}
 				user = &security.User{
-					Id:    googleId,
-					Email: userOauthInfo.Email,
-					Name:  userOauthInfo.Name,
+					Id:        googleId,
+					Email:     userOauthInfo.Email,
+					Name:      userOauthInfo.Name,
 					FirstName: userOauthInfo.FirstName,
 					LastName:  userOauthInfo.LastName,
 				}
 			}
 		}
-	} else 	if int(oauthType) == int(pb.OauthType_OAUTH_FACEBOOK) {
+	} else if int(oauthType) == int(pb.OauthType_OAUTH_FACEBOOK) {
 		code, _ := url.QueryUnescape(in.Code)
 
 		tok, err := s.facebookUserConfig.Exchange(ctx, code)
 
-		if err!=nil{
+		if err != nil {
 			logger.Errorf("Invalid exchange code", err)
 			exchangeCodeErr = pb.InvalidCode.ErrorNoMsg()
 		} else {
@@ -160,9 +159,9 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 						}
 
 						user = &security.User{
-							Id:    userInfo.Id,
-							Email: userInfo.Email,
-							Name:  userInfo.Name,
+							Id:        userInfo.Id,
+							Email:     userInfo.Email,
+							Name:      userInfo.Name,
 							FirstName: userInfo.FirstName,
 							LastName:  userInfo.LastName,
 						}
@@ -176,23 +175,23 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 
 	if exchangeCodeErr != nil {
 		oauthResponse, err := s.getOauthResponseFromCache(ctx, in.GetDeviceId())
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
-		if oauthResponse == nil{
+		if oauthResponse == nil {
 			return nil, exchangeCodeErr
 		}
-		if int(oauthType) == int(pb.OauthType_OAUTH_GOOGLE){
+		if int(oauthType) == int(pb.OauthType_OAUTH_GOOGLE) {
 			googleId = oauthResponse.Identifier
-		} else if int(oauthType) == int(pb.OauthType_OAUTH_FACEBOOK){
+		} else if int(oauthType) == int(pb.OauthType_OAUTH_FACEBOOK) {
 			facebookId = oauthResponse.Identifier
 		}
 		user = &security.User{
-			Id:    oauthResponse.Identifier,
-			Email: oauthResponse.Info.Email,
-			Name:  oauthResponse.Info.Name,
+			Id:        oauthResponse.Identifier,
+			Email:     oauthResponse.Info.Email,
+			Name:      oauthResponse.Info.Name,
 			FirstName: oauthResponse.Info.FirstName,
-			LastName: oauthResponse.Info.LastName,
+			LastName:  oauthResponse.Info.LastName,
 		}
 		userOauthInfo = oauthResponse.Info
 	}
@@ -216,22 +215,22 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 	} else {
 		user.Id = tokenUser.Id
 		newUser = false
-		for _,claim := range tokenUser.Claims {
+		for _, claim := range tokenUser.Claims {
 			user.Claims = append(user.Claims, claim)
 		}
 	}
 
-	for _,claim := range user.Claims{
-		if claim.ClaimType == security.CLAIM_TYPE_GOOGLE_ID  {
-			u,_ := s.partyAPI.FindUserByGoogleId(claim.Identifier, proto.UserType_USER_TYPE_PASSENGER)
-			if u != nil && u.Id != ""{
-				if u != nil && u.Id != ""{
+	for _, claim := range user.Claims {
+		if claim.ClaimType == security.CLAIM_TYPE_GOOGLE_ID {
+			u, _ := s.partyAPI.FindUserByGoogleId(claim.Identifier, proto.UserType_USER_TYPE_PASSENGER)
+			if u != nil && u.Id != "" {
+				if u != nil && u.Id != "" {
 					if err := s.insertOauthResponseIntoCache(ctx, oauthResponse{
-						DeviceId: in.GetDeviceId(),
-						OauthType: int64(pb.OauthType_OAUTH_GOOGLE),
-						UserType: USER_TYPE_USER,
+						DeviceId:   in.GetDeviceId(),
+						OauthType:  int64(pb.OauthType_OAUTH_GOOGLE),
+						UserType:   USER_TYPE_USER,
 						Identifier: googleId,
-						Info: userOauthInfo,
+						Info:       userOauthInfo,
 					}); err != nil {
 						return nil, err
 					}
@@ -239,15 +238,15 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 				}
 				return nil, pb.AlreadyExists.ErrorMsg("already registered with this google id")
 			}
-		} else if claim.ClaimType == security.CLAIM_TYPE_FACEBOOK_ID  {
-			u,_ := s.partyAPI.FindUserByFacebookId(claim.Identifier, proto.UserType_USER_TYPE_PASSENGER)
-			if u != nil && u.Id != ""{
+		} else if claim.ClaimType == security.CLAIM_TYPE_FACEBOOK_ID {
+			u, _ := s.partyAPI.FindUserByFacebookId(claim.Identifier, proto.UserType_USER_TYPE_PASSENGER)
+			if u != nil && u.Id != "" {
 				if err := s.insertOauthResponseIntoCache(ctx, oauthResponse{
-					DeviceId: in.GetDeviceId(),
-					OauthType: int64(pb.OauthType_OAUTH_FACEBOOK),
-					UserType: USER_TYPE_USER,
+					DeviceId:   in.GetDeviceId(),
+					OauthType:  int64(pb.OauthType_OAUTH_FACEBOOK),
+					UserType:   USER_TYPE_USER,
 					Identifier: facebookId,
-					Info: userOauthInfo,
+					Info:       userOauthInfo,
 				}); err != nil {
 					return nil, err
 				}
@@ -260,13 +259,13 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 
 	token, err := s.jwtUtils.GenerateToken(*user)
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("cannot generate token", err)
 		return nil, pb.Internal.Error(err)
 	}
 
 	if !newUser {
-		validUser,_ := s.partyAPI.GetUserByUserId(user.Id, proto.UserType_USER_TYPE_PASSENGER)
+		validUser, _ := s.partyAPI.GetUserByUserId(user.Id, proto.UserType_USER_TYPE_PASSENGER)
 		if validUser != nil && validUser.Id != "" {
 			var identifier string
 			var claimType proto.ClaimType
@@ -279,7 +278,7 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 				claimType = proto.ClaimType_CLAIM_TYPE_GOOGLE_ID
 			}
 
-			if err := s.partyAPI.RegisterClaim(user.Id, claimType, identifier, proto.UserType_USER_TYPE_PASSENGER); err != nil{
+			if err := s.partyAPI.RegisterClaim(user.Id, claimType, identifier, proto.UserType_USER_TYPE_PASSENGER); err != nil {
 				logger.Errorf("cannot register claim to party api", err)
 				return nil, pb.Internal.ErrorMsg("cannot register claim to party api " + err.Error())
 			}
@@ -288,7 +287,7 @@ func (s *RegistrationService) UserOauthRegisterVerify(ctx context.Context, in *p
 
 	return &pb.UserOauthRegisterVerifyResponse{
 		Token: token,
-		Info: userOauthInfo,
+		Info:  userOauthInfo,
 	}, nil
 }
 
@@ -298,20 +297,20 @@ func (s *RegistrationService) UserOauthLogin(ctx context.Context, in *pb.UserOau
 	fields := map[string]string{}
 	fields[REDIS_KEY_OAUTH_TYPE] = strconv.FormatInt(int64(in.OauthType), 10)
 	fields[REDIS_KEY_USER_TYPE] = strconv.FormatInt(USER_TYPE_USER, 10)
-	if _,err := s.redis.HMSet(ctx, key, fields).Result(); err != nil{
+	if _, err := s.redis.HMSet(ctx, key, fields).Result(); err != nil {
 		return nil, pb.Internal.Error(err)
 	}
-	if _,err := s.redis.Expire(ctx, key, time.Duration(s.config.Redis.OTPSessionExpireSeconds) * time.Second).Result(); err != nil{
+	if _, err := s.redis.Expire(ctx, key, time.Duration(s.config.Redis.OTPSessionExpireSeconds)*time.Second).Result(); err != nil {
 		return nil, pb.Internal.Error(err)
 	}
 	// Finish Redis Operations
 
 	var link string
-	if in.OauthType == pb.OauthType_OAUTH_GOOGLE{
+	if in.OauthType == pb.OauthType_OAUTH_GOOGLE {
 		link = s.googleUserConfig.AuthCodeURL("state")
-	} else if in.OauthType == pb.OauthType_OAUTH_FACEBOOK{
+	} else if in.OauthType == pb.OauthType_OAUTH_FACEBOOK {
 		link = s.facebookUserConfig.AuthCodeURL("state")
-	} else{
+	} else {
 		return nil, pb.InvalidArgument.ErrorMsg("invalid authorization server type")
 	}
 	return &pb.UserOauthLoginResponse{
@@ -322,12 +321,12 @@ func (s *RegistrationService) UserOauthLogin(ctx context.Context, in *pb.UserOau
 func (s *RegistrationService) UserOauthLoginVerify(ctx context.Context, in *pb.UserOauthLoginVerifyRequest) (*pb.UserOauthLoginVerifyResponse, error) {
 	// Start Redis Operations
 	key := "oauth_" + in.DeviceId
-	redisMap,err := s.redis.HGetAll(ctx, key).Result()
+	redisMap, err := s.redis.HGetAll(ctx, key).Result()
 	if err != nil {
 		return nil, pb.InvalidCode.ErrorNoMsg()
 	}
-	oauthType,err := strconv.ParseInt(redisMap[REDIS_KEY_OAUTH_TYPE], 10, 32)
-	userType,err := strconv.ParseInt(redisMap[REDIS_KEY_USER_TYPE], 10, 32)
+	oauthType, err := strconv.ParseInt(redisMap[REDIS_KEY_OAUTH_TYPE], 10, 32)
+	userType, err := strconv.ParseInt(redisMap[REDIS_KEY_USER_TYPE], 10, 32)
 
 	if err != nil {
 		return nil, pb.InvalidCode.ErrorNoMsg()
@@ -346,12 +345,12 @@ func (s *RegistrationService) UserOauthLoginVerify(ctx context.Context, in *pb.U
 
 	var exchangeCodeErr error
 
-	if int(oauthType) == int(pb.OauthType_OAUTH_GOOGLE){
+	if int(oauthType) == int(pb.OauthType_OAUTH_GOOGLE) {
 		code, _ := url.QueryUnescape(in.Code)
 
 		tok, err := s.googleUserConfig.Exchange(ctx, code)
 
-		if err!=nil{
+		if err != nil {
 			logger.Errorf("Invalid exchange code", err)
 			exchangeCodeErr = pb.InvalidCode.ErrorNoMsg()
 		} else {
@@ -370,12 +369,12 @@ func (s *RegistrationService) UserOauthLoginVerify(ctx context.Context, in *pb.U
 				}
 			}
 		}
-	} else 	if int(oauthType) == int(pb.OauthType_OAUTH_FACEBOOK) {
+	} else if int(oauthType) == int(pb.OauthType_OAUTH_FACEBOOK) {
 		code, _ := url.QueryUnescape(in.Code)
 
 		tok, err := s.facebookUserConfig.Exchange(ctx, code)
 
-		if err!=nil{
+		if err != nil {
 			logger.Errorf("Invalid exchange code", err)
 			exchangeCodeErr = pb.InvalidCode.ErrorNoMsg()
 		} else {
@@ -415,15 +414,15 @@ func (s *RegistrationService) UserOauthLoginVerify(ctx context.Context, in *pb.U
 
 	if exchangeCodeErr != nil {
 		oauthResponse, err := s.getOauthResponseFromCache(ctx, in.GetDeviceId())
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 		if oauthResponse == nil {
 			return nil, exchangeCodeErr
 		}
-		if int(oauthType) == int(pb.OauthType_OAUTH_GOOGLE){
+		if int(oauthType) == int(pb.OauthType_OAUTH_GOOGLE) {
 			googleId = oauthResponse.Identifier
-		} else if int(oauthType) == int(pb.OauthType_OAUTH_FACEBOOK){
+		} else if int(oauthType) == int(pb.OauthType_OAUTH_FACEBOOK) {
 			facebookId = oauthResponse.Identifier
 		}
 		userOauthInfo = oauthResponse.Info
@@ -445,20 +444,20 @@ func (s *RegistrationService) UserOauthLoginVerify(ctx context.Context, in *pb.U
 
 	var selectedClaim security.Claim
 
-	for _,claim := range claims{
-		if claim.ClaimType == security.CLAIM_TYPE_GOOGLE_ID  ||
-			claim.ClaimType == security.CLAIM_TYPE_FACEBOOK_ID  {
+	for _, claim := range claims {
+		if claim.ClaimType == security.CLAIM_TYPE_GOOGLE_ID ||
+			claim.ClaimType == security.CLAIM_TYPE_FACEBOOK_ID {
 			selectedClaim = claim
 		}
 	}
 
-	if selectedClaim.ClaimType == security.CLAIM_TYPE_GOOGLE_ID  {
-		user,_ = s.partyAPI.FindUserByGoogleId(selectedClaim.Identifier, proto.UserType_USER_TYPE_PASSENGER)
-	} else if selectedClaim.ClaimType == security.CLAIM_TYPE_FACEBOOK_ID  {
-		user,_ = s.partyAPI.FindUserByFacebookId(selectedClaim.Identifier, proto.UserType_USER_TYPE_PASSENGER)
+	if selectedClaim.ClaimType == security.CLAIM_TYPE_GOOGLE_ID {
+		user, _ = s.partyAPI.FindUserByGoogleId(selectedClaim.Identifier, proto.UserType_USER_TYPE_PASSENGER)
+	} else if selectedClaim.ClaimType == security.CLAIM_TYPE_FACEBOOK_ID {
+		user, _ = s.partyAPI.FindUserByFacebookId(selectedClaim.Identifier, proto.UserType_USER_TYPE_PASSENGER)
 	}
 
-	if user == nil || user.Id == ""{
+	if user == nil || user.Id == "" {
 		if selectedClaim.ClaimType == security.CLAIM_TYPE_GOOGLE_ID {
 			if err := s.insertOauthResponseIntoCache(ctx, oauthResponse{
 				DeviceId:   in.GetDeviceId(),
@@ -485,9 +484,9 @@ func (s *RegistrationService) UserOauthLoginVerify(ctx context.Context, in *pb.U
 
 	user.Roles = []security.Role{security.Role_CLIENT}
 
-	for _,claim := range claims{
+	for _, claim := range claims {
 		var has = false
-		for _,claim2 := range user.Claims{
+		for _, claim2 := range user.Claims {
 			if claim.ClaimType == claim2.ClaimType && claim.Identifier == claim2.Identifier {
 				has = true
 				break
@@ -500,14 +499,14 @@ func (s *RegistrationService) UserOauthLoginVerify(ctx context.Context, in *pb.U
 
 	token, err := s.jwtUtils.GenerateToken(*user)
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("error in generating token", err)
 		return nil, pb.Internal.ErrorMsg("error in generating token")
 	}
 
 	return &pb.UserOauthLoginVerifyResponse{
 		Token: token,
-		Info: userOauthInfo,
+		Info:  userOauthInfo,
 	}, nil
 }
 
@@ -519,10 +518,10 @@ func (s *RegistrationService) insertOauthResponseIntoCache(ctx context.Context, 
 		return pb.Internal.Error(err)
 	}
 	fields[REDIS_KEY_OAUTH_RESPONSE] = string(b)
-	if _,err := s.redis.HMSet(ctx, key, fields).Result(); err != nil{
+	if _, err := s.redis.HMSet(ctx, key, fields).Result(); err != nil {
 		return pb.Internal.Error(err)
 	}
-	if _,err := s.redis.Expire(ctx, key, time.Duration(s.config.Redis.OTPSessionExpireSeconds) * time.Second).Result(); err != nil{
+	if _, err := s.redis.Expire(ctx, key, time.Duration(s.config.Redis.OTPSessionExpireSeconds)*time.Second).Result(); err != nil {
 		return pb.Internal.Error(err)
 	}
 	return nil
@@ -530,7 +529,7 @@ func (s *RegistrationService) insertOauthResponseIntoCache(ctx context.Context, 
 
 func (s *RegistrationService) getOauthResponseFromCache(ctx context.Context, deviceId string) (*oauthResponse, error) {
 	key := "oauth_res_" + deviceId
-	redisMap,err := s.redis.HGetAll(ctx, key).Result()
+	redisMap, err := s.redis.HGetAll(ctx, key).Result()
 	if err != nil {
 		return nil, pb.InvalidCode.ErrorNoMsg()
 	}
@@ -544,9 +543,9 @@ func (s *RegistrationService) getOauthResponseFromCache(ctx context.Context, dev
 }
 
 type oauthResponse struct {
-	DeviceId string
-	OauthType int64
-	UserType int64
+	DeviceId   string
+	OauthType  int64
+	UserType   int64
 	Identifier string
-	Info *pb.UserOauthInfo
+	Info       *pb.UserOauthInfo
 }

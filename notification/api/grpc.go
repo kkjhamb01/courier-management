@@ -1,19 +1,20 @@
 package api
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/notification/business"
-	pb "gitlab.artin.ai/backend/courier-management/notification/proto"
+	"net"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/notification/business"
+	pb "github.com/kkjhamb01/courier-management/notification/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type grpcServer struct {
 	// UnimplementedAppCallbackServer must be embedded to have forward compatible implementations.
 	pb.UnimplementedNotificationServiceServer
-	server *grpc.Server
+	server  *grpc.Server
 	service *business.Service
 }
 
@@ -53,7 +54,6 @@ func createGrpcServer() {
 		logger.Fatalf("failed to serve: %v", err)
 	}
 }
-
 
 func StopGrpcServer() {
 	server.server.Stop()

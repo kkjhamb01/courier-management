@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -30,7 +31,6 @@ func ChainInterceptors(interceptors ...grpc.UnaryServerInterceptor) grpc.UnarySe
 }
 
 type ValidationInterceptor struct {
-
 }
 
 type Validator interface {
@@ -42,7 +42,7 @@ func (v *ValidationInterceptor) Unary() grpc.UnaryServerInterceptor {
 		req interface{},
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler) (interface{}, error) {
-		if err := v.validate(req); err!=nil {
+		if err := v.validate(req); err != nil {
 			return nil, proto.InvalidArgument.ErrorMsg(err.Error())
 		}
 		return handler(ctx, req)
@@ -61,13 +61,12 @@ func NewValidationInterceptor() *ValidationInterceptor {
 }
 
 type AuthInterceptor struct {
-	jwtUtils      *security.JWTUtils
+	jwtUtils *security.JWTUtils
 }
 
-type authenticatedRequest interface{
+type authenticatedRequest interface {
 	GetAccessToken() string
 }
-
 
 func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 	return func(
@@ -78,13 +77,13 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 	) (interface{}, error) {
 
 		// only extract user, without authentication
-		user,err := interceptor.extractUser(ctx, req)
+		user, err := interceptor.extractUser(ctx, req)
 
 		if err != nil {
 			return nil, err
 		}
 
-		if user != nil && user.Id != ""{
+		if user != nil && user.Id != "" {
 			ctx = context.WithValue(context.Background(), "user", *user)
 		}
 
@@ -92,7 +91,7 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 	}
 }
 
-func (interceptor *AuthInterceptor) extractUser(ctx context.Context, req interface{}) (*security.User,error) {
+func (interceptor *AuthInterceptor) extractUser(ctx context.Context, req interface{}) (*security.User, error) {
 	var user *security.User
 	var token string
 	var err error
@@ -117,7 +116,7 @@ func (interceptor *AuthInterceptor) extractUser(ctx context.Context, req interfa
 		}
 	}
 
-	if user != nil{
+	if user != nil {
 		logger.Debugf("request has a valid token %v", user.Id)
 	} else {
 		logger.Debugf("request has an invalid token")
@@ -128,7 +127,7 @@ func (interceptor *AuthInterceptor) extractUser(ctx context.Context, req interfa
 
 func NewAuthInterceptor(jwtConfig config.JwtData) *AuthInterceptor {
 	jwtUtils, err := security.NewJWTUtils(jwtConfig)
-	if err != nil{
+	if err != nil {
 		logger.Fatalf("cannot create jwtutils ", err)
 	}
 	return &AuthInterceptor{&jwtUtils}

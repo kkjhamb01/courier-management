@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/finance/db"
-	"gitlab.artin.ai/backend/courier-management/finance/model"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/finance/db"
+	"github.com/kkjhamb01/courier-management/finance/model"
 )
 
 func CreateAccount(ctx context.Context, userId string, accessToken string) error {

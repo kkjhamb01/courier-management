@@ -2,10 +2,11 @@ package business
 
 import (
 	"context"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/finance/storage"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/setupintent"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/finance/storage"
 )
 
 func GetClientSecret(ctx context.Context, userId string) (string, error) {

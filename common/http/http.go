@@ -2,11 +2,12 @@ package http
 
 import (
 	"context"
-	"github.com/gorilla/mux"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Server struct {

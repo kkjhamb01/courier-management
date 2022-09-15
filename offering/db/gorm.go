@@ -2,13 +2,14 @@ package db
 
 import (
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/offering/model"
+	"sync"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/offering/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"sync"
 )
 
 var mariaDb *gorm.DB

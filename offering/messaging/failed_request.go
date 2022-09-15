@@ -3,11 +3,12 @@ package messaging
 import (
 	"context"
 	"errors"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/common/messaging"
+	"github.com/kkjhamb01/courier-management/offering/pubsub"
 	"github.com/nats-io/nats.go"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/common/messaging"
-	"gitlab.artin.ai/backend/courier-management/offering/pubsub"
 )
 
 func onOfferCreationFailed(ctx context.Context, msg *nats.Msg) error {

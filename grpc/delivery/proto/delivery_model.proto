@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package artin.couriermanagement.delivery;
 
-option go_package = "gitlab.artin.ai/backend/courier-management/grpc/delivery/go;deliveryPb";
+option go_package = "github.com/kkjhamb01/courier-management/grpc/delivery/go;deliveryPb";
 
 import "google/protobuf/timestamp.proto";
 import "validate/validate.proto";

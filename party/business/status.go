@@ -3,13 +3,14 @@ package business
 import (
 	"context"
 	"encoding/json"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/messaging"
-	"gitlab.artin.ai/backend/courier-management/party/domain"
-	pb "gitlab.artin.ai/backend/courier-management/party/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/messaging"
+	"github.com/kkjhamb01/courier-management/party/domain"
+	pb "github.com/kkjhamb01/courier-management/party/proto"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 )
 
 func (s *Service) GetCourierUserStatus(ctx context.Context, in *pb.GetCourierUserStatusRequest) (*pb.GetCourierUserStatusResponse, error) {
@@ -17,12 +18,12 @@ func (s *Service) GetCourierUserStatus(ctx context.Context, in *pb.GetCourierUse
 
 	user := domain.CourierUser{}
 
-	if err := s.db.Model(&domain.CourierUser{}).Where("id = ?", in.UserId).Find(&user).Error; err != nil{
+	if err := s.db.Model(&domain.CourierUser{}).Where("id = ?", in.UserId).Find(&user).Error; err != nil {
 		logger.Infof("GetCourierUserStatus userId = %v, error = %v", in.GetUserId(), err)
 		return nil, proto.Internal.Error(err)
 	}
 
-	if user.ID == ""{
+	if user.ID == "" {
 		logger.Infof("GetCourierUserStatus user not found %v", in.GetUserId())
 		return nil, proto.NotFound.ErrorMsg("user not found")
 	}
@@ -39,38 +40,36 @@ func (s *Service) UpdateCourierUserStatus(ctx context.Context, in *pb.UpdateCour
 
 	result := s.db.Model(&domain.CourierUser{}).Where("id = ?", in.UserId).Update("status", in.GetStatus())
 
-	if result.Error != nil{
+	if result.Error != nil {
 		logger.Errorf("UpdateCourierUserStatus error in updating status", result.Error)
 		return nil, proto.Internal.Error(result.Error)
 	}
 
-	if result.RowsAffected == 0{
+	if result.RowsAffected == 0 {
 		logger.Debugf("UpdateCourierUserStatus user not found %v", in.UserId)
 		return nil, proto.NotFound.ErrorMsg("user not found or update doesn't change a record")
 	}
 
 	s.publishUpdateCourierStatusEvent(&UpdateCourierStatusEvent{
 		CourierId: in.GetUserId(),
-		Status: in.GetStatus(),
-		Time: time.Now().Format("2006-01-02 15:04:05"),
+		Status:    in.GetStatus(),
+		Time:      time.Now().Format("2006-01-02 15:04:05"),
 	})
 
-	return &pb.UpdateCourierUserStatusResponse{
-
-	}, nil
+	return &pb.UpdateCourierUserStatusResponse{}, nil
 }
 
-func (s *Service) GetClientUserStatus(ctx context.Context, in *pb.GetClientUserStatusRequest) (*pb.GetClientUserStatusResponse, error){
+func (s *Service) GetClientUserStatus(ctx context.Context, in *pb.GetClientUserStatusRequest) (*pb.GetClientUserStatusResponse, error) {
 	logger.Infof("GetClientUserStatus userId = %v", in.GetUserId())
 
 	user := domain.ClientUser{}
 
-	if err := s.db.Model(&domain.ClientUser{}).Where("id = ?", in.UserId).Find(&user).Error; err != nil{
+	if err := s.db.Model(&domain.ClientUser{}).Where("id = ?", in.UserId).Find(&user).Error; err != nil {
 		logger.Errorf("GetClientUserStatus error", err)
 		return nil, proto.Internal.Error(err)
 	}
 
-	if user.ID == ""{
+	if user.ID == "" {
 		return nil, proto.NotFound.ErrorMsg("user not found")
 	}
 
@@ -81,27 +80,23 @@ func (s *Service) GetClientUserStatus(ctx context.Context, in *pb.GetClientUserS
 	}, nil
 }
 
-func (s *Service) UpdateClientUserStatus(ctx context.Context, in *pb.UpdateClientUserStatusRequest) (*pb.UpdateClientUserStatusResponse, error){
+func (s *Service) UpdateClientUserStatus(ctx context.Context, in *pb.UpdateClientUserStatusRequest) (*pb.UpdateClientUserStatusResponse, error) {
 	logger.Infof("UpdateClientUserStatus userId = %v, status = %v", in.GetUserId(), in.GetStatus())
 
 	result := s.db.Model(&domain.ClientUser{}).Where("id = ?", in.UserId).Update("status", in.GetStatus())
 
-	if result.Error != nil{
+	if result.Error != nil {
 		logger.Errorf("UpdateClientUserStatus error in updating status", result.Error)
 		return nil, proto.Internal.Error(result.Error)
 	}
 
-	if result.RowsAffected == 0{
+	if result.RowsAffected == 0 {
 		logger.Debugf("UpdateClientUserStatus user not found %v", in.UserId)
 		return nil, proto.NotFound.ErrorMsg("user not found or update doesn't change a record")
 	}
 
-	return &pb.UpdateClientUserStatusResponse{
-
-	}, nil
+	return &pb.UpdateClientUserStatusResponse{}, nil
 }
-
-
 
 func (s *Service) GetCourierUserStatusByToken(ctx context.Context, in *pb.GetCourierUserStatusByTokenRequest) (*pb.GetCourierUserStatusResponse, error) {
 	tokenUser := ctx.Value("user").(security.User)
@@ -125,7 +120,7 @@ func (s *Service) UpdateCourierUserStatusByToken(ctx context.Context, in *pb.Upd
 	})
 }
 
-func (s *Service) GetClientUserStatusByToken(ctx context.Context, in *pb.GetClientUserStatusByTokenRequest) (*pb.GetClientUserStatusResponse, error){
+func (s *Service) GetClientUserStatusByToken(ctx context.Context, in *pb.GetClientUserStatusByTokenRequest) (*pb.GetClientUserStatusResponse, error) {
 
 	tokenUser := ctx.Value("user").(security.User)
 
@@ -136,7 +131,7 @@ func (s *Service) GetClientUserStatusByToken(ctx context.Context, in *pb.GetClie
 	})
 }
 
-func (s *Service) UpdateClientUserStatusByToken(ctx context.Context, in *pb.UpdateClientUserStatusByTokenRequest) (*pb.UpdateClientUserStatusResponse, error){
+func (s *Service) UpdateClientUserStatusByToken(ctx context.Context, in *pb.UpdateClientUserStatusByTokenRequest) (*pb.UpdateClientUserStatusResponse, error) {
 
 	tokenUser := ctx.Value("user").(security.User)
 
@@ -150,14 +145,13 @@ func (s *Service) UpdateClientUserStatusByToken(ctx context.Context, in *pb.Upda
 
 type UpdateCourierStatusEvent struct {
 	CourierId string
-	Status pb.UserStatus
-	Time string
+	Status    pb.UserStatus
+	Time      string
 }
 
 func (s *Service) publishUpdateCourierStatusEvent(event *UpdateCourierStatusEvent) error {
 	client := messaging.NatsClient()
-	serialized,_ := json.Marshal(event)
+	serialized, _ := json.Marshal(event)
 	logger.Debugf("publishUpdateCourierStatusEvent %v", string(serialized))
 	return client.Publish(messaging.TopicCourierStatusUpdate, serialized)
 }
-

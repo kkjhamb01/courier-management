@@ -3,13 +3,14 @@ package business
 import (
 	"context"
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/delivery/db"
-	"gitlab.artin.ai/backend/courier-management/delivery/model"
-	"gitlab.artin.ai/backend/courier-management/delivery/services"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
-	"gitlab.artin.ai/backend/courier-management/party/proto"
-	uaa "gitlab.artin.ai/backend/courier-management/uaa/proto"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/delivery/db"
+	"github.com/kkjhamb01/courier-management/delivery/model"
+	"github.com/kkjhamb01/courier-management/delivery/services"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
+	"github.com/kkjhamb01/courier-management/party/proto"
+	uaa "github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
 func GetCourierRequestDetails(ctx context.Context, requestId string) (deliveryPb.Request, error) {
@@ -70,7 +71,6 @@ func GetCustomerRequestDetails(ctx context.Context, requestId string) (deliveryP
 		} else {
 			plateNumber = plateResponse.GetMot().RegistrationNumber
 		}
-
 
 		// get photo
 		// TODO Skipping party service errors for now to make testing easier, change it back later

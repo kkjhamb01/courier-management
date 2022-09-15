@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	offeringPb "gitlab.artin.ai/backend/courier-management/grpc/offering/go"
-	"gitlab.artin.ai/backend/courier-management/offering/business"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	offeringPb "github.com/kkjhamb01/courier-management/grpc/offering/go"
+	"github.com/kkjhamb01/courier-management/offering/business"
 )
 
 func (s serverImpl) HadCustomerRideWithCourier(ctx context.Context, req *offeringPb.HadCustomerRideWithCourierRequest) (*offeringPb.HadCustomerRideWithCourierResponse, error) {

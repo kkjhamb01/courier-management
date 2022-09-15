@@ -2,10 +2,11 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
 )
 
 func isOriginAndDestinationWithinAllowedCities(ctx context.Context, origin *deliveryPb.CreateRequestLocation, destinations []*deliveryPb.CreateRequestLocation) (bool, error) {

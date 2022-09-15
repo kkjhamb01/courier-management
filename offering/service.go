@@ -2,15 +2,16 @@ package offering
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/http"
-	"gitlab.artin.ai/backend/courier-management/common/service"
-	"gitlab.artin.ai/backend/courier-management/offering/api"
-	"gitlab.artin.ai/backend/courier-management/offering/db"
-	"gitlab.artin.ai/backend/courier-management/offering/healthcheck"
-	"gitlab.artin.ai/backend/courier-management/offering/maps"
-	"gitlab.artin.ai/backend/courier-management/offering/messaging"
-	"gitlab.artin.ai/backend/courier-management/offering/prometheus"
-	"gitlab.artin.ai/backend/courier-management/offering/services"
+
+	"github.com/kkjhamb01/courier-management/common/http"
+	"github.com/kkjhamb01/courier-management/common/service"
+	"github.com/kkjhamb01/courier-management/offering/api"
+	"github.com/kkjhamb01/courier-management/offering/db"
+	"github.com/kkjhamb01/courier-management/offering/healthcheck"
+	"github.com/kkjhamb01/courier-management/offering/maps"
+	"github.com/kkjhamb01/courier-management/offering/messaging"
+	"github.com/kkjhamb01/courier-management/offering/prometheus"
+	"github.com/kkjhamb01/courier-management/offering/services"
 )
 
 func init() {

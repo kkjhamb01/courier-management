@@ -2,10 +2,11 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/finance/db"
-	"gitlab.artin.ai/backend/courier-management/finance/model"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/finance/db"
+	"github.com/kkjhamb01/courier-management/finance/model"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
 )
 
 func AddPaymentMethodToAccount(ctx context.Context, userId string, paymentMethod financePb.PaymentMethod) error {

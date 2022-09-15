@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"github.com/kkjhamb01/courier-management/common/service"
 	"github.com/spf13/cobra"
-	"gitlab.artin.ai/backend/courier-management/common/service"
 )
 
 var PromotionCmd = &cobra.Command{

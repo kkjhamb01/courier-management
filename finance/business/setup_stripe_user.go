@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
 )
 
 var (

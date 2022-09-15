@@ -3,14 +3,15 @@ package push
 import (
 	"errors"
 	"fmt"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger"
 )
 
-func Encode(e proto.Message) ([]byte, error){
-	serialized,_ := proto.Marshal(e)
+func Encode(e proto.Message) ([]byte, error) {
+	serialized, _ := proto.Marshal(e)
 	return encodeEventData(serialized, proto.MessageName(e))
 }
 
@@ -28,7 +29,7 @@ func Decode(eventByte []byte) (proto.Message, error) {
 	logger.Debugf("Decode event %v", string(eventByte))
 	var event PushEvent
 	err := proto.Unmarshal(eventByte, &event)
-	if err != nil{
+	if err != nil {
 		logger.Errorf("Decode cannot decode push event", err)
 		return nil, err
 	}

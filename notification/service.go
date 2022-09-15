@@ -2,9 +2,10 @@ package notification
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/service"
-	"gitlab.artin.ai/backend/courier-management/notification/api"
-	"gitlab.artin.ai/backend/courier-management/notification/messaging"
+
+	"github.com/kkjhamb01/courier-management/common/service"
+	"github.com/kkjhamb01/courier-management/notification/api"
+	"github.com/kkjhamb01/courier-management/notification/messaging"
 )
 
 func init() {

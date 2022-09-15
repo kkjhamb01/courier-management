@@ -1,9 +1,5 @@
 package pubsub
 
-import (
-	"gitlab.artin.ai/backend/courier-management/grpc/finance/go"
-)
-
 type Event struct {
 	Data  interface{}
 	Topic string

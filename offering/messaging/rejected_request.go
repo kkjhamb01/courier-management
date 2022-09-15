@@ -3,12 +3,13 @@ package messaging
 import (
 	"context"
 	"errors"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/common/messaging"
+	offeringPb "github.com/kkjhamb01/courier-management/grpc/offering/go"
+	"github.com/kkjhamb01/courier-management/offering/business"
 	"github.com/nats-io/nats.go"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/common/messaging"
-	offeringPb "gitlab.artin.ai/backend/courier-management/grpc/offering/go"
-	"gitlab.artin.ai/backend/courier-management/offering/business"
 )
 
 func onRequestRejected(ctx context.Context, msg *nats.Msg) error {

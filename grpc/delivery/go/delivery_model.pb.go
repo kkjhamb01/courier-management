@@ -8,7 +8,7 @@ package deliveryPb
 
 import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
-	_go "gitlab.artin.ai/backend/courier-management/grpc/common/go"
+	_go "github.com/kkjhamb01/courier-management/grpc/common/go"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"

@@ -3,13 +3,14 @@ package business
 import (
 	"context"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/delivery/db"
-	"gitlab.artin.ai/backend/courier-management/delivery/model"
-	"gitlab.artin.ai/backend/courier-management/delivery/status"
-	storage "gitlab.artin.ai/backend/courier-management/delivery/storage/lock"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/delivery/db"
+	"github.com/kkjhamb01/courier-management/delivery/model"
+	"github.com/kkjhamb01/courier-management/delivery/status"
+	storage "github.com/kkjhamb01/courier-management/delivery/storage/lock"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
 func AcceptRequest(ctx context.Context, requestId string, courierId string, desc string) (err error) {

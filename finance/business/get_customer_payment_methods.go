@@ -3,11 +3,12 @@ package business
 import (
 	"context"
 	"fmt"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/finance/storage"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/paymentmethod"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/finance/storage"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
 )
 
 func GetCustomerPaymentMethods(ctx context.Context, userId string) ([]*financePb.PaymentMethod, error) {

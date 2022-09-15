@@ -2,12 +2,13 @@ package finance
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/service"
-	"gitlab.artin.ai/backend/courier-management/finance/api"
-	"gitlab.artin.ai/backend/courier-management/finance/db"
-	"gitlab.artin.ai/backend/courier-management/finance/scheduler"
-	"gitlab.artin.ai/backend/courier-management/finance/services"
-	"gitlab.artin.ai/backend/courier-management/finance/stripe"
+
+	"github.com/kkjhamb01/courier-management/common/service"
+	"github.com/kkjhamb01/courier-management/finance/api"
+	"github.com/kkjhamb01/courier-management/finance/db"
+	"github.com/kkjhamb01/courier-management/finance/scheduler"
+	"github.com/kkjhamb01/courier-management/finance/services"
+	"github.com/kkjhamb01/courier-management/finance/stripe"
 )
 
 func init() {

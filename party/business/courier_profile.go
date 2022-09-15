@@ -3,11 +3,12 @@ package business
 import (
 	"context"
 	"database/sql"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/party/domain"
-	pb "gitlab.artin.ai/backend/courier-management/party/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/party/domain"
+	pb "github.com/kkjhamb01/courier-management/party/proto"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -22,7 +23,7 @@ func (s *Service) CreateCourierAccount(ctx context.Context, in *pb.CreateCourier
 
 	existingUser := domain.CourierUser{}
 
-	if err := s.db.Model(&domain.CourierUser{}).Where("id = ?", tokenUser.Id).Find(&existingUser).Error; err != nil{
+	if err := s.db.Model(&domain.CourierUser{}).Where("id = ?", tokenUser.Id).Find(&existingUser).Error; err != nil {
 		logger.Debugf("CreateCourierAccount cannot query %v, err = %v", tokenUser.Id, err)
 		return nil, proto.Internal.Error(err)
 	}
@@ -33,8 +34,8 @@ func (s *Service) CreateCourierAccount(ctx context.Context, in *pb.CreateCourier
 	}
 
 	var authorizedPhoneNumber = false
-	for _,claim := range tokenUser.Claims {
-		if claim.ClaimType == security.CLAIM_TYPE_PHONE_NUMBER{
+	for _, claim := range tokenUser.Claims {
+		if claim.ClaimType == security.CLAIM_TYPE_PHONE_NUMBER {
 			authorizedPhoneNumber = true
 		}
 	}
@@ -155,18 +156,18 @@ func (s *Service) profileInfoStatus(userId string, infoType pb.AdditionalInfoTyp
 	var validDocTypes = infoType.ValidDocumentTypes()
 
 	// first check driver background, because it might be checked as upload documents later
-	if infoType == pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_DRIVER_BACKGROUND{
+	if infoType == pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_DRIVER_BACKGROUND {
 		driverBackground, err := s.GetDriverBackground(userId)
 		if err != nil {
 			// if not found
 			if e, ok := status.FromError(err); ok {
-				if uint32(e.Code()) == uint32(proto.NotFound){
+				if uint32(e.Code()) == uint32(proto.NotFound) {
 					return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_EMPTY, nil
 				}
 			}
-			return pb.ProfileAdditionalInfoStatus_UNKNOWN_PROFILE_ADDITIONAL_INFO_STATUS,err
+			return pb.ProfileAdditionalInfoStatus_UNKNOWN_PROFILE_ADDITIONAL_INFO_STATUS, err
 		}
-		if driverBackground != nil{
+		if driverBackground != nil {
 			if driverBackground.UploadDbsLater.ToBool() {
 				return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_COMPLETED, nil
 			}
@@ -201,7 +202,7 @@ func (s *Service) profileInfoStatus(userId string, infoType pb.AdditionalInfoTyp
 
 	if err != nil {
 		if e, ok := status.FromError(err); ok {
-			if uint32(e.Code()) == uint32(proto.NotFound){
+			if uint32(e.Code()) == uint32(proto.NotFound) {
 				emptyEntity = true
 			}
 		} else {
@@ -213,8 +214,8 @@ func (s *Service) profileInfoStatus(userId string, infoType pb.AdditionalInfoTyp
 
 		res, _ := s.getDocumentsOfUserById(userId, docType, pb.DocumentDataType_UNKNOWN_DOCUMENT_DATA_TYPE)
 
-		if res == nil{
-			if emptyEntity{
+		if res == nil {
+			if emptyEntity {
 				return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_EMPTY, nil
 			}
 			return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_INCOMPLETED, nil
@@ -222,16 +223,16 @@ func (s *Service) profileInfoStatus(userId string, infoType pb.AdditionalInfoTyp
 
 		var documentTypeList = make([]pb.DocumentType, len(res.Documents))
 
-		for i,d := range res.Documents{
+		for i, d := range res.Documents {
 			documentTypeList[i] = d.DocType
 		}
 
-		if infoType == pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_ID_CARD{
+		if infoType == pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_ID_CARD {
 			if pb.DocumentType_DOCUMENT_TYPE_PASSPORT.InArray(documentTypeList) ||
 				(pb.DocumentType_DOCUMENT_TYPE_NATIONAL_ID_FRONT.InArray(documentTypeList) &&
-					pb.DocumentType_DOCUMENT_TYPE_NATIONAL_ID_BACK.InArray(documentTypeList)){
+					pb.DocumentType_DOCUMENT_TYPE_NATIONAL_ID_BACK.InArray(documentTypeList)) {
 			} else {
-				if emptyEntity{
+				if emptyEntity {
 					return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_EMPTY, nil
 				}
 				return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_INCOMPLETED, nil
@@ -239,7 +240,7 @@ func (s *Service) profileInfoStatus(userId string, infoType pb.AdditionalInfoTyp
 		} else {
 			for _, vtype := range validDocTypes {
 				if !vtype.InArray(documentTypeList) {
-					if emptyEntity{
+					if emptyEntity {
 						return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_EMPTY, nil
 					}
 					return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_INCOMPLETED, nil
@@ -248,7 +249,7 @@ func (s *Service) profileInfoStatus(userId string, infoType pb.AdditionalInfoTyp
 		}
 	}
 
-	if emptyEntity{
+	if emptyEntity {
 		return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_INCOMPLETED, nil
 	}
 	return pb.ProfileAdditionalInfoStatus_PROFILE_ADDITIONAL_INFO_STATUS_COMPLETED, nil
@@ -619,7 +620,7 @@ func (s *Service) getProfileAdditionalInfoByUserid(userId string, reqType pb.Add
 		}
 		if err = s.findDocuments(userId, result, false); err != nil {
 			logger.Errorf("getProfileAdditionalInfoByUserid cannot find documents", err)
-			return nil,err
+			return nil, err
 		}
 		logger.Debugf("getProfileAdditionalInfoByUserid address is %v", result)
 		return &pb.GetProfileAdditionalInfoResponse{
@@ -633,7 +634,7 @@ func (s *Service) getProfileAdditionalInfoByUserid(userId string, reqType pb.Add
 			logger.Errorf("getProfileAdditionalInfoByUserid cannot find documents", err)
 			return nil, err
 		}
-		if result.GetDocumentIds() == nil || len(result.GetDocumentIds()) == 0{
+		if result.GetDocumentIds() == nil || len(result.GetDocumentIds()) == 0 {
 			logger.Debugf("getProfileAdditionalInfoByUserid cannot find insurance certificate")
 			return nil, proto.NotFound.ErrorNoMsg()
 		}
@@ -660,9 +661,9 @@ func (s *Service) getProfileAdditionalInfoByUserid(userId string, reqType pb.Add
 		result := &pb.ProfilePicture{}
 		if err := s.findDocuments(userId, result, true); err != nil {
 			logger.Errorf("getProfileAdditionalInfoByUserid cannot find documents", err)
-			return nil,err
+			return nil, err
 		}
-		if result.GetDocumentIds() == nil || len(result.GetDocumentIds()) == 0{
+		if result.GetDocumentIds() == nil || len(result.GetDocumentIds()) == 0 {
 			logger.Debugf("getProfileAdditionalInfoByUserid cannot find profile picture")
 			return nil, proto.NotFound.ErrorNoMsg()
 		}
@@ -675,31 +676,31 @@ func (s *Service) getProfileAdditionalInfoByUserid(userId string, reqType pb.Add
 
 	case pb.AdditionalInfoType_UNKNOWN_ADDITIONAL_INFO_TYPE:
 		result := &pb.ProfileAdditionalInfo{}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_ID_CARD); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_ID_CARD); item != nil {
 			result.IdCard = item.GetIdCard()
 		}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_DRIVING_LICENSE); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_DRIVING_LICENSE); item != nil {
 			result.DrivingLicense = item.GetDrivingLicense()
 		}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_DRIVER_BACKGROUND); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_DRIVER_BACKGROUND); item != nil {
 			result.DriverBackground = item.GetDriverBackground()
 		}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_RESIDENCE_CARD); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_RESIDENCE_CARD); item != nil {
 			result.ResidenceCard = item.GetResidenceCard()
 		}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_BANK_ACCOUNT); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_BANK_ACCOUNT); item != nil {
 			result.BankAccount = item.GetBankAccount()
 		}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_ADDRESS); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_ADDRESS); item != nil {
 			result.Address = item.GetAddress()
 		}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_INSURANCE_CERTIFICATE); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_INSURANCE_CERTIFICATE); item != nil {
 			result.InsuranceCertificate = item.GetInsuranceCertificate()
 		}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_MOT); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_MOT); item != nil {
 			result.Mot = item.GetMot()
 		}
-		if item,_ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_PROFILE_PICTURE); item != nil {
+		if item, _ := s.getProfileAdditionalInfoByUserid(userId, pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_PROFILE_PICTURE); item != nil {
 			result.ProfilePicture = item.GetProfilePicture()
 		}
 		return &pb.GetProfileAdditionalInfoResponse{
@@ -709,8 +710,6 @@ func (s *Service) getProfileAdditionalInfoByUserid(userId string, reqType pb.Add
 		}, nil
 	}
 
-
-
 	return nil, nil
 }
 
@@ -719,7 +718,7 @@ func (s *Service) GetIdCard(userId string) (*pb.IDCard, error) {
 
 	idCard := domain.IDCard{}
 
-	if err := s.db.Model(&domain.IDCard{}).Where("user_id = ?", userId).Find(&idCard).Error; err != nil{
+	if err := s.db.Model(&domain.IDCard{}).Where("user_id = ?", userId).Find(&idCard).Error; err != nil {
 		return nil, proto.Internal.Error(err)
 	}
 
@@ -742,7 +741,7 @@ func (s *Service) GetDriversLicense(userId string) (*pb.DrivingLicense, error) {
 
 	driverLicense := domain.DrivingLicense{}
 
-	if err := s.db.Model(&domain.DrivingLicense{}).Where("user_id = ?", userId).Find(&driverLicense).Error; err != nil{
+	if err := s.db.Model(&domain.DrivingLicense{}).Where("user_id = ?", userId).Find(&driverLicense).Error; err != nil {
 		return nil, proto.Internal.Error(err)
 	}
 
@@ -761,7 +760,7 @@ func (s *Service) GetDriverBackground(userId string) (*pb.DriverBackground, erro
 
 	driverBackground := domain.DriverBackground{}
 
-	if err := s.db.Model(&domain.DriverBackground{}).Where("user_id = ?", userId).Find(&driverBackground).Error; err != nil{
+	if err := s.db.Model(&domain.DriverBackground{}).Where("user_id = ?", userId).Find(&driverBackground).Error; err != nil {
 		return nil, proto.Internal.Error(err)
 	}
 
@@ -782,7 +781,7 @@ func (s *Service) GetResidenceCard(userId string) (*pb.ResidenceCard, error) {
 
 	residenceCard := domain.ResidenceCard{}
 
-	if err := s.db.Model(&domain.ResidenceCard{}).Where("user_id = ?", userId).Find(&residenceCard).Error; err != nil{
+	if err := s.db.Model(&domain.ResidenceCard{}).Where("user_id = ?", userId).Find(&residenceCard).Error; err != nil {
 		return nil, proto.Internal.Error(err)
 	}
 
@@ -802,7 +801,7 @@ func (s *Service) GetBankAccount(userId string) (*pb.BankAccount, error) {
 
 	bankAccount := domain.BankAccount{}
 
-	if err := s.db.Model(&domain.BankAccount{}).Where("user_id = ?", userId).Find(&bankAccount).Error; err != nil{
+	if err := s.db.Model(&domain.BankAccount{}).Where("user_id = ?", userId).Find(&bankAccount).Error; err != nil {
 		return nil, proto.Internal.Error(err)
 	}
 
@@ -823,7 +822,7 @@ func (s *Service) GetAddress(userId string) (*pb.Address, error) {
 
 	address := domain.CourierAddress{}
 
-	if err := s.db.Model(&domain.CourierAddress{}).Where("user_id = ?", userId).Find(&address).Error; err != nil{
+	if err := s.db.Model(&domain.CourierAddress{}).Where("user_id = ?", userId).Find(&address).Error; err != nil {
 		return nil, proto.Internal.Error(err)
 	}
 
@@ -853,7 +852,7 @@ func (s *Service) findDocuments(userId string, entity hasDocument, loadData bool
 
 	if len(documents) > 0 {
 		var documents2 = make([]*pb.DocumentInfo, len(documents))
-		for i,d := range documents{
+		for i, d := range documents {
 			var data []byte
 			if loadData {
 				documentData := domain.DocumentData{}
@@ -861,11 +860,11 @@ func (s *Service) findDocuments(userId string, entity hasDocument, loadData bool
 				data = documentData.Data
 			}
 			documents2[i] = &pb.DocumentInfo{
-				ObjectId: d.ObjectId,
-				InfoType: pb.DocumentInfoType(d.DocumentInfoType),
-				DocType: pb.DocumentType(d.DocumentType),
-				FileType: d.FileType.String,
-				Data: data,
+				ObjectId:     d.ObjectId,
+				InfoType:     pb.DocumentInfoType(d.DocumentInfoType),
+				DocType:      pb.DocumentType(d.DocumentType),
+				FileType:     d.FileType.String,
+				Data:         data,
 				CreationDate: d.CreationTime.Format("2006-01-02 15:04:05"),
 			}
 		}
@@ -906,7 +905,7 @@ func (s *Service) getCourierAccountById(ctx context.Context, userId string) (*pb
 	var citizen = pb.Boolean_UNKNOWN_BOOLEAN
 	citizen = citizen.FromInt(user.Citizen.Int32)
 
-	authorizedClaims,err := s.getAuthorizedCourierClaims(userId)
+	authorizedClaims, err := s.getAuthorizedCourierClaims(userId)
 
 	if err != nil {
 		logger.Infof("GetCourierAccount error in get authorized claims = %v", err)
@@ -915,15 +914,15 @@ func (s *Service) getCourierAccountById(ctx context.Context, userId string) (*pb
 
 	return &pb.GetCourierAccountResponse{
 		Profile: &pb.CourierProfile{
-			UserId:        user.ID,
-			PhoneNumber:   user.PhoneNumber,
-			FirstName:     user.FirstName.String,
-			LastName:      user.LastName,
-			Email:         user.Email.String,
-			BirthDate:     user.BirthDate.String,
-			TransportType: pb.TransportationType(user.TransportType.Int32),
-			TransportSize: pb.TransportationSize(user.TransportSize.Int32),
-			Citizen:       citizen,
+			UserId:           user.ID,
+			PhoneNumber:      user.PhoneNumber,
+			FirstName:        user.FirstName.String,
+			LastName:         user.LastName,
+			Email:            user.Email.String,
+			BirthDate:        user.BirthDate.String,
+			TransportType:    pb.TransportationType(user.TransportType.Int32),
+			TransportSize:    pb.TransportationSize(user.TransportSize.Int32),
+			Citizen:          citizen,
 			AuthorizedClaims: authorizedClaims,
 		},
 	}, nil
@@ -956,7 +955,7 @@ func (s *Service) FindCourierAccounts(ctx context.Context, in *pb.FindCourierAcc
 		return nil, proto.Internal.Error(err)
 	}
 
-	if len(users) == 0{
+	if len(users) == 0 {
 		return nil, proto.NotFound.ErrorMsg("no user found")
 	}
 
@@ -968,7 +967,7 @@ func (s *Service) FindCourierAccounts(ctx context.Context, in *pb.FindCourierAcc
 		var citizen = pb.Boolean_UNKNOWN_BOOLEAN
 		citizen = citizen.FromInt(user.Citizen.Int32)
 
-		authorizedClaims,err := s.getAuthorizedCourierClaims(user.ID)
+		authorizedClaims, err := s.getAuthorizedCourierClaims(user.ID)
 
 		if err != nil {
 			logger.Infof("FindCourierAccounts error in get authorized claims = %v", err)
@@ -976,15 +975,15 @@ func (s *Service) FindCourierAccounts(ctx context.Context, in *pb.FindCourierAcc
 		}
 
 		profiles[i] = &pb.CourierProfile{
-			UserId:        user.ID,
-			PhoneNumber:   user.PhoneNumber,
-			FirstName:     user.FirstName.String,
-			LastName:      user.LastName,
-			Email:         user.Email.String,
-			BirthDate:     user.BirthDate.String,
-			TransportType: pb.TransportationType(user.TransportType.Int32),
-			TransportSize: pb.TransportationSize(user.TransportSize.Int32),
-			Citizen:       citizen,
+			UserId:           user.ID,
+			PhoneNumber:      user.PhoneNumber,
+			FirstName:        user.FirstName.String,
+			LastName:         user.LastName,
+			Email:            user.Email.String,
+			BirthDate:        user.BirthDate.String,
+			TransportType:    pb.TransportationType(user.TransportType.Int32),
+			TransportSize:    pb.TransportationSize(user.TransportSize.Int32),
+			Citizen:          citizen,
 			AuthorizedClaims: authorizedClaims,
 		}
 	}
@@ -1174,7 +1173,7 @@ func (s *Service) DeleteProfileAdditionalInfo(ctx context.Context, in *pb.Delete
 		return nil, proto.Internal.Error(err)
 	}
 
-	for _, infoType := range infoTypeList{
+	for _, infoType := range infoTypeList {
 		newStatus, err := s.profileInfoStatus(tokenUser.Id, infoType)
 		if err != nil {
 			return nil, proto.Internal.Error(err)
@@ -1349,9 +1348,9 @@ func (s *Service) GetProfileStatus(ctx context.Context, in *pb.GetProfileStatusR
 		return nil, proto.Internal.Error(err)
 	}
 
-	var statusItems = make([]pb.ProfileAdditionalInfoStatus,0)
+	var statusItems = make([]pb.ProfileAdditionalInfoStatus, 0)
 
-	for _,s := range status.Items{
+	for _, s := range status.Items {
 		if s.Type != pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_PROFILE_PICTURE {
 			statusItems = append(statusItems, s.Status)
 		}
@@ -1377,7 +1376,7 @@ func (s *Service) GetProfileStatus(ctx context.Context, in *pb.GetProfileStatusR
 		profileStatus = pb.ProfileStatus_PROFILE_STATUS_REJECTED
 	} else if countAccepted == len(statusItems) {
 		profileStatus = pb.ProfileStatus_PROFILE_STATUS_COMPLETED
-	} else if countCompleted + countAccepted == len(statusItems) {
+	} else if countCompleted+countAccepted == len(statusItems) {
 		profileStatus = pb.ProfileStatus_PROFILE_STATUS_WAITING_FOR_VERIFY
 	} else {
 		profileStatus = pb.ProfileStatus_PROFILE_STATUS_IN_PROGRESS
@@ -1460,16 +1459,16 @@ func (s *Service) getAuthorizedCourierClaims(userId string) ([]*pb.AuthorizedCla
 
 	err := s.db.Model(&domain.CourierClaim{}).Where("user_id = ?", userId).Scan(&claims).Error
 
-	if err != nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 
 	var result = make([]*pb.AuthorizedClaim, len(claims))
 
-	for i,claim := range claims {
+	for i, claim := range claims {
 		result[i] = &pb.AuthorizedClaim{
 			Identifier: claim.Identifier,
-			Type: pb.ClaimType(claim.ClaimType),
+			Type:       pb.ClaimType(claim.ClaimType),
 		}
 	}
 

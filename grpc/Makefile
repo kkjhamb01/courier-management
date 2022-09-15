@@ -1,7 +1,7 @@
 DEV_VERSION=0.0.0-dev
 ENV=env GOOS=linux
 
-export COURIER_MANAGEMENT_WORKING_DIR := ${GOPATH}/src/gitlab.artin.ai/backend/courier-management
+export COURIER_MANAGEMENT_WORKING_DIR := ${GOPATH}/src/github.com/kkjhamb01/courier-management
 export COURIER_MANAGEMENT_CONFIG_FILE := config
 
 export GRPC_DIR := ${COURIER_MANAGEMENT_WORKING_DIR}/grpc

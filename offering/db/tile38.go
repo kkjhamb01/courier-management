@@ -1,11 +1,12 @@
 package db
 
 import (
-	t38c "github.com/axvq/tile38-client"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
 	"sync"
+
+	t38c "github.com/axvq/tile38-client"
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
 )
 
 // to make sure tile38 would be set up only once

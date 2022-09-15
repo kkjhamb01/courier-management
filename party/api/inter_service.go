@@ -2,7 +2,8 @@ package api
 
 import (
 	"context"
-	pb "gitlab.artin.ai/backend/courier-management/party/proto"
+
+	pb "github.com/kkjhamb01/courier-management/party/proto"
 )
 
 func (s *grpcServer) InterServiceGetProfileAdditionalInfo(ctx context.Context, in *pb.InterServiceGetProfileAdditionalInfoRequest) (*pb.GetProfileAdditionalInfoResponse, error) {

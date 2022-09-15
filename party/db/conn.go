@@ -2,17 +2,18 @@ package db
 
 import (
 	"database/sql"
+	"os"
+
 	"github.com/rs/zerolog"
 	sqldblogger "github.com/simukti/sqldb-logger"
 	"github.com/simukti/sqldb-logger/logadapter/zerologadapter"
-	"os"
 
-	"gitlab.artin.ai/backend/courier-management/common/config"
+	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"time"
 )
-
 
 func NewOrm(config config.Database) (*gorm.DB, error) {
 	loggerAdapter := zerologadapter.New(zerolog.New(os.Stdout))
@@ -23,7 +24,7 @@ func NewOrm(config config.Database) (*gorm.DB, error) {
 		Conn: conn,
 	}), &gorm.Config{
 		SkipDefaultTransaction: true,
-		PrepareStmt: true,
+		PrepareStmt:            true,
 	})
 
 	dbDB, err := db.DB()
@@ -32,5 +33,5 @@ func NewOrm(config config.Database) (*gorm.DB, error) {
 	dbDB.SetConnMaxIdleTime(time.Duration(config.MaxIdleTimeInMinutes) * time.Minute)
 	dbDB.SetConnMaxLifetime(time.Duration(config.MaxLifetimeInMinutes) * time.Minute)
 
-	return db,err
+	return db, err
 }

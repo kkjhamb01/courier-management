@@ -1,14 +1,15 @@
 package api
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/promotion/business"
-	pb "gitlab.artin.ai/backend/courier-management/promotion/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+	"net"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/promotion/business"
+	pb "github.com/kkjhamb01/courier-management/promotion/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type grpcServer struct {
@@ -76,13 +77,13 @@ func rolesMap() map[string][]string {
 
 	// nil values are open to everyone (even without token)
 	return map[string][]string{
-		PREFIX_ADMIN_SERVICE + "CreatePromotion":  ResourceAccessAdmin,
-		PREFIX_ADMIN_SERVICE + "AssignPromotionToUser":   ResourceAccessAdmin,
-		PREFIX_ADMIN_SERVICE + "GetPromotions":     ResourceAccessAdmin,
-		PREFIX_ADMIN_SERVICE + "GetUsers":      ResourceAccessAdmin,
-		PREFIX_SERVICE_SERVICE + "AssignUserReferral": nil,
-		PREFIX_SERVICE_SERVICE + "ApplyPromotion":  nil,
-		PREFIX_USER_SERVICE + "GetPromotionsOfUser":      ResourceAccessClient,
+		PREFIX_ADMIN_SERVICE + "CreatePromotion":       ResourceAccessAdmin,
+		PREFIX_ADMIN_SERVICE + "AssignPromotionToUser": ResourceAccessAdmin,
+		PREFIX_ADMIN_SERVICE + "GetPromotions":         ResourceAccessAdmin,
+		PREFIX_ADMIN_SERVICE + "GetUsers":              ResourceAccessAdmin,
+		PREFIX_SERVICE_SERVICE + "AssignUserReferral":  nil,
+		PREFIX_SERVICE_SERVICE + "ApplyPromotion":      nil,
+		PREFIX_USER_SERVICE + "GetPromotionsOfUser":    ResourceAccessClient,
 	}
 }
 

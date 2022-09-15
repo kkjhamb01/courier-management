@@ -3,15 +3,16 @@ package business
 import (
 	"context"
 	"errors"
+	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/finance/db"
+	"github.com/kkjhamb01/courier-management/finance/model"
+	"github.com/kkjhamb01/courier-management/finance/storage"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/transfer"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/finance/db"
-	"gitlab.artin.ai/backend/courier-management/finance/model"
-	"gitlab.artin.ai/backend/courier-management/finance/storage"
-	"time"
 )
 
 func MakeSettlementPayments() {

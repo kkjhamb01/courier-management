@@ -2,9 +2,9 @@ package db
 
 import (
 	"database/sql"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-)
 
+	"github.com/kkjhamb01/courier-management/common/logger"
+)
 
 type Transaction interface {
 	Exec(query string, args ...interface{}) (sql.Result, error)

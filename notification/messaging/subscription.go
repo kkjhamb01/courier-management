@@ -2,13 +2,14 @@ package messaging
 
 import (
 	"context"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/common/messaging"
+	"github.com/kkjhamb01/courier-management/common/push"
 	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/common/messaging"
-	"gitlab.artin.ai/backend/courier-management/common/push"
 )
 
 var subscriptions []*nats.Subscription
@@ -51,7 +52,7 @@ func onNewPushEvent(ctx context.Context, client *PushClient, msg *nats.Msg) {
 		return
 	}
 
-	if templater, ok := newPush.(push.Templater); ok{
+	if templater, ok := newPush.(push.Templater); ok {
 		go client.OnNewPushEvent(ctx, templater)
 	} else {
 		logger.Debugf("event is not templater %v", newPush.String())

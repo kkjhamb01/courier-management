@@ -1,6 +1,6 @@
 package logger
 
-import "gitlab.artin.ai/backend/courier-management/common/logger/tag"
+import "github.com/kkjhamb01/courier-management/common/logger/tag"
 
 type logger interface {
 	info(s string, tags ...tag.Tag)

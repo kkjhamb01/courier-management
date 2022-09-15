@@ -1,7 +1,7 @@
 package business
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/stringutil"
+	"github.com/kkjhamb01/courier-management/common/stringutil"
 )
 
 func requestHumanReadableId() string {

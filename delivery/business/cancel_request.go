@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/delivery/db"
-	"gitlab.artin.ai/backend/courier-management/delivery/model"
-	"gitlab.artin.ai/backend/courier-management/delivery/status"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/delivery/db"
+	"github.com/kkjhamb01/courier-management/delivery/model"
+	"github.com/kkjhamb01/courier-management/delivery/status"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
 var cancelAfterPickUpErr = errors.New("requests with any picked up in their history cannot be cancelled")

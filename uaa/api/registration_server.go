@@ -2,22 +2,23 @@ package api
 
 import (
 	"context"
-	pb "gitlab.artin.ai/backend/courier-management/uaa/proto"
+
+	pb "github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
-func (s *grpcServer) CourierOtpRegister(ctx context.Context, in *pb.CourierOtpRegisterRequest) (*pb.CourierOtpRegisterResponse, error){
+func (s *grpcServer) CourierOtpRegister(ctx context.Context, in *pb.CourierOtpRegisterRequest) (*pb.CourierOtpRegisterResponse, error) {
 	return s.registrationService.CourierOtpRegister(ctx, in)
 }
 
-func (s *grpcServer) CourierOtpLogin(ctx context.Context, in *pb.CourierOtpLoginRequest) (*pb.CourierOtpLoginResponse, error){
+func (s *grpcServer) CourierOtpLogin(ctx context.Context, in *pb.CourierOtpLoginRequest) (*pb.CourierOtpLoginResponse, error) {
 	return s.registrationService.CourierOtpLogin(ctx, in)
 }
 
-func (s *grpcServer) CourierOtpAuthenticate(ctx context.Context, in *pb.CourierOtpAuthenticateRequest) (*pb.CourierOtpAuthenticateResponse, error){
+func (s *grpcServer) CourierOtpAuthenticate(ctx context.Context, in *pb.CourierOtpAuthenticateRequest) (*pb.CourierOtpAuthenticateResponse, error) {
 	return s.registrationService.CourierOtpAuthenticate(ctx, in)
 }
 
-func (s *grpcServer) CourierOtpRetry(ctx context.Context, in *pb.CourierOtpRetryRequest) (*pb.CourierOtpRetryResponse, error){
+func (s *grpcServer) CourierOtpRetry(ctx context.Context, in *pb.CourierOtpRetryRequest) (*pb.CourierOtpRetryResponse, error) {
 	return s.registrationService.CourierOtpRetry(ctx, in)
 }
 
@@ -37,24 +38,23 @@ func (s *grpcServer) CourierOauthLoginVerify(ctx context.Context, in *pb.Courier
 	return s.registrationService.CourierOauthLoginVerify(ctx, in)
 }
 
-func (s *grpcServer) CourierOtpReclaim(ctx context.Context, in *pb.CourierOtpReclaimRequest) (*pb.CourierOtpReclaimResponse, error){
+func (s *grpcServer) CourierOtpReclaim(ctx context.Context, in *pb.CourierOtpReclaimRequest) (*pb.CourierOtpReclaimResponse, error) {
 	return s.registrationService.CourierOtpReclaim(ctx, in)
 }
 
-
-func (s *grpcServer) UserOtpRegister(ctx context.Context, in *pb.UserOtpRegisterRequest) (*pb.UserOtpRegisterResponse, error){
+func (s *grpcServer) UserOtpRegister(ctx context.Context, in *pb.UserOtpRegisterRequest) (*pb.UserOtpRegisterResponse, error) {
 	return s.registrationService.UserOtpRegister(ctx, in)
 }
 
-func (s *grpcServer) UserOtpLogin(ctx context.Context, in *pb.UserOtpLoginRequest) (*pb.UserOtpLoginResponse, error){
+func (s *grpcServer) UserOtpLogin(ctx context.Context, in *pb.UserOtpLoginRequest) (*pb.UserOtpLoginResponse, error) {
 	return s.registrationService.UserOtpLogin(ctx, in)
 }
 
-func (s *grpcServer) UserOtpAuthenticate(ctx context.Context, in *pb.UserOtpAuthenticateRequest) (*pb.UserOtpAuthenticateResponse, error){
+func (s *grpcServer) UserOtpAuthenticate(ctx context.Context, in *pb.UserOtpAuthenticateRequest) (*pb.UserOtpAuthenticateResponse, error) {
 	return s.registrationService.UserOtpAuthenticate(ctx, in)
 }
 
-func (s *grpcServer) UserOtpRetry(ctx context.Context, in *pb.UserOtpRetryRequest) (*pb.UserOtpRetryResponse, error){
+func (s *grpcServer) UserOtpRetry(ctx context.Context, in *pb.UserOtpRetryRequest) (*pb.UserOtpRetryResponse, error) {
 	return s.registrationService.UserOtpRetry(ctx, in)
 }
 
@@ -74,6 +74,6 @@ func (s *grpcServer) UserOauthLoginVerify(ctx context.Context, in *pb.UserOauthL
 	return s.registrationService.UserOauthLoginVerify(ctx, in)
 }
 
-func (s *grpcServer) UserOtpReclaim(ctx context.Context, in *pb.UserOtpReclaimRequest) (*pb.UserOtpReclaimResponse, error){
+func (s *grpcServer) UserOtpReclaim(ctx context.Context, in *pb.UserOtpReclaimRequest) (*pb.UserOtpReclaimResponse, error) {
 	return s.registrationService.UserOtpReclaim(ctx, in)
 }

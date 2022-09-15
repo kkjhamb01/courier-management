@@ -2,11 +2,12 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/common/messaging"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
-	offeringPb "gitlab.artin.ai/backend/courier-management/grpc/offering/go"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/common/messaging"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
+	offeringPb "github.com/kkjhamb01/courier-management/grpc/offering/go"
 )
 
 func publishOfferCancelledEventOnMessaging(ctx context.Context, cancelEvent offeringPb.OfferCancelledEvent) error {

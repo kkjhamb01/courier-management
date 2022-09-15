@@ -3,13 +3,14 @@ package api
 import (
 	"context"
 	"errors"
-	"github.com/golang/protobuf/ptypes/empty"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/delivery/business"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"time"
+
+	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/delivery/business"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
+	"github.com/kkjhamb01/courier-management/uaa/security"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (s serverImpl) CreateRequest(ctx context.Context, req *deliveryPb.CreateRequestRequest) (*deliveryPb.CreateRequestResponse, error) {

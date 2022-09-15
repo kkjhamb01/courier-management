@@ -2,12 +2,13 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/delivery/db"
-	"gitlab.artin.ai/backend/courier-management/delivery/model"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
-	uaa "gitlab.artin.ai/backend/courier-management/uaa/proto"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/delivery/db"
+	"github.com/kkjhamb01/courier-management/delivery/model"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
+	uaa "github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
 func GetCourierCompletedRequests(ctx context.Context, userId string, from time.Time, to time.Time) (int, error) {

@@ -3,10 +3,11 @@ package business
 import (
 	"context"
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/finance/services"
-	"gitlab.artin.ai/backend/courier-management/party/proto"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/finance/services"
+	"github.com/kkjhamb01/courier-management/party/proto"
 )
 
 func getCustomerInfo(ctx context.Context, accessToken string) (*proto.UserProfile, error) {

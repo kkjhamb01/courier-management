@@ -1,8 +1,8 @@
 package model
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
 )
 
 type PaymentMethod struct {

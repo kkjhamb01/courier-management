@@ -1,32 +1,33 @@
 package business
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/hashicorp/go-uuid"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/uaa/db"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/uaa/db"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/facebook"
 	"golang.org/x/oauth2/google"
-	"math/rand"
-	"time"
 )
 
-const(
-	REDIS_KEY_OTP = "t"
+const (
+	REDIS_KEY_OTP             = "t"
 	REDIS_KEY_REMAINING_RETRY = "r"
-	REDIS_KEY_PHONE_NUMBER = "p"
-	REDIS_KEY_OAUTH_TYPE = "o"
-	REDIS_KEY_USER_TYPE = "u"
+	REDIS_KEY_PHONE_NUMBER    = "p"
+	REDIS_KEY_OAUTH_TYPE      = "o"
+	REDIS_KEY_USER_TYPE       = "u"
 	REDIS_KEY_USER_IDENTIFIER = "i"
-	REDIS_KEY_CLAIM_TYPE = "c"
-	REDIS_KEY_USER_ID = "d"
-	REDIS_KEY_USER = "e"
-	REDIS_KEY_OAUTH_RESPONSE = "n"
-	USER_TYPE_COURIER = 1
-	USER_TYPE_USER = 2
+	REDIS_KEY_CLAIM_TYPE      = "c"
+	REDIS_KEY_USER_ID         = "d"
+	REDIS_KEY_USER            = "e"
+	REDIS_KEY_OAUTH_RESPONSE  = "n"
+	USER_TYPE_COURIER         = 1
+	USER_TYPE_USER            = 2
 )
 
 var (
@@ -46,23 +47,23 @@ var (
 )
 
 type RegistrationService struct {
-	config   config.UaaData
-	jwtUtils security.JWTUtils
-	redis    *redis.Client
-	partyAPI PartyAPI
-	googleCourierConfig    *oauth2.Config
-	googleUserConfig *oauth2.Config
-	facebookCourierConfig 		  *oauth2.Config
-	facebookUserConfig 		  *oauth2.Config
+	config                config.UaaData
+	jwtUtils              security.JWTUtils
+	redis                 *redis.Client
+	partyAPI              PartyAPI
+	googleCourierConfig   *oauth2.Config
+	googleUserConfig      *oauth2.Config
+	facebookCourierConfig *oauth2.Config
+	facebookUserConfig    *oauth2.Config
 }
 
-type facebookUserInfo struct{
-	Id           		string   `json:"id,omitempty"`
-	Name           		string   `json:"name,omitempty"`
-	Email           	string   `json:"email,omitempty"`
-	FirstName           string   `json:"first_name,omitempty"`
-	LastName           	string   `json:"last_name,omitempty"`
-	ProfilePicture 		[]byte
+type facebookUserInfo struct {
+	Id             string `json:"id,omitempty"`
+	Name           string `json:"name,omitempty"`
+	Email          string `json:"email,omitempty"`
+	FirstName      string `json:"first_name,omitempty"`
+	LastName       string `json:"last_name,omitempty"`
+	ProfilePicture []byte
 }
 
 func (s *RegistrationService) generateOtp() string {
@@ -82,10 +83,9 @@ func (s *RegistrationService) sendOtp(phoneNumber string, otp string) error {
 	return nil
 }
 
-
 func NewRegistrationService(config config.UaaData, jwtConfig config.JwtData, partyApi PartyAPI) *RegistrationService {
 	jwtUtils, err := security.NewJWTUtils(jwtConfig)
-	if err != nil{
+	if err != nil {
 		logger.Fatalf("cannot create jwtutils ", err)
 	}
 
@@ -106,30 +106,30 @@ func NewRegistrationService(config config.UaaData, jwtConfig config.JwtData, par
 	}
 
 	googleCourierConfig := &oauth2.Config{
-		ClientID: config.Google.Driver.ClientID,
+		ClientID:     config.Google.Driver.ClientID,
 		ClientSecret: config.Google.Driver.ClientSecret,
 		RedirectURL:  config.Google.Driver.RedirectURL,
-		Scopes: driverScopes,
-		Endpoint: google.Endpoint,
+		Scopes:       driverScopes,
+		Endpoint:     google.Endpoint,
 	}
 	googleUserConfig := &oauth2.Config{
-		ClientID: config.Google.Passenger.ClientID,
+		ClientID:     config.Google.Passenger.ClientID,
 		ClientSecret: config.Google.Passenger.ClientSecret,
 		RedirectURL:  config.Google.Passenger.RedirectURL,
-		Scopes: passengerScopes,
-		Endpoint: google.Endpoint,
+		Scopes:       passengerScopes,
+		Endpoint:     google.Endpoint,
 	}
 
 	rand.Seed(time.Now().UnixNano())
 	return &RegistrationService{
-		config: config,
-		jwtUtils: jwtUtils,
-		redis: db.NewRedisConnection(config.Redis),
-		partyAPI: partyApi,
+		config:                config,
+		jwtUtils:              jwtUtils,
+		redis:                 db.NewRedisConnection(config.Redis),
+		partyAPI:              partyApi,
 		facebookCourierConfig: facebookCourierConfig,
-		facebookUserConfig: facebookUserConfig,
-		googleCourierConfig: googleCourierConfig,
-		googleUserConfig: googleUserConfig,
+		facebookUserConfig:    facebookUserConfig,
+		googleCourierConfig:   googleCourierConfig,
+		googleUserConfig:      googleUserConfig,
 	}
 }
 
@@ -142,6 +142,6 @@ func generateId(isCourier bool) string {
 	if isCourier {
 		buf[0] = buf[0] | 128
 	}
-	id,_ := uuid.FormatUUID(buf)
+	id, _ := uuid.FormatUUID(buf)
 	return id
 }

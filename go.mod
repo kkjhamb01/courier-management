@@ -1,4 +1,4 @@
-module gitlab.artin.ai/backend/courier-management
+module github.com/kkjhamb01/courier-management
 
 go 1.16
 

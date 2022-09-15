@@ -3,11 +3,12 @@ package api
 import (
 	"context"
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/finance/business"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/finance/business"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 )
 
 func (s serverImpl) GetClientSecret(ctx context.Context, req *financePb.GetClientSecretRequest) (*financePb.GetClientSecretResponse, error) {

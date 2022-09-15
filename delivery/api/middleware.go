@@ -3,9 +3,10 @@ package api
 import (
 	"context"
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

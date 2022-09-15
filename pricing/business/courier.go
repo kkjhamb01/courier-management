@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	pricingPb "gitlab.artin.ai/backend/courier-management/grpc/pricing/go"
 	"io/ioutil"
 	"math"
 	"net/http"
 	"strings"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	pricingPb "github.com/kkjhamb01/courier-management/grpc/pricing/go"
 )
 
 func CalculateCourierPrice(ctx context.Context, req *pricingPb.CalculateCourierPriceRequest) (*pricingPb.CalculateCourierPriceResponse, error) {
@@ -30,8 +31,8 @@ func CalculateCourierPrice(ctx context.Context, req *pricingPb.CalculateCourierP
 	res := &pricingPb.CalculateCourierPriceResponse{
 		EstimatedDuration: duration,
 		EstimatedDistance: distance,
-		Amount: float64(price),
-		Currency: "GBP",
+		Amount:            float64(price),
+		Currency:          "GBP",
 	}
 	logger.Debugf("CalculateCourierPrice result = %%v", res)
 	return res, nil
@@ -58,28 +59,28 @@ func ReviewCourierPrice(ctx context.Context, req *pricingPb.ReviewCourierPriceRe
 	}
 
 	var prices = make([]*pricingPb.ReviewCourierPriceResponse_Price, len(vehicleTypes))
-	for i,vt := range vehicleTypes {
+	for i, vt := range vehicleTypes {
 		prices[i] = &pricingPb.ReviewCourierPriceResponse_Price{
 			VehicleType: vt,
-			Currency: "GBP",
-			Amount: float64(calculatePrice(distance, duration, vt, req.RequiredWorkers)),
+			Currency:    "GBP",
+			Amount:      float64(calculatePrice(distance, duration, vt, req.RequiredWorkers)),
 		}
 	}
 
 	return &pricingPb.ReviewCourierPriceResponse{
 		EstimatedDuration: duration,
 		EstimatedDistance: distance,
-		Prices: prices,
+		Prices:            prices,
 	}, nil
 }
 
-func calculatePrice(distance int32, duration int64, vehicleType commonPb.VehicleType, numberOfWorkers int32) int32{
-	return 3 * distance / 1000 + 5 * int32(duration) / 60 + numberOfWorkers * 7
+func calculatePrice(distance int32, duration int64, vehicleType commonPb.VehicleType, numberOfWorkers int32) int32 {
+	return 3*distance/1000 + 5*int32(duration)/60 + numberOfWorkers*7
 }
 
 func callDistanceApi(source *commonPb.Location, destinations []*commonPb.Location) (int32, int64, error) {
 	destinationsStr := make([]string, len(destinations))
-	for i,d := range destinations {
+	for i, d := range destinations {
 		destinationsStr[i] = fmt.Sprintf("%v,%v", d.Lat, d.Lon)
 	}
 	url := fmt.Sprintf("https://maps.googleapis.com/maps/api/distancematrix/json?origins=%v&destinations=%v&key=%v",
@@ -92,22 +93,21 @@ func callDistanceApi(source *commonPb.Location, destinations []*commonPb.Locatio
 
 	method := "GET"
 
-	client := &http.Client {
-	}
+	client := &http.Client{}
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		return 0,0,err
+		return 0, 0, err
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		return 0,0,err
+		return 0, 0, err
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return 0,0,err
+		return 0, 0, err
 	}
 	response := GoogleDistanceResponse{}
 	logger.Debugf("callDistanceApi response body = %v", string(body))
@@ -117,8 +117,8 @@ func callDistanceApi(source *commonPb.Location, destinations []*commonPb.Locatio
 	if response.Rows != nil && len(response.Rows) > 0 {
 		row := response.Rows[0]
 		if row.Elements != nil {
-			for _,element := range row.Elements {
-				if element.Distance == nil{
+			for _, element := range row.Elements {
+				if element.Distance == nil {
 					return 0, 0, errors.New("empty response from Google")
 				}
 				distance = distance + element.Distance.Value
@@ -134,18 +134,18 @@ func roundTo(n float64, decimals uint32) float64 {
 }
 
 type GoogleDistanceResponse struct {
-	Rows     	 []*Row `json:"rows"`
+	Rows []*Row `json:"rows"`
 }
 type Row struct {
-	Elements     []*Element `json:"elements"`
+	Elements []*Element `json:"elements"`
 }
 type Element struct {
-	Distance     *Distance `json:"distance"`
-	Duration     *Duration `json:"duration"`
+	Distance *Distance `json:"distance"`
+	Duration *Duration `json:"duration"`
 }
 type Distance struct {
-	Value     int32 	`json:"value"`
+	Value int32 `json:"value"`
 }
 type Duration struct {
-	Value     int64 `json:"value"`
+	Value int64 `json:"value"`
 }

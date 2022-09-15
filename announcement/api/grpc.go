@@ -1,14 +1,15 @@
 package api
 
 import (
-	"gitlab.artin.ai/backend/courier-management/announcement/business"
-	pb "gitlab.artin.ai/backend/courier-management/announcement/proto"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+	"net"
+
+	"github.com/kkjhamb01/courier-management/announcement/business"
+	pb "github.com/kkjhamb01/courier-management/announcement/proto"
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type grpcServer struct {
@@ -74,11 +75,11 @@ func rolesMap() map[string][]string {
 
 	// nil values are open to everyone (even without token)
 	return map[string][]string{
-		PREFIX_ADMIN_SERVICE + "CreateAnnouncement":  ResourceAccessAdmin,
-		PREFIX_ADMIN_SERVICE + "AssignAnnouncementToUser":   ResourceAccessAdmin,
-		PREFIX_ADMIN_SERVICE + "GetAnnouncements":     ResourceAccessAdmin,
-		PREFIX_ADMIN_SERVICE + "GetUsers":      ResourceAccessAdmin,
-		PREFIX_USER_SERVICE + "GetAnnouncementsOfUser":      ResourceAccessUser,
+		PREFIX_ADMIN_SERVICE + "CreateAnnouncement":       ResourceAccessAdmin,
+		PREFIX_ADMIN_SERVICE + "AssignAnnouncementToUser": ResourceAccessAdmin,
+		PREFIX_ADMIN_SERVICE + "GetAnnouncements":         ResourceAccessAdmin,
+		PREFIX_ADMIN_SERVICE + "GetUsers":                 ResourceAccessAdmin,
+		PREFIX_USER_SERVICE + "GetAnnouncementsOfUser":    ResourceAccessUser,
 	}
 }
 

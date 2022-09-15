@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	uaaproto "gitlab.artin.ai/backend/courier-management/uaa/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	uaaproto "github.com/kkjhamb01/courier-management/uaa/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 	"google.golang.org/grpc"
 )
 
@@ -29,7 +30,6 @@ func ChainInterceptors(interceptors ...grpc.UnaryServerInterceptor) grpc.UnarySe
 }
 
 type ValidationInterceptor struct {
-
 }
 
 type Validator interface {
@@ -41,7 +41,7 @@ func (v *ValidationInterceptor) Unary() grpc.UnaryServerInterceptor {
 		req interface{},
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler) (interface{}, error) {
-		if err := v.validate(req); err!=nil {
+		if err := v.validate(req); err != nil {
 			return nil, uaaproto.InvalidArgument.Error(err)
 		}
 		return handler(ctx, req)
@@ -59,13 +59,11 @@ func NewValidationInterceptor() *ValidationInterceptor {
 	return &ValidationInterceptor{}
 }
 
-
-
 type AuthInterceptor struct {
-	jwtUtils      *security.JWTUtils
+	jwtUtils *security.JWTUtils
 }
 
-type authenticatedRequest interface{
+type authenticatedRequest interface {
 	GetAccessToken() string
 }
 
@@ -81,7 +79,7 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		// only extract user, without authentication
 		user := interceptor.extractUser(ctx, req)
 
-		if user != nil && user.Id != ""{
+		if user != nil && user.Id != "" {
 			ctx = context.WithValue(context.Background(), "user", *user)
 		} else {
 			return nil, uaaproto.Unauthenticated.ErrorMsg("invalid token")
@@ -95,7 +93,7 @@ func (interceptor *AuthInterceptor) extractUser(ctx context.Context, req interfa
 	var user *security.User
 	if a, ok := req.(authenticatedRequest); ok {
 		token := a.GetAccessToken()
-		user,_ = interceptor.jwtUtils.ValidateUnsigned(token, true)
+		user, _ = interceptor.jwtUtils.ValidateUnsigned(token, true)
 	}
 	logger.Debugf("extract user from request ", user)
 	return user
@@ -103,7 +101,7 @@ func (interceptor *AuthInterceptor) extractUser(ctx context.Context, req interfa
 
 func NewAuthInterceptor(config config.NotificationData, jwtConfig config.JwtData) *AuthInterceptor {
 	jwtUtils, err := security.NewJWTUtils(jwtConfig)
-	if err != nil{
+	if err != nil {
 		logger.Fatalf("cannot create jwtutils ", err)
 	}
 	return &AuthInterceptor{&jwtUtils}

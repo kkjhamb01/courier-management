@@ -3,15 +3,16 @@ package business
 import (
 	"context"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	offeringPb "gitlab.artin.ai/backend/courier-management/grpc/offering/go"
-	"gitlab.artin.ai/backend/courier-management/offering/db"
-	"gitlab.artin.ai/backend/courier-management/offering/model"
-	"gitlab.artin.ai/backend/courier-management/offering/pubsub"
-	"gitlab.artin.ai/backend/courier-management/offering/storage"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	offeringPb "github.com/kkjhamb01/courier-management/grpc/offering/go"
+	"github.com/kkjhamb01/courier-management/offering/db"
+	"github.com/kkjhamb01/courier-management/offering/model"
+	"github.com/kkjhamb01/courier-management/offering/pubsub"
+	"github.com/kkjhamb01/courier-management/offering/storage"
 )
 
 func OnOfferAccepted(ctx context.Context, event offeringPb.OfferAcceptedEvent) (returnErr error) {

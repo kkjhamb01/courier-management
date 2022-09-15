@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/delivery/services"
+	"github.com/kkjhamb01/courier-management/finance/pubsub"
+	"github.com/kkjhamb01/courier-management/finance/storage"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
+	"github.com/kkjhamb01/courier-management/party/proto"
 	"github.com/stripe/stripe-go/v72"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/delivery/services"
-	"gitlab.artin.ai/backend/courier-management/finance/pubsub"
-	"gitlab.artin.ai/backend/courier-management/finance/storage"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
-	"gitlab.artin.ai/backend/courier-management/party/proto"
 )
 
 var (

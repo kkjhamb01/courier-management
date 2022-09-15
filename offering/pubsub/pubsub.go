@@ -1,8 +1,9 @@
 package pubsub
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/logger"
 	"sync"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
 )
 
 var (

@@ -2,8 +2,9 @@ package model
 
 import (
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

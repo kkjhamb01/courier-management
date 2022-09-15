@@ -2,14 +2,15 @@ package logger
 
 import (
 	"fmt"
-	"github.com/rs/zerolog"
-	zlog "github.com/rs/zerolog/log"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
 	"os"
 	"os/user"
 	"path/filepath"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/rs/zerolog"
+	zlog "github.com/rs/zerolog/log"
 )
 
 type zeroLog struct {

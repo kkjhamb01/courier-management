@@ -2,11 +2,12 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/finance/db"
-	"gitlab.artin.ai/backend/courier-management/finance/model"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/finance/db"
+	"github.com/kkjhamb01/courier-management/finance/model"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
 )
 
 func GetTransactionsPaidToCourier(ctx context.Context, courierId string, from time.Time, to time.Time, pageNumber int, pageSize int) ([]*financePb.Transaction, error) {

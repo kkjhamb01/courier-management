@@ -2,8 +2,9 @@ package uaa
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/service"
-	"gitlab.artin.ai/backend/courier-management/uaa/api"
+
+	"github.com/kkjhamb01/courier-management/common/service"
+	"github.com/kkjhamb01/courier-management/uaa/api"
 )
 
 func init() {

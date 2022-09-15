@@ -3,10 +3,11 @@ package business
 import (
 	"context"
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/delivery/services"
-	partypb "gitlab.artin.ai/backend/courier-management/party/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/delivery/services"
+	partypb "github.com/kkjhamb01/courier-management/party/proto"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
 func getCourierProfile(ctx context.Context, courierId string) (*partypb.CourierProfile, error) {

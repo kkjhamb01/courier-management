@@ -17,7 +17,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
 )
 
 // ensure the imports are used

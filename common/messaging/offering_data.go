@@ -1,8 +1,7 @@
 package messaging
 
 import (
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
-	"gitlab.artin.ai/backend/courier-management/grpc/offering/go"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
 )
 
 func EncodeMaxOfferRetriesData(event offeringPb.MaxOfferRetriesEvent) ([]byte, error) {

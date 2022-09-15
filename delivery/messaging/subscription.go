@@ -2,10 +2,11 @@ package messaging
 
 import (
 	"context"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/common/messaging"
 	"github.com/nats-io/nats.go"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/common/messaging"
 )
 
 var subscriptions []*nats.Subscription

@@ -2,17 +2,18 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	pb "gitlab.artin.ai/backend/courier-management/grpc/offering/go"
+	"testing"
+	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	pb "github.com/kkjhamb01/courier-management/grpc/offering/go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"testing"
-	"time"
 )
 
-func init(){
+func init() {
 	config.InitTestConfig()
 	logger.InitLogger()
 }
@@ -46,12 +47,12 @@ func TestGetRideInfo(t *testing.T) {
 	out, err := c.GetOfferCourierAndCustomer(ctx, request)
 
 	if e, ok := status.FromError(err); ok {
-		if e.Code() == 2{
+		if e.Code() == 2 {
 			logger.Debugf("not found")
 		}
 	}
 
-	if err != nil{
+	if err != nil {
 		logger.Debugf("error = %v", err.Error())
 	}
 

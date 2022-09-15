@@ -2,8 +2,8 @@ package storage
 
 import (
 	"github.com/go-redsync/redsync/v4"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/delivery/db"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/delivery/db"
 )
 
 const (

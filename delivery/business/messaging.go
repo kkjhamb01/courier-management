@@ -2,12 +2,13 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/common/messaging"
-	"gitlab.artin.ai/backend/courier-management/common/push"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/common/messaging"
+	"github.com/kkjhamb01/courier-management/common/push"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
 )
 
 func publishNewRequestEventOnMessaging(ctx context.Context, newRequestEvent deliveryPb.Request) error {

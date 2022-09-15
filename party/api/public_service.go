@@ -2,7 +2,8 @@ package api
 
 import (
 	"context"
-	pb "gitlab.artin.ai/backend/courier-management/party/proto"
+
+	pb "github.com/kkjhamb01/courier-management/party/proto"
 )
 
 func (s *grpcServer) OpenGetCourierAccount(ctx context.Context, in *pb.OpenGetCourierAccountRequest) (*pb.GetCourierAccountResponse, error) {

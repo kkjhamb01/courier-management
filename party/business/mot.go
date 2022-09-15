@@ -5,14 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/party/domain"
-	pb "gitlab.artin.ai/backend/courier-management/party/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/party/domain"
+	pb "github.com/kkjhamb01/courier-management/party/proto"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
 )
 
 type MotErrors struct {
@@ -107,7 +108,7 @@ func (s *Service) SearchMot(ctx context.Context, in *pb.SearchMotRequest) (*pb.S
 		}
 
 		var markedForExport pb.Boolean
-		if courierMot.MarkedForExport{
+		if courierMot.MarkedForExport {
 			markedForExport = pb.Boolean_BOOLEAN_TRUE
 		} else {
 			markedForExport = pb.Boolean_BOOLEAN_FALSE
@@ -161,7 +162,7 @@ func (s *Service) GetMot(userId string) ([]*pb.Mot, error) {
 
 	for i, item := range motList {
 		var markedForExport pb.Boolean
-		if item.MarkedForExport{
+		if item.MarkedForExport {
 			markedForExport = pb.Boolean_BOOLEAN_TRUE
 		} else {
 			markedForExport = pb.Boolean_BOOLEAN_FALSE

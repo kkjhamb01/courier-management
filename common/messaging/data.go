@@ -2,7 +2,7 @@ package messaging
 
 import (
 	"github.com/golang/protobuf/proto"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger"
 	"google.golang.org/protobuf/runtime/protoiface"
 )
 

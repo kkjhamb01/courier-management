@@ -3,13 +3,14 @@ package api
 import (
 	"context"
 	"errors"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/finance/business"
-	"gitlab.artin.ai/backend/courier-management/finance/pubsub"
-	financePb "gitlab.artin.ai/backend/courier-management/grpc/finance/go"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
 	"io"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/finance/business"
+	"github.com/kkjhamb01/courier-management/finance/pubsub"
+	financePb "github.com/kkjhamb01/courier-management/grpc/finance/go"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 )
 
 func (s serverImpl) SetUpStripeUser(stream financePb.Finance_SetUpStripeUserServer) error {

@@ -1,12 +1,13 @@
 package api
 
 import (
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
+	"net"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type serverImpl struct {

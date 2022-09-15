@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	"gitlab.artin.ai/backend/courier-management/offering/db"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	"github.com/kkjhamb01/courier-management/offering/db"
 )
 
 const (
@@ -38,7 +39,7 @@ func (s storageImpl) SetCourierLocationByCourierType(ctx context.Context, locati
 		return err
 	}
 
-	if err := s.redisImpl.pipeliner.Set(ctx, fmt.Sprintf("alive-%s", courierId), 1, time.Duration(30 * time.Minute)).Err(); err != nil {
+	if err := s.redisImpl.pipeliner.Set(ctx, fmt.Sprintf("alive-%s", courierId), 1, time.Duration(30*time.Minute)).Err(); err != nil {
 		logger.Error("failed to set courier alive location in redis", err)
 		return err
 	}

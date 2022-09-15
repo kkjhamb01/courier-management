@@ -1,15 +1,16 @@
 package cmd
 
 import (
-	"github.com/getsentry/sentry-go"
-	"github.com/spf13/cobra"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/service"
 	"os"
 	"os/signal"
 	"strings"
 	"time"
+
+	"github.com/getsentry/sentry-go"
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/service"
+	"github.com/spf13/cobra"
 )
 
 var startServiceNames string

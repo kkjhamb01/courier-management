@@ -2,8 +2,9 @@ package healthcheck
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/offering/db"
 	"net/http"
+
+	"github.com/kkjhamb01/courier-management/offering/db"
 )
 
 func Readyz(w http.ResponseWriter, _ *http.Request) {

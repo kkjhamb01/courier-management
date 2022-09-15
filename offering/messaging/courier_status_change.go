@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/nats-io/nats.go"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	"gitlab.artin.ai/backend/courier-management/offering/business"
-	partyBusiness "gitlab.artin.ai/backend/courier-management/party/business"
-	"gitlab.artin.ai/backend/courier-management/party/proto"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	"github.com/kkjhamb01/courier-management/offering/business"
+	partyBusiness "github.com/kkjhamb01/courier-management/party/business"
+	"github.com/kkjhamb01/courier-management/party/proto"
+	"github.com/nats-io/nats.go"
 )
 
 func onCourierStatusChange(ctx context.Context, msg *nats.Msg) error {

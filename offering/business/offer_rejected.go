@@ -3,9 +3,10 @@ package business
 import (
 	"context"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
-	"gitlab.artin.ai/backend/courier-management/offering/storage"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/kkjhamb01/courier-management/offering/storage"
 )
 
 func OnOfferRejected(ctx context.Context, offerId string, courierId string) (returnErr error) {

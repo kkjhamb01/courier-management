@@ -1,11 +1,12 @@
 package messaging
 
 import (
-	"github.com/nats-io/nats.go"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/logger/tag"
 	"sync"
+
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/logger/tag"
+	"github.com/nats-io/nats.go"
 )
 
 var natsClientSetupOnce sync.Once

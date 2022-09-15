@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package artin.couriermanagement.common;
 
-option go_package = "gitlab.artin.ai/backend/courier-management/grpc/common/go;commonPb";
+option go_package = "github.com/kkjhamb01/courier-management/grpc/common/go;commonPb";
 
  
 import "google/protobuf/duration.proto";

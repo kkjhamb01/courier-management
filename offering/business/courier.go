@@ -3,15 +3,16 @@ package business
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/go-multierror"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	"gitlab.artin.ai/backend/courier-management/offering/db"
-	"gitlab.artin.ai/backend/courier-management/offering/model"
-	"gitlab.artin.ai/backend/courier-management/offering/services"
-	"gitlab.artin.ai/backend/courier-management/offering/storage"
-	"gitlab.artin.ai/backend/courier-management/party/proto"
 	"time"
+
+	"github.com/hashicorp/go-multierror"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	"github.com/kkjhamb01/courier-management/offering/db"
+	"github.com/kkjhamb01/courier-management/offering/model"
+	"github.com/kkjhamb01/courier-management/offering/services"
+	"github.com/kkjhamb01/courier-management/offering/storage"
+	"github.com/kkjhamb01/courier-management/party/proto"
 )
 
 func GetCourierType(ctx context.Context, accessToken string, courierId string) (_ commonPb.VehicleType, _err error) {

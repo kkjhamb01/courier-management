@@ -4,37 +4,38 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitlab.artin.ai/backend/courier-management/announcement/domain"
-	pb "gitlab.artin.ai/backend/courier-management/announcement/proto"
-	"gitlab.artin.ai/backend/courier-management/common/config"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/common/messaging"
-	"gitlab.artin.ai/backend/courier-management/common/push"
-	"gitlab.artin.ai/backend/courier-management/party/db"
-	partypb "gitlab.artin.ai/backend/courier-management/party/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
-	"gorm.io/gorm"
 	"time"
+
+	"github.com/kkjhamb01/courier-management/announcement/domain"
+	pb "github.com/kkjhamb01/courier-management/announcement/proto"
+	"github.com/kkjhamb01/courier-management/common/config"
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/common/messaging"
+	"github.com/kkjhamb01/courier-management/common/push"
+	"github.com/kkjhamb01/courier-management/party/db"
+	partypb "github.com/kkjhamb01/courier-management/party/proto"
+	"github.com/kkjhamb01/courier-management/uaa/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
+	"gorm.io/gorm"
 )
 
 type Service struct {
-	config                config.AnnouncementData
-	db					  *gorm.DB
-	jwtUtils      		  *security.JWTUtils
-	partyApi      		  PartyAPI
+	config   config.AnnouncementData
+	db       *gorm.DB
+	jwtUtils *security.JWTUtils
+	partyApi PartyAPI
 }
 
-func (s *Service) CreateAnnouncement(ctx context.Context, in *pb.CreateAnnouncementRequest) (*pb.CreateAnnouncementResponse, error){
+func (s *Service) CreateAnnouncement(ctx context.Context, in *pb.CreateAnnouncementRequest) (*pb.CreateAnnouncementResponse, error) {
 	logger.Infof("CreateAnnouncement title = %v, text = %v, type = %v",
 		in.GetTitle(), in.GetText(), in.GetType())
 
 	announcement := &domain.Announcement{
-		Title:        		in.GetTitle(),
-		Text:   			in.GetText(),
-		Type:      			domain.AnnouncementType(in.GetType()),
-		MessageType:      	domain.AnnouncementMessageType(in.GetMessageType()),
-		CreationTime: 		time.Now(),
+		Title:        in.GetTitle(),
+		Text:         in.GetText(),
+		Type:         domain.AnnouncementType(in.GetType()),
+		MessageType:  domain.AnnouncementMessageType(in.GetMessageType()),
+		CreationTime: time.Now(),
 	}
 
 	err := s.db.Transaction(func(tx *gorm.DB) error {
@@ -60,8 +61,8 @@ func (s *Service) CreateAnnouncement(ctx context.Context, in *pb.CreateAnnouncem
 
 func (s *Service) sendPushEvent(announcement domain.Announcement, userId string) error {
 	logger.Debugf("sendPushEvent announcement = %v, userId = %v", announcement.Id, userId)
-	user,err := s.partyApi.GetUserByUserId(userId, partypb.UserType_USER_TYPE_ALL)
-	if err != nil{
+	user, err := s.partyApi.GetUserByUserId(userId, partypb.UserType_USER_TYPE_ALL)
+	if err != nil {
 		return err
 	}
 	if user == nil || user.Id == "" {
@@ -70,16 +71,16 @@ func (s *Service) sendPushEvent(announcement domain.Announcement, userId string)
 
 	evt1Data := &push.AnnouncementReceived{
 		UserPhoneNumber: user.PhoneNumber,
-		Id: announcement.Id,
-		Title: announcement.Title,
-		Text: announcement.Text,
-		Type: int32(announcement.Type),
-		MessageType: int32(announcement.MessageType),
-		Time: announcement.CreationTime.Format("2006-01-02 15:04:05"),
+		Id:              announcement.Id,
+		Title:           announcement.Title,
+		Text:            announcement.Text,
+		Type:            int32(announcement.Type),
+		MessageType:     int32(announcement.MessageType),
+		Time:            announcement.CreationTime.Format("2006-01-02 15:04:05"),
 	}
 	pushClient := messaging.NatsClient()
 
-	if pushClient == nil{
+	if pushClient == nil {
 		logger.Debugf("cannot connect to nats")
 		return errors.New("cannot connect to nats")
 	} else {
@@ -95,7 +96,7 @@ func (s *Service) sendPushEvent(announcement domain.Announcement, userId string)
 	return nil
 }
 
-func (s *Service) AssignAnnouncementToUser(ctx context.Context, in *pb.AssignAnnouncementToUserRequest) (*pb.AssignAnnouncementToUserResponse, error){
+func (s *Service) AssignAnnouncementToUser(ctx context.Context, in *pb.AssignAnnouncementToUserRequest) (*pb.AssignAnnouncementToUserResponse, error) {
 	logger.Infof("AssignAnnouncementToUser announcement_id = %v, user_id = %v", in.GetAnnouncementId(), in.GetUserIds())
 
 	if in.GetUserIds() == nil || len(in.GetUserIds()) == 0 {
@@ -105,7 +106,7 @@ func (s *Service) AssignAnnouncementToUser(ctx context.Context, in *pb.AssignAnn
 
 	announcement := domain.Announcement{}
 
-	if err := s.db.Model(&domain.Announcement{}).Where("id = ?", in.GetAnnouncementId()).Find(&announcement).Error; err != nil{
+	if err := s.db.Model(&domain.Announcement{}).Where("id = ?", in.GetAnnouncementId()).Find(&announcement).Error; err != nil {
 		logger.Errorf("AssignAnnouncementToUser error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
@@ -117,10 +118,10 @@ func (s *Service) AssignAnnouncementToUser(ctx context.Context, in *pb.AssignAnn
 
 	announcementUsers := make([]*domain.AnnouncementUser, len(in.GetUserIds()))
 
-	for i, userId := range in.GetUserIds(){
+	for i, userId := range in.GetUserIds() {
 		announcementUsers[i] = &domain.AnnouncementUser{
-			AnnouncementId:        	in.GetAnnouncementId(),
-			UserId:   				userId,
+			AnnouncementId: in.GetAnnouncementId(),
+			UserId:         userId,
 		}
 	}
 
@@ -140,19 +141,17 @@ func (s *Service) AssignAnnouncementToUser(ctx context.Context, in *pb.AssignAnn
 
 	logger.Debugf("AssignAnnouncementToUser announcement created successfully")
 
-	for _, userId := range in.GetUserIds(){
-		if err := s.sendPushEvent(announcement, userId); err != nil{
+	for _, userId := range in.GetUserIds() {
+		if err := s.sendPushEvent(announcement, userId); err != nil {
 			logger.Errorf("AssignAnnouncementToUser error in sending push event %v", err)
 			return nil, proto.Internal.Error(err)
 		}
 	}
 
-	return &pb.AssignAnnouncementToUserResponse{
-
-	}, nil
+	return &pb.AssignAnnouncementToUserResponse{}, nil
 }
 
-func (s *Service) GetAnnouncements(ctx context.Context, in *pb.GetAnnouncementsRequest) (*pb.GetAnnouncementsResponse, error){
+func (s *Service) GetAnnouncements(ctx context.Context, in *pb.GetAnnouncementsRequest) (*pb.GetAnnouncementsResponse, error) {
 
 	logger.Infof("GetAnnouncements pagination = %v", in.GetPagination())
 
@@ -164,11 +163,11 @@ func (s *Service) GetAnnouncements(ctx context.Context, in *pb.GetAnnouncementsR
 	if in.GetPagination() != nil {
 		page = in.GetPagination().GetPage()
 		limit = in.GetPagination().GetLimit()
-		if in.GetPagination().GetSort() != ""{
+		if in.GetPagination().GetSort() != "" {
 			order = in.GetPagination().GetSort()
 			if in.GetPagination().GetSortType() == pb.SortType_SORT_TYPE_DESC {
 				order = order + " desc"
-			} else{
+			} else {
 				order = order + " asc"
 			}
 		}
@@ -180,20 +179,20 @@ func (s *Service) GetAnnouncements(ctx context.Context, in *pb.GetAnnouncementsR
 		limit = 20
 	}
 	offset = (page - 1) * limit
-	if order == ""{
+	if order == "" {
 		order = "creation_time desc"
 	}
 
 	err := s.db.Limit(int(limit)).Offset(int(offset)).Order(order).Model(&domain.Announcement{}).Scan(&announcements).Error
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("GetAnnouncements error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
 
 	var result = make([]*pb.Announcement, len(announcements))
 
-	for i,announcement := range announcements{
+	for i, announcement := range announcements {
 		result[i] = s.announcementToDto(announcement)
 	}
 
@@ -204,18 +203,18 @@ func (s *Service) GetAnnouncements(ctx context.Context, in *pb.GetAnnouncementsR
 	}, nil
 }
 
-func (s *Service) announcementToDto(announcement domain.Announcement) *pb.Announcement{
+func (s *Service) announcementToDto(announcement domain.Announcement) *pb.Announcement {
 	return &pb.Announcement{
-		Id: announcement.Id,
-		Title: announcement.Title,
-		Text: announcement.Text,
-		Type: pb.AnnouncementType(announcement.Type),
+		Id:          announcement.Id,
+		Title:       announcement.Title,
+		Text:        announcement.Text,
+		Type:        pb.AnnouncementType(announcement.Type),
 		MessageType: pb.AnnouncementMessageType(announcement.MessageType),
-		Time: announcement.CreationTime.Format("2006-01-02 15:04:05"),
+		Time:        announcement.CreationTime.Format("2006-01-02 15:04:05"),
 	}
 }
 
-func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.GetUsersResponse, error){
+func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
 
 	logger.Infof("GetUsers user_id = %v, announcement_id = %v", in.GetUserId(), in.GetAnnouncementId())
 
@@ -231,16 +230,16 @@ func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.Get
 
 	err := s.db.Preload("Announcement").Where(query).Find(&users).Error
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("GetUsers error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
 
 	var result = make([]*pb.AnnouncementUser, len(users))
 
-	for i,user := range users {
+	for i, user := range users {
 		result[i] = &pb.AnnouncementUser{
-			UserId : user.UserId,
+			UserId:       user.UserId,
 			Announcement: s.announcementToDto(user.Announcement),
 		}
 	}
@@ -252,7 +251,7 @@ func (s *Service) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.Get
 	}, nil
 }
 
-func (s *Service) GetAnnouncementsOfUser(ctx context.Context, in *pb.GetAnnouncementsOfUserRequest) (*pb.GetAnnouncementsOfUserResponse, error){
+func (s *Service) GetAnnouncementsOfUser(ctx context.Context, in *pb.GetAnnouncementsOfUserRequest) (*pb.GetAnnouncementsOfUserResponse, error) {
 
 	tokenUser := ctx.Value("user").(security.User)
 
@@ -262,14 +261,14 @@ func (s *Service) GetAnnouncementsOfUser(ctx context.Context, in *pb.GetAnnounce
 
 	var err = s.db.Preload("Announcement").Order("creation_time desc").Where("user_id = ?", tokenUser.Id).Find(&users).Error
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("GetAnnouncementsOfUser error in query", err)
 		return nil, proto.Internal.Error(err)
 	}
 
 	var result = make([]*pb.Announcement, len(users))
 
-	for i,user := range users{
+	for i, user := range users {
 		result[i] = s.announcementToDto(user.Announcement)
 	}
 
@@ -280,20 +279,19 @@ func (s *Service) GetAnnouncementsOfUser(ctx context.Context, in *pb.GetAnnounce
 	}, nil
 }
 
-
 func NewService(config config.Data) *Service {
-	dbInstance,err := db.NewOrm(config.Announcement.Database)
-	if err != nil{
+	dbInstance, err := db.NewOrm(config.Announcement.Database)
+	if err != nil {
 		logger.Fatalf("cannot connect to database", err)
 	}
 	jwtUtils, err := security.NewJWTUtils(config.Jwt)
-	if err != nil{
+	if err != nil {
 		logger.Fatalf("cannot create jwtutils ", err)
 	}
 	partyApi := NewPartyAPI(config.Uaa)
 	return &Service{
-		config: config.Announcement,
-		db: dbInstance,
+		config:   config.Announcement,
+		db:       dbInstance,
 		jwtUtils: &jwtUtils,
 		partyApi: partyApi,
 	}

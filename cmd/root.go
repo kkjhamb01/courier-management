@@ -3,19 +3,20 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 
-	_ "gitlab.artin.ai/backend/courier-management/announcement"
-	_ "gitlab.artin.ai/backend/courier-management/delivery"
-	_ "gitlab.artin.ai/backend/courier-management/finance"
-	_ "gitlab.artin.ai/backend/courier-management/notification"
-	_ "gitlab.artin.ai/backend/courier-management/offering"
-	_ "gitlab.artin.ai/backend/courier-management/party"
-	_ "gitlab.artin.ai/backend/courier-management/pricing"
-	_ "gitlab.artin.ai/backend/courier-management/promotion"
-	_ "gitlab.artin.ai/backend/courier-management/rating"
-	_ "gitlab.artin.ai/backend/courier-management/uaa"
+	"github.com/spf13/cobra"
+
+	_ "github.com/kkjhamb01/courier-management/announcement"
+	_ "github.com/kkjhamb01/courier-management/delivery"
+	_ "github.com/kkjhamb01/courier-management/finance"
+	_ "github.com/kkjhamb01/courier-management/notification"
+	_ "github.com/kkjhamb01/courier-management/offering"
+	_ "github.com/kkjhamb01/courier-management/party"
+	_ "github.com/kkjhamb01/courier-management/pricing"
+	_ "github.com/kkjhamb01/courier-management/promotion"
+	_ "github.com/kkjhamb01/courier-management/rating"
+	_ "github.com/kkjhamb01/courier-management/uaa"
 )
 
 var (

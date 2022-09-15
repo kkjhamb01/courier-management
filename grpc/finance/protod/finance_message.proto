@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package artin.couriermanagement.finance;
 
-option go_package = "gitlab.artin.ai/backend/courier-management/grpc/finance/go;financePb";
+option go_package = "github.com/kkjhamb01/courier-management/grpc/finance/go;financePb";
 
  
 import "finance_model.proto";

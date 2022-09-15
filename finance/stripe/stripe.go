@@ -1,8 +1,8 @@
 package stripe
 
 import (
+	"github.com/kkjhamb01/courier-management/common/config"
 	"github.com/stripe/stripe-go/v72"
-	"gitlab.artin.ai/backend/courier-management/common/config"
 )
 
 func Setup() {

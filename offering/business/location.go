@@ -2,9 +2,10 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	commonPb "gitlab.artin.ai/backend/courier-management/grpc/common/go"
-	"gitlab.artin.ai/backend/courier-management/offering/storage"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	commonPb "github.com/kkjhamb01/courier-management/grpc/common/go"
+	"github.com/kkjhamb01/courier-management/offering/storage"
 )
 
 func SetCourierLocation(ctx context.Context, location commonPb.Location, accessToken string, courierId string) (returnErr error) {

@@ -2,8 +2,9 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	pb "gitlab.artin.ai/backend/courier-management/party/proto"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	pb "github.com/kkjhamb01/courier-management/party/proto"
 )
 
 func (s *Service) OpenGetCourierAccount(ctx context.Context, in *pb.OpenGetCourierAccountRequest) (*pb.GetCourierAccountResponse, error) {
@@ -33,25 +34,25 @@ func (s *Service) OpenGetCourierPublicInfo(ctx context.Context, in *pb.OpenGetCo
 	var registrationNumber string
 	var profilePicture *pb.ProfilePicture
 
-	res,err := s.getCourierAccountById(ctx, in.GetCourierId())
+	res, err := s.getCourierAccountById(ctx, in.GetCourierId())
 	if err != nil {
 		logger.Errorf("OpenGetCourierPublicInfo error in get profile %v", err)
 		return nil, err
 	}
-	if res != nil{
+	if res != nil {
 		profile = res.GetProfile()
 	}
 
-	mot,err := s.getProfileAdditionalInfoByUserid(in.GetCourierId(), pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_MOT)
-	if err != nil{
+	mot, err := s.getProfileAdditionalInfoByUserid(in.GetCourierId(), pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_MOT)
+	if err != nil {
 		logger.Errorf("OpenGetCourierPublicInfo error in get mot %v", err)
 	}
 	if mot != nil && mot.GetMot() != nil {
 		registrationNumber = mot.GetMot().GetRegistrationNumber()
 	}
 
-	pp,err := s.getProfileAdditionalInfoByUserid(in.GetCourierId(), pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_PROFILE_PICTURE)
-	if err != nil{
+	pp, err := s.getProfileAdditionalInfoByUserid(in.GetCourierId(), pb.AdditionalInfoType_ADDITIONAL_INFO_TYPE_PROFILE_PICTURE)
+	if err != nil {
 		logger.Errorf("OpenGetCourierPublicInfo error in get profile picture %v", err)
 	}
 	if pp != nil && pp.GetProfilePicture() != nil {
@@ -59,8 +60,8 @@ func (s *Service) OpenGetCourierPublicInfo(ctx context.Context, in *pb.OpenGetCo
 	}
 
 	return &pb.OpenGetCourierPublicInfoResponse{
-		Profile: profile,
+		Profile:            profile,
 		RegistrationNumber: registrationNumber,
-		ProfilePicture: profilePicture,
+		ProfilePicture:     profilePicture,
 	}, nil
 }

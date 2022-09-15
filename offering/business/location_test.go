@@ -2,9 +2,9 @@ package business
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
-	"gitlab.artin.ai/backend/courier-management/grpc/offering/go"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSetCourierLocationEmptyLocation(t *testing.T) {

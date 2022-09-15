@@ -1,6 +1,6 @@
 package messaging
 
-import deliveryPb "gitlab.artin.ai/backend/courier-management/grpc/delivery/go"
+import deliveryPb "github.com/kkjhamb01/courier-management/grpc/delivery/go"
 
 func EncodeDeliveryRequestRejectedData(event deliveryPb.RequestRejectedEvent) ([]byte, error) {
 	return encodeProto(&event)

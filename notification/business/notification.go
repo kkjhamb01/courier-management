@@ -2,16 +2,17 @@ package business
 
 import (
 	"context"
-	"gitlab.artin.ai/backend/courier-management/common/logger"
-	"gitlab.artin.ai/backend/courier-management/notification/domain"
-	pb "gitlab.artin.ai/backend/courier-management/notification/proto"
-	proto "gitlab.artin.ai/backend/courier-management/uaa/proto"
-	"gitlab.artin.ai/backend/courier-management/uaa/security"
+
+	"github.com/kkjhamb01/courier-management/common/logger"
+	"github.com/kkjhamb01/courier-management/notification/domain"
+	pb "github.com/kkjhamb01/courier-management/notification/proto"
+	proto "github.com/kkjhamb01/courier-management/uaa/proto"
+	"github.com/kkjhamb01/courier-management/uaa/security"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
-func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error){
+func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 
 	tokenUser := ctx.Value("user").(security.User)
 
@@ -22,12 +23,12 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 	var phoneNumber string
 
 	for _, claim := range tokenUser.Claims {
-		if claim.ClaimType == security.CLAIM_TYPE_PHONE_NUMBER{
+		if claim.ClaimType == security.CLAIM_TYPE_PHONE_NUMBER {
 			phoneNumber = claim.Identifier
 		}
 	}
-	
-	if phoneNumber == ""{
+
+	if phoneNumber == "" {
 		logger.Debugf("Register request doesn't have phone_number")
 		return nil, proto.Unauthenticated.ErrorMsg("unauthorized phone number")
 	}
@@ -39,17 +40,17 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 			Columns:   []clause.Column{{Name: "device_id"}},
 			DoUpdates: clause.AssignmentColumns([]string{"phone_number", "manufacturer", "device_model", "device_os", "device_version", "device_token"}),
 		}).Create(&domain.Device{
-			DeviceId: in.DeviceId,
-			PhoneNumber: phoneNumber,
-			Manufacturer: in.Manufacturer,
-			DeviceModel: in.DeviceModel,
-			DeviceOs: int32(in.DeviceOs),
+			DeviceId:      in.DeviceId,
+			PhoneNumber:   phoneNumber,
+			Manufacturer:  in.Manufacturer,
+			DeviceModel:   in.DeviceModel,
+			DeviceOs:      int32(in.DeviceOs),
 			DeviceVersion: in.DeviceVersion,
-			DeviceToken: in.DeviceToken,
+			DeviceToken:   in.DeviceToken,
 		}).Error
 	})
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("Register error in registering device", err)
 		return nil, proto.Internal.Error(err)
 	}
@@ -58,7 +59,7 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 
 }
 
-func (s *Service) Unregister(ctx context.Context, in *pb.UnregisterRequest) (*pb.UnregisterResponse, error){
+func (s *Service) Unregister(ctx context.Context, in *pb.UnregisterRequest) (*pb.UnregisterResponse, error) {
 
 	tokenUser := ctx.Value("user").(security.User)
 
@@ -67,12 +68,12 @@ func (s *Service) Unregister(ctx context.Context, in *pb.UnregisterRequest) (*pb
 	var phoneNumber string
 
 	for _, claim := range tokenUser.Claims {
-		if claim.ClaimType == security.CLAIM_TYPE_PHONE_NUMBER{
+		if claim.ClaimType == security.CLAIM_TYPE_PHONE_NUMBER {
 			phoneNumber = claim.Identifier
 		}
 	}
 
-	if phoneNumber == ""{
+	if phoneNumber == "" {
 		logger.Debugf("Unregister request doesn't have phone_number")
 		return nil, proto.Unauthenticated.ErrorMsg("unauthorized phone number")
 	}
@@ -85,7 +86,7 @@ func (s *Service) Unregister(ctx context.Context, in *pb.UnregisterRequest) (*pb
 		}).Error
 	})
 
-	if err != nil{
+	if err != nil {
 		logger.Errorf("Unregister cannot perform action", err)
 		return nil, proto.Internal.Error(err)
 	}
